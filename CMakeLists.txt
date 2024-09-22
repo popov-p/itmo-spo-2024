@@ -1,17 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(langparser VERSION 0.1.0 LANGUAGES C)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m32")
-
-set(ANTLR_INCLUDE_DIRS /usr/local/include)
-set(ANTLR_LIBRARIES /usr/local/lib/libantlr3c.a)
-
-
-add_definitions(-DANTLR3_DEBUG)
-
-include_directories(${ANTLR_INCLUDE_DIRS})
-link_directories(/usr/local/lib)
+find_library(ANTLR3_LIB antlr3c PATHS /usr/local/lib /usr/lib)
 
 set(PROJECT_SOURCES
   src/Var4Lexer.c
@@ -22,6 +12,6 @@ set(PROJECT_SOURCES
 )
 
 add_executable(treebuilder ${PROJECT_SOURCES})
-target_link_libraries(treebuilder ${ANTLR3C_PATH})
+target_link_libraries(treebuilder ${ANTLR3_LIB})
 
 
