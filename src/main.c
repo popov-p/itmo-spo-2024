@@ -3,8 +3,6 @@
 #include "Var4Lexer.h"
 #include "Var4Parser.h"
 
-
-
 void printAST(pANTLR3_BASE_TREE tree, int depth) {
     if (tree == NULL) {
         return;
@@ -22,26 +20,33 @@ void printAST(pANTLR3_BASE_TREE tree, int depth) {
     }
 }
 
-int main() {
-    const char *inputString = "def test ( ) begin x = false ; end";
+int main(int argc, char *argv[]) {
+    pANTLR3_INPUT_STREAM input = antlr3FileStreamNew((pANTLR3_UINT8)"../src/test.txt", ANTLR3_ENC_8BIT);
+    if (input == NULL) {
+        fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
+        return 1;
+    }
 
-    pANTLR3_INPUT_STREAM input = antlr3StringStreamNew((pANTLR3_UINT8)inputString, ANTLR3_ENC_8BIT, strlen(inputString), (pANTLR3_UINT8)"input");
+    pVar4Lexer lex = Var4LexerNew(input);
+    if (lex == NULL) {
+        fprintf(stderr, "Failed to create lexer\n");
+        input->close(input);
+        return 1;
+    }
 
-    pVar4Lexer lexer = Var4LexerNew(input);
-    pANTLR3_COMMON_TOKEN_STREAM tokenStream = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT, TOKENSOURCE(lexer));
+    pANTLR3_COMMON_TOKEN_STREAM tokens = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT, TOKENSOURCE(lex));
 
-    pVar4Parser parser = Var4ParserNew(tokenStream);
 
-    Var4Parser_source_return res = parser->source(parser);
 
-    pANTLR3_BASE_TREE tree = res.tree;
+    pVar4Parser parser = Var4ParserNew(tokens);
 
-    printAST(tree, 0);
+    Var4Parser_source_return parseResult = parser->source(parser);
+    printAST(parseResult.tree, 0);
 
     parser->free(parser);
-    tokenStream->free(tokenStream);
-    lexer->free(lexer);
-    input->free(input);
+    tokens->free(tokens);
+    lex->free(lex);
+    input->close(input);
 
     return 0;
 }

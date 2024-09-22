@@ -8,6 +8,7 @@ set(ANTLR_INCLUDE_DIRS /usr/local/include)
 set(ANTLR_LIBRARIES /usr/local/lib/libantlr3c.a)
 
 
+add_definitions(-DANTLR3_DEBUG)
 
 include_directories(${ANTLR_INCLUDE_DIRS})
 link_directories(/usr/local/lib)

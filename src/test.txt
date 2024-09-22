@@ -1,1 +1,3 @@
- 
+def simpleFunction (x of int) begin
+	x = true;
+end
