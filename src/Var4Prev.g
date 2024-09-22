@@ -1,9 +1,28 @@
-grammar Var4;
-
+grammar Var4Prev;
+//fornow it is equal to var4 grammar but its a testing field
 options {
   language = C;
   backtrack = true;
   output = AST;
+}
+
+tokens {
+  FUNC_DEF;
+  SOURCE;
+  SOURCE_ITEM;
+  PLUS;
+  MINUS;
+  GREATER;
+  FUNC_SIGNATURE;
+  STATEMENT;
+  RETURN_STATEMENT;
+  ASSIGNMENT_STATEMENT;
+  IF_STATEMENT;
+  LIST_ARG;
+  ARG;
+  BIN_OP;
+  LITERAL;
+  PLACE_EXPR;
 }
 
 //specific keywords Var4
@@ -64,16 +83,28 @@ DEC: ('0'..'9')+;
 WS: (' ' | '\t' | '\n')+ { $channel = HIDDEN; };
 //--------------------
 
-source : sourceItem*;
-sourceItem : funcDef;
+source : sourceItem* -> ^(SOURCE sourceItem*);
+sourceItem : funcDef -> ^(SOURCE_ITEM funcDef);
 
-funcDef : DEF funcSignature statement* END;
-    
-funcSignature : IDENTIFIER LPAREN list_arg RPAREN (OF typeRef)?;
+funcDef
+  : DEF funcSignature statement* END
+  -> ^(FUNC_DEF funcSignature statement*);
 
-arg : IDENTIFIER (OF typeRef)?;
+funcSignature :
+  IDENTIFIER LPAREN list_arg RPAREN (OF typeRef)?
+  -> ^(FUNC_SIGNATURE IDENTIFIER list_arg (typeRef)?);
 
-list_arg : (arg (COMMA arg)*)?;
+arg : IDENTIFIER (OF typeRef)?
+    -> ^(ARG IDENTIFIER (typeRef)?);
+
+list_arg
+  : arg (COMMA arg)*
+  -> ^(LIST_ARG arg (arg)*)
+  |
+  -> ^(LIST_ARG)
+  ;
+
+
 typeRef
   : builtin
   | custom
@@ -81,11 +112,19 @@ typeRef
   ;
 
 builtin
-  : BOOL_T | BYTE_T | INT_T | UINT_T | LONG_T | ULONG_T | CHAR_T | STRING_T
+  : BOOL_T -> ^(BOOL_T)
+  | BYTE_T -> ^(BYTE_T)
+  | INT_T -> ^(INT_T)
+  | UINT_T -> ^(UINT_T)
+  | LONG_T -> ^(LONG_T)
+  | ULONG_T -> ^(ULONG_T)
+  | CHAR_T -> ^(CHAR_T)
+  | STRING_T -> ^(STRING_T)
   ;
 
+
 custom
-  : IDENTIFIER
+  : IDENTIFIER -> ^(IDENTIFIER)
   ;
 
 
@@ -95,19 +134,19 @@ arrayType
 
 
 statement
-  : ifStatement
-  | loopStatement
-  | repeatStatement
-  | breakStatement
-  | returnStatement
-  | expressionStatement
-  | blockStatement
-  | assignmentStatement
+  : ifStatement -> ^(STATEMENT ifStatement)
+  | loopStatement -> ^(STATEMENT loopStatement)
+  | repeatStatement -> ^(STATEMENT repeatStatement)
+  | breakStatement -> ^(STATEMENT breakStatement)
+  | returnStatement -> ^(STATEMENT returnStatement)
+  | expressionStatement -> ^(STATEMENT expressionStatement)
+  | blockStatement -> ^(STATEMENT blockStatement)
+  | assignmentStatement -> ^(STATEMENT assignmentStatement)
   ;
 
 ifStatement
   : IF expr THEN statement (ELSE statement)?
-  ;
+  -> ^(IF_STATEMENT expr statement (ELSE statement)?);
 
 loopStatement
   : (WHILE | UNTIL) expr statement* END
@@ -139,13 +178,17 @@ blockStatement
   : (BEGIN | LCURLBRACK) (statement | sourceItem)* (END | RCURLBRACK)
   ;
 
+
 assignmentStatement
   : IDENTIFIER ASSIGN expr SEMICOLON
+  -> ^(ASSIGNMENT_STATEMENT IDENTIFIER expr)
   ;
 
 returnStatement
   : RETURN expr SEMICOLON
+  -> ^(RETURN_STATEMENT expr)
   ;
+
 expr
   : primaryExpr (binaryOpSuffix | callSuffix | sliceSuffix)*
   ;
@@ -159,6 +202,7 @@ primaryExpr
 
 binaryOpSuffix
   : binOp primaryExpr
+  -> ^(BIN_OP binOp primaryExpr)
   ;
 
 callSuffix
@@ -178,13 +222,18 @@ bracesExpr
   ;
 
 placeExpr
-  : IDENTIFIER
+  : IDENTIFIER -> ^(PLACE_EXPR IDENTIFIER)
   ;
 
 bool: TRUE | FALSE;
 
 literalExpr
-  : bool | STRING | CHAR | HEX | BITS | DEC
+  : bool -> ^(LITERAL bool)
+  | STRING -> ^(LITERAL STRING)
+  | CHAR -> ^(LITERAL CHAR)
+  | HEX -> ^(LITERAL HEX)
+  | BITS -> ^(LITERAL BITS)
+  | DEC -> ^(LITERAL DEC)
   ;
 
 ranges
@@ -201,20 +250,21 @@ list_range
 
 
 binOp
-  : PLUS
-  | MINUS
-  | MUL
-  | DIV
-  | GREATER
-  | LESS
-  | GEQ
-  | LEQ
-  | EQUAL
+  : PLUS    -> ^(PLUS)
+  | MINUS   -> ^(MINUS)
+  | MUL     -> ^(MUL)
+  | DIV     -> ^(DIV)
+  | GREATER -> ^(GREATER)
+  | LESS    -> ^(LESS)
+  | GEQ     -> ^(GEQ)
+  | LEQ     -> ^(LEQ)
+  | EQUAL   -> ^(EQUAL)
   ;
 
+
 unOp
-  : MINUS
-  | LOGICNOT
-  | BYTENOT
+  : MINUS -> ^(MINUS)
+  | LOGICNOT -> ^(LOGICNOT)
+  | BYTENOT -> ^(BYTENOT)
   ;
 
