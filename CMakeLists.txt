@@ -13,14 +13,14 @@ include_directories(${ANTLR_INCLUDE_DIRS})
 link_directories(/usr/local/lib)
 
 set(PROJECT_SOURCES
-  src/TLexer.c
-  src/TLexer.h
-  src/TParser.c
-  src/TParser.h
+  src/Var4Lexer.c
+  src/Var4Lexer.h
+  src/Var4Parser.c
+  src/Var4Parser.h
   src/main.c
 )
 
 add_executable(treebuilder ${PROJECT_SOURCES})
-target_link_libraries(treebuilder antlr3c)
+target_link_libraries(treebuilder ${ANTLR3C_PATH})
 
 
