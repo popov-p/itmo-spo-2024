@@ -14,7 +14,6 @@ tokens {
   MINUS;
   GREATER;
   FUNC_SIGNATURE;
-  STATEMENT;
   RETURN_STATEMENT;
   ASSIGNMENT_STATEMENT;
   IF_STATEMENT;
@@ -91,7 +90,7 @@ funcDef
   -> ^(FUNC_DEF funcSignature statement*);
 
 funcSignature :
-  IDENTIFIER LPAREN list_arg RPAREN (OF typeRef)?
+  IDENTIFIER '(' list_arg ')' (OF typeRef)?
   -> ^(FUNC_SIGNATURE IDENTIFIER list_arg (typeRef)?);
 
 arg : IDENTIFIER (OF typeRef)?
@@ -134,14 +133,14 @@ arrayType
 
 
 statement
-  : ifStatement -> ^(STATEMENT ifStatement)
-  | loopStatement -> ^(STATEMENT loopStatement)
-  | repeatStatement -> ^(STATEMENT repeatStatement)
-  | breakStatement -> ^(STATEMENT breakStatement)
-  | returnStatement -> ^(STATEMENT returnStatement)
-  | expressionStatement -> ^(STATEMENT expressionStatement)
-  | blockStatement -> ^(STATEMENT blockStatement)
-  | assignmentStatement -> ^(STATEMENT assignmentStatement)
+  : ifStatement
+  | loopStatement
+  | repeatStatement
+  | breakStatement
+  | returnStatement
+  | expressionStatement
+  | blockStatement
+  | assignmentStatement
   ;
 
 ifStatement
@@ -222,7 +221,7 @@ bracesExpr
   ;
 
 placeExpr
-  : IDENTIFIER -> ^(PLACE_EXPR IDENTIFIER)
+  : IDENTIFIER
   ;
 
 bool: TRUE | FALSE;
@@ -250,15 +249,15 @@ list_range
 
 
 binOp
-  : PLUS    -> ^(PLUS)
-  | MINUS   -> ^(MINUS)
-  | MUL     -> ^(MUL)
-  | DIV     -> ^(DIV)
-  | GREATER -> ^(GREATER)
-  | LESS    -> ^(LESS)
-  | GEQ     -> ^(GEQ)
-  | LEQ     -> ^(LEQ)
-  | EQUAL   -> ^(EQUAL)
+  : PLUS
+  | MINUS
+  | MUL
+  | DIV
+  | GREATER
+  | LESS
+  | GEQ
+  | LEQ
+  | EQUAL
   ;
 
 
