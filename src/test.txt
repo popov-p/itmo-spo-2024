@@ -1,4 +1,12 @@
-def calculateSum(a of int, b of int) of int
+def calculateSum(a of boolean, b of int) of int
   if a > b then
     result = a + b;
+  else if a < b then
+    res = g - h;
+  callfunc = foo();
+  return -1;
+  while t == f
+    break;
+  end
+
 end

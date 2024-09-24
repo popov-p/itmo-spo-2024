@@ -22,13 +22,17 @@ tokens {
   BIN_OP;
   LITERAL;
   PLACE_EXPR;
+  LOOP_STATEMENT;
+  EXPRESSION_STATEMENT;
+  BREAK_STATEMENT;
+  BLOCK_STATEMENT;
+  REPEAT_STATEMENT;
 }
 
 //specific keywords Var4
 TRUE: 'true';
 FALSE: 'false';
 DEF: 'def';
-BEGIN: 'begin';
 END: 'end';
 OF: 'of';
 LPAREN: '(';
@@ -69,6 +73,7 @@ LEQ: '<=';
 EQUAL: '==';
 LOGICNOT: '!';
 BYTENOT: '~';
+BEGIN: 'begin';
 //-----------------------
 
 //common part
@@ -86,7 +91,7 @@ source : sourceItem* -> ^(SOURCE sourceItem*);
 sourceItem : funcDef -> ^(SOURCE_ITEM funcDef);
 
 funcDef
-  : DEF funcSignature statement* END
+  : 'def' funcSignature statement* 'end'
   -> ^(FUNC_DEF funcSignature statement*);
 
 funcSignature :
@@ -97,7 +102,7 @@ arg : IDENTIFIER (OF typeRef)?
     -> ^(ARG IDENTIFIER (typeRef)?);
 
 list_arg
-  : arg (COMMA arg)*
+  : arg (',' arg)*
   -> ^(LIST_ARG arg (arg)*)
   |
   -> ^(LIST_ARG)
@@ -128,35 +133,35 @@ custom
 
 
 arrayType
-  : (builtin | custom) (ARRAY LSQBRACK DEC RSQBRACK)*
+  : (builtin | custom) ('array' '[' DEC ']')*
   ;
 
 
 statement
-  : ifStatement
-  | loopStatement
-  | repeatStatement
-  | breakStatement
-  | returnStatement
-  | expressionStatement
-  | blockStatement
-  | assignmentStatement
+  : ifStatement -> ^(IF_STATEMENT ifStatement)
+  | loopStatement -> ^(LOOP_STATEMENT loopStatement)
+  | repeatStatement -> ^(REPEAT_STATEMENT repeatStatement)
+  | breakStatement -> ^(BREAK_STATEMENT breakStatement)
+  | returnStatement -> ^(RETURN_STATEMENT returnStatement)
+  | expressionStatement -> ^(EXPRESSION_STATEMENT expressionStatement)
+  | blockStatement -> ^(BLOCK_STATEMENT blockStatement)
+  | assignmentStatement -> ^(ASSIGNMENT_STATEMENT assignmentStatement)
   ;
+
 
 ifStatement
-  : IF expr THEN statement (ELSE statement)?
-  -> ^(IF_STATEMENT expr statement (ELSE statement)?);
+  : 'if' expr 'then' statement ('else' statement)?;
 
 loopStatement
-  : (WHILE | UNTIL) expr statement* END
-  ;
+  : ('while' | 'until') expr statement* 'end';
+
 
 repeatStatement
   : baseStatement repeatSuffix
   ;
 
 repeatSuffix
-  : (WHILE | UNTIL) expr SEMICOLON
+  : ('while' | 'until') expr ';'
   ;
 
 baseStatement
@@ -166,27 +171,22 @@ baseStatement
   ;
 
 breakStatement
-  : BREAK SEMICOLON
-  ;
+  : 'break' ';';
 
 expressionStatement
-  : expr SEMICOLON
-  ;
+  : expr ';';
+
 
 blockStatement
-  : (BEGIN | LCURLBRACK) (statement | sourceItem)* (END | RCURLBRACK)
+  : ('begin' | '{') (statement | sourceItem)* ('end' | '}')
   ;
 
 
 assignmentStatement
-  : IDENTIFIER ASSIGN expr SEMICOLON
-  -> ^(ASSIGNMENT_STATEMENT IDENTIFIER expr)
-  ;
+  : IDENTIFIER '=' expr ';';
 
 returnStatement
-  : RETURN expr SEMICOLON
-  -> ^(RETURN_STATEMENT expr)
-  ;
+  : 'return' expr ';';
 
 expr
   : primaryExpr (binaryOpSuffix | callSuffix | sliceSuffix)*
@@ -205,11 +205,11 @@ binaryOpSuffix
   ;
 
 callSuffix
-  : LPAREN list_expr RPAREN
+  : '(' list_expr ')'
   ;
 
 sliceSuffix
-  : LSQBRACK list_range RSQBRACK
+  : '[' list_range ']'
   ;
 
 unaryExpr
@@ -217,7 +217,7 @@ unaryExpr
   ;
 
 bracesExpr
-  : LPAREN expr RPAREN
+  : '(' expr ')'
   ;
 
 placeExpr
@@ -236,34 +236,34 @@ literalExpr
   ;
 
 ranges
-  : expr (RANGEDOTS expr)?
+  : expr ('..' expr)?
   ;
 
 list_expr
-  : (expr (COMMA expr)*)?
+  : (expr (',' expr)*)?
   ;
 
 list_range
-  : (ranges (COMMA ranges)*)?
+  : (ranges (',' ranges)*)?
   ;
 
 
 binOp
-  : PLUS
-  | MINUS
-  | MUL
-  | DIV
-  | GREATER
-  | LESS
-  | GEQ
-  | LEQ
-  | EQUAL
+  : '+'
+  | '-'
+  | '*'
+  | '/'
+  | '>'
+  | '<'
+  | '>='
+  | '<='
+  | '=='
   ;
 
 
 unOp
-  : MINUS -> ^(MINUS)
-  | LOGICNOT -> ^(LOGICNOT)
-  | BYTENOT -> ^(BYTENOT)
+  : '-' -> ^('-')
+  | '!' -> ^('!')
+  | '~' -> ^('~')
   ;
 
