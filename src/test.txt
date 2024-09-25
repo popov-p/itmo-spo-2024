@@ -1,13 +1,20 @@
-def calculateSum(a of int) of int
+def calculateSum(a of int array[5], beta of boolean) of int
+  beta = true;
+  while (3 < 5)
+    begin
+      psi = phi - kappa;
+    end
+  end
   {
     j = x + y;
     if g < h then
       break;
-  } until a < b end
+  } until a < b;
   brt = (x) + (2 * y);
   foo(x+t, 2+2);
   int x = (z+t) + 4 * (6+7);
   uint t;
   int array[3] x = y[3];
+  z[3..5];
 end
 

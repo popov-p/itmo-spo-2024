@@ -1,35 +1,46 @@
 grammar Var4;
 
+//it`s a testing field
+
 options {
   language = C;
   backtrack = true;
   output = AST;
 }
 
+tokens {
+  FUNC_DEF;
+  SOURCE;
+  SOURCE_ITEM;
+  FUNC_SIGNATURE;
+  RETURN;
+  ASSIGNMENT;
+  IF;
+  LIST_ARG;
+  ARG;
+  BIN_OP;
+  PLACE_EXPR;
+  LOOP;
+  BREAK;
+  BLOCK;
+  REPEAT;
+  ARRAY_TYPE;
+  CALL;
+  SLICE;
+  UNARY_OP;
+  BRACES_EXPR;
+  EXPR;
+  RANGES;
+  LIST_EXPR;
+  LIST_RANGE;
+  VAR_DEC;
+  VAR_DEF;
+}
+
 //specific keywords Var4
+
 TRUE: 'true';
 FALSE: 'false';
-DEF: 'def';
-BEGIN: 'begin';
-END: 'end';
-OF: 'of';
-LPAREN: '(';
-RPAREN: ')';
-COMMA: ',';
-ARRAY: 'array';
-LSQBRACK: '[';
-RSQBRACK: ']';
-IF: 'if';
-ELSE: 'else';
-THEN: 'then';
-RETURN: 'return';
-WHILE: 'while';
-UNTIL: 'until';
-SEMICOLON: ';';
-BREAK: 'break';
-LCURLBRACK: '{';
-RCURLBRACK: '}';
-RANGEDOTS: '..';
 BYTE_T: 'byte';
 INT_T: 'int';
 UINT_T: 'uint';
@@ -39,19 +50,6 @@ CHAR_T: 'char';
 STRING_T: 'string';
 BOOL_T: 'boolean';
 
-ASSIGN: '=';
-PLUS: '+';
-MINUS: '-';
-MUL: '*';
-DIV: '/';
-GREATER: '>';
-LESS: '<';
-GEQ: '>=';
-LEQ: '<=';
-EQUAL: '==';
-LOGICNOT: '!';
-BYTENOT: '~';
-//-----------------------
 
 //common part
 
@@ -62,18 +60,36 @@ HEX: '0' ('x' | 'X') ( '0'..'9' | 'a'..'f' | 'A'..'F' )+;
 BITS: '0' ('b' | 'B') ('0' | '1')+;
 DEC: ('0'..'9')+;
 WS: (' ' | '\t' | '\n')+ { $channel = HIDDEN; };
-//--------------------
 
-source : sourceItem*;
-sourceItem : funcDef;
+source
+  : sourceItem* -> ^(SOURCE sourceItem*)
+  ;
+sourceItem
+  : funcDef -> ^(SOURCE_ITEM funcDef)
+  ;
 
-funcDef : DEF funcSignature statement* END;
-    
-funcSignature : IDENTIFIER LPAREN list_arg RPAREN (OF typeRef)?;
+funcDef
+  : 'def' funcSignature statement* 'end'
+  -> ^(FUNC_DEF funcSignature statement*)
+  ;
 
-arg : IDENTIFIER (OF typeRef)?;
+funcSignature
+  : IDENTIFIER '(' list_arg ')' ('of' typeRef)?
+  -> ^(FUNC_SIGNATURE IDENTIFIER list_arg (typeRef)?)
+  ;
 
-list_arg : (arg (COMMA arg)*)?;
+arg
+  : IDENTIFIER ('of' typeRef)?
+  -> ^(ARG IDENTIFIER (typeRef)?)
+  ;
+
+list_arg
+  : arg (',' arg)*
+  -> ^(LIST_ARG arg (arg)*)
+  |
+  -> ^(LIST_ARG)
+  ;
+
 typeRef
   : builtin
   | custom
@@ -81,18 +97,25 @@ typeRef
   ;
 
 builtin
-  : BOOL_T | BYTE_T | INT_T | UINT_T | LONG_T | ULONG_T | CHAR_T | STRING_T
+  : BOOL_T -> ^(BOOL_T)
+  | BYTE_T -> ^(BYTE_T)
+  | INT_T -> ^(INT_T)
+  | UINT_T -> ^(UINT_T)
+  | LONG_T -> ^(LONG_T)
+  | ULONG_T -> ^(ULONG_T)
+  | CHAR_T -> ^(CHAR_T)
+  | STRING_T -> ^(STRING_T)
   ;
 
 custom
-  : IDENTIFIER
+  : IDENTIFIER -> ^(IDENTIFIER)
   ;
 
 
 arrayType
-  : (builtin | custom) (ARRAY LSQBRACK DEC RSQBRACK)*
+  : builtin 'array' '[' DEC ']' -> ^(ARRAY_TYPE builtin DEC)
+  | custom 'array' '[' DEC ']' -> ^(ARRAY_TYPE custom DEC)
   ;
-
 
 statement
   : ifStatement
@@ -101,24 +124,37 @@ statement
   | breakStatement
   | returnStatement
   | expressionStatement
-  | blockStatement
+  | blockStatement -> ^(BLOCK blockStatement)
   | assignmentStatement
+  | variableDeclaration
+  | variableDefinition
+  ;
+
+variableDefinition
+  : typeRef IDENTIFIER ';' -> ^(VAR_DEF IDENTIFIER)
+  ;
+
+variableDeclaration
+  : typeRef IDENTIFIER '=' expr ';' -> ^(VAR_DEC IDENTIFIER expr)
   ;
 
 ifStatement
-  : IF expr THEN statement (ELSE statement)?
+  : 'if' expr 'then' statement ('else' statement)?
+  -> ^(IF expr statement (statement)?)
   ;
 
 loopStatement
-  : (WHILE | UNTIL) expr statement* END
+  : ('while' | 'until') expr statement* 'end'
+  -> ^(LOOP expr statement*)
   ;
 
 repeatStatement
   : baseStatement repeatSuffix
+  -> ^(REPEAT baseStatement repeatSuffix)
   ;
 
 repeatSuffix
-  : (WHILE | UNTIL) expr SEMICOLON
+  : ('while' | 'until') expr ';'
   ;
 
 baseStatement
@@ -128,26 +164,33 @@ baseStatement
   ;
 
 breakStatement
-  : BREAK SEMICOLON
+  : 'break' ';'
+  -> ^(BREAK)
   ;
 
 expressionStatement
-  : expr SEMICOLON
+  : expr ';'
   ;
 
 blockStatement
-  : (BEGIN | LCURLBRACK) (statement | sourceItem)* (END | RCURLBRACK)
+  : ('begin' | '{') (statement | sourceItem)* ('end' | '}')
   ;
 
 assignmentStatement
-  : IDENTIFIER ASSIGN expr SEMICOLON
+  : IDENTIFIER '=' expr ';' -> ^(ASSIGNMENT IDENTIFIER expr)
   ;
 
 returnStatement
-  : RETURN expr SEMICOLON
+  : 'return' expr ';' -> ^(RETURN expr)
   ;
+
 expr
-  : primaryExpr (binaryOpSuffix | callSuffix | sliceSuffix)*
+  : primaryExpr rest
+  -> ^(EXPR primaryExpr rest)
+  ;
+
+rest
+  : (binaryOpSuffix | callSuffix | sliceSuffix)*
   ;
 
 primaryExpr
@@ -159,62 +202,73 @@ primaryExpr
 
 binaryOpSuffix
   : binOp primaryExpr
+  -> ^(BIN_OP binOp primaryExpr)
   ;
 
 callSuffix
-  : LPAREN list_expr RPAREN
+  : '(' list_expr ')' -> ^(CALL list_expr)
   ;
 
 sliceSuffix
-  : LSQBRACK list_range RSQBRACK
+  : '[' list_range ']' -> ^(SLICE list_range)
   ;
 
 unaryExpr
-  : unOp primaryExpr
+  : unOp primaryExpr -> ^(UNARY_OP unOp primaryExpr)
   ;
 
 bracesExpr
-  : LPAREN expr RPAREN
+  : '(' expr ')' -> ^(BRACES_EXPR expr)
   ;
 
 placeExpr
-  : IDENTIFIER
+  : IDENTIFIER -> ^(IDENTIFIER)
   ;
 
-bool: TRUE | FALSE;
+bool
+  : TRUE | FALSE
+  ;
 
 literalExpr
-  : bool | STRING | CHAR | HEX | BITS | DEC
+  : bool -> ^(bool)
+  | STRING -> ^(STRING)
+  | CHAR -> ^(CHAR)
+  | HEX -> ^(HEX)
+  | BITS -> ^(BITS)
+  | DEC -> ^(DEC)
   ;
 
 ranges
-  : expr (RANGEDOTS expr)?
+  : expr ('..' expr)?
+  -> ^(RANGES expr (expr)?)
   ;
+
 
 list_expr
-  : (expr (COMMA expr)*)?
+  : (expr (',' expr)*)?
+  -> ^(LIST_EXPR (expr)*)?
   ;
+
 
 list_range
-  : (ranges (COMMA ranges)*)?
+  : (ranges (',' ranges)*)?
+  -> ^(LIST_RANGE (ranges)*)?
   ;
 
-
 binOp
-  : PLUS
-  | MINUS
-  | MUL
-  | DIV
-  | GREATER
-  | LESS
-  | GEQ
-  | LEQ
-  | EQUAL
+  : '+' -> ^('+')
+  | '-' -> ^('-')
+  | '*' -> ^('*')
+  | '/' -> ^('/')
+  | '>' -> ^('>')
+  | '<' -> ^('<')
+  | '>=' -> ^('>=')
+  | '<=' -> ^('<=')
+  | '==' -> ^('==')
   ;
 
 unOp
-  : MINUS
-  | LOGICNOT
-  | BYTENOT
+  : '-' -> ^('-')
+  | '!' -> ^('!')
+  | '~' -> ^('~')
   ;
-
