@@ -1,5 +1,7 @@
 grammar Var4Prev;
-//fornow it is equal to var4 grammar but its a testing field
+
+//it`s a testing field
+
 options {
   language = C;
   backtrack = true;
@@ -27,31 +29,22 @@ tokens {
   BREAK_STATEMENT;
   BLOCK_STATEMENT;
   REPEAT_STATEMENT;
+  ARRAY_TYPE;
+  CALL;
+  SLICE;
+  UNARY_OP;
+  BRACES_EXPR;
+  EXPR;
+  RANGES;
+  LIST_EXPR;
+  LIST_RANGE;
+  VARIABLE_DECLARATION;
+  VARIABLE_DEFINITION;
 }
 
 //specific keywords Var4
 TRUE: 'true';
 FALSE: 'false';
-DEF: 'def';
-END: 'end';
-OF: 'of';
-LPAREN: '(';
-RPAREN: ')';
-COMMA: ',';
-ARRAY: 'array';
-LSQBRACK: '[';
-RSQBRACK: ']';
-IF: 'if';
-ELSE: 'else';
-THEN: 'then';
-RETURN: 'return';
-WHILE: 'while';
-UNTIL: 'until';
-SEMICOLON: ';';
-BREAK: 'break';
-LCURLBRACK: '{';
-RCURLBRACK: '}';
-RANGEDOTS: '..';
 BYTE_T: 'byte';
 INT_T: 'int';
 UINT_T: 'uint';
@@ -61,19 +54,6 @@ CHAR_T: 'char';
 STRING_T: 'string';
 BOOL_T: 'boolean';
 
-ASSIGN: '=';
-PLUS: '+';
-MINUS: '-';
-MUL: '*';
-DIV: '/';
-GREATER: '>';
-LESS: '<';
-GEQ: '>=';
-LEQ: '<=';
-EQUAL: '==';
-LOGICNOT: '!';
-BYTENOT: '~';
-BEGIN: 'begin';
 //-----------------------
 
 //common part
@@ -95,10 +75,10 @@ funcDef
   -> ^(FUNC_DEF funcSignature statement*);
 
 funcSignature :
-  IDENTIFIER '(' list_arg ')' (OF typeRef)?
+  IDENTIFIER '(' list_arg ')' ('of' typeRef)?
   -> ^(FUNC_SIGNATURE IDENTIFIER list_arg (typeRef)?);
 
-arg : IDENTIFIER (OF typeRef)?
+arg : IDENTIFIER ('of' typeRef)?
     -> ^(ARG IDENTIFIER (typeRef)?);
 
 list_arg
@@ -107,7 +87,6 @@ list_arg
   |
   -> ^(LIST_ARG)
   ;
-
 
 typeRef
   : builtin
@@ -126,39 +105,48 @@ builtin
   | STRING_T -> ^(STRING_T)
   ;
 
-
 custom
   : IDENTIFIER -> ^(IDENTIFIER)
   ;
 
 
 arrayType
-  : (builtin | custom) ('array' '[' DEC ']')*
+  : builtin 'array' '[' DEC ']' -> ^(ARRAY_TYPE builtin DEC)
+  | custom 'array' '[' DEC ']' -> ^(ARRAY_TYPE custom DEC)
   ;
 
 
 statement
-  : ifStatement -> ^(IF_STATEMENT ifStatement)
-  | loopStatement -> ^(LOOP_STATEMENT loopStatement)
-  | repeatStatement -> ^(REPEAT_STATEMENT repeatStatement)
-  | breakStatement -> ^(BREAK_STATEMENT breakStatement)
-  | returnStatement -> ^(RETURN_STATEMENT returnStatement)
-  | expressionStatement -> ^(EXPRESSION_STATEMENT expressionStatement)
+  : ifStatement
+  | loopStatement
+  | repeatStatement
+  | breakStatement
+  | returnStatement
+  | expressionStatement
   | blockStatement -> ^(BLOCK_STATEMENT blockStatement)
-  | assignmentStatement -> ^(ASSIGNMENT_STATEMENT assignmentStatement)
+  | assignmentStatement
+  | variableDeclaration
+  | variableDefinition
   ;
 
+variableDefinition
+  : typeRef IDENTIFIER ';' -> ^(VARIABLE_DEFINITION IDENTIFIER);
+
+variableDeclaration
+  : typeRef IDENTIFIER '=' expr ';' -> ^(VARIABLE_DECLARATION IDENTIFIER expr);
 
 ifStatement
-  : 'if' expr 'then' statement ('else' statement)?;
+  : 'if' expr 'then' statement ('else' statement)?
+  -> ^(IF_STATEMENT expr statement (statement)?);
 
 loopStatement
-  : ('while' | 'until') expr statement* 'end';
-
+  : ('while' | 'until') expr statement* 'end'
+  -> ^(LOOP_STATEMENT expr statement*)
+  ;
 
 repeatStatement
   : baseStatement repeatSuffix
-  ;
+  -> ^(REPEAT_STATEMENT baseStatement repeatSuffix);
 
 repeatSuffix
   : ('while' | 'until') expr ';'
@@ -171,26 +159,31 @@ baseStatement
   ;
 
 breakStatement
-  : 'break' ';';
+  : 'break' ';' -> ^(BREAK_STATEMENT);
 
 expressionStatement
-  : expr ';';
-
+  : expr ';'
+  ;
 
 blockStatement
   : ('begin' | '{') (statement | sourceItem)* ('end' | '}')
   ;
 
-
 assignmentStatement
-  : IDENTIFIER '=' expr ';';
+  : IDENTIFIER '=' expr ';' -> ^(ASSIGNMENT_STATEMENT IDENTIFIER expr)
+  ;
 
 returnStatement
-  : 'return' expr ';';
+  : 'return' expr ';' -> ^(RETURN_STATEMENT expr)
+  ;
 
 expr
-  : primaryExpr (binaryOpSuffix | callSuffix | sliceSuffix)*
+  : primaryExpr rest
+  -> ^(EXPR primaryExpr rest)
   ;
+
+rest
+  : (binaryOpSuffix | callSuffix | sliceSuffix)*;
 
 primaryExpr
   : unaryExpr
@@ -205,61 +198,64 @@ binaryOpSuffix
   ;
 
 callSuffix
-  : '(' list_expr ')'
+  : '(' list_expr ')' -> ^(CALL list_expr)
   ;
 
 sliceSuffix
-  : '[' list_range ']'
+  : '[' list_range ']' -> ^(SLICE list_range)
   ;
 
 unaryExpr
-  : unOp primaryExpr
+  : unOp primaryExpr -> ^(UNARY_OP unOp primaryExpr)
   ;
 
 bracesExpr
-  : '(' expr ')'
+  : '(' expr ')' -> ^(BRACES_EXPR expr)
   ;
 
 placeExpr
-  : IDENTIFIER
+  : IDENTIFIER -> ^(IDENTIFIER)
   ;
 
 bool: TRUE | FALSE;
 
 literalExpr
-  : bool -> ^(LITERAL bool)
-  | STRING -> ^(LITERAL STRING)
-  | CHAR -> ^(LITERAL CHAR)
-  | HEX -> ^(LITERAL HEX)
-  | BITS -> ^(LITERAL BITS)
-  | DEC -> ^(LITERAL DEC)
+  : bool -> ^(bool)
+  | STRING -> ^(STRING)
+  | CHAR -> ^(CHAR)
+  | HEX -> ^(HEX)
+  | BITS -> ^(BITS)
+  | DEC -> ^(DEC)
   ;
 
 ranges
   : expr ('..' expr)?
+  -> ^(RANGES expr (expr)?)
   ;
+
 
 list_expr
   : (expr (',' expr)*)?
+  -> ^(LIST_EXPR (expr)*)?
   ;
+
 
 list_range
   : (ranges (',' ranges)*)?
+  -> ^(LIST_RANGE (ranges)*)?
   ;
-
 
 binOp
-  : '+'
-  | '-'
-  | '*'
-  | '/'
-  | '>'
-  | '<'
-  | '>='
-  | '<='
-  | '=='
+  : '+' -> ^('+')
+  | '-' -> ^('-')
+  | '*' -> ^('*')
+  | '/' -> ^('/')
+  | '>' -> ^('>')
+  | '<' -> ^('<')
+  | '>=' -> ^('>=')
+  | '<=' -> ^('<=')
+  | '==' -> ^('==')
   ;
-
 
 unOp
   : '-' -> ^('-')

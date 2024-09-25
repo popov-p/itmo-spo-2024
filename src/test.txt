@@ -1,12 +1,13 @@
-def calculateSum(a of boolean, b of int) of int
-  if a > b then
-    result = a + b;
-  else if a < b then
-    res = g - h;
-  callfunc = foo();
-  return -1;
-  while t == f
-    break;
-  end
-
+def calculateSum(a of int) of int
+  {
+    j = x + y;
+    if g < h then
+      break;
+  } until a < b end
+  brt = (x) + (2 * y);
+  foo(x+t, 2+2);
+  int x = (z+t) + 4 * (6+7);
+  uint t;
+  int array[3] x = y[3];
 end
+
