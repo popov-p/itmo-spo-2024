@@ -11,22 +11,27 @@ void generateDot(pANTLR3_STRING dotString, char* path) {
         fprintf(dotFile, "%s", (char *)dotString->chars);
         fclose(dotFile);
     } else {
-        printf("Ошибка при открытии файла для записи.\n");
+        printf("not ok. trouble with opening .dot file\n");
     }
 }
 
 int main(int argc, char *argv[]) {
-
+    if (argc != 3) {
+        printf("usage: %s <input file> <output file>\n", argv[0]);
+        return 1;
+    }
+    char *inputFilePath = argv[1]; // ../src/test.txt
+    char *outputFilePath = argv[2]; // ../src/tree.dot
     const char* compile_grammar = "java -jar ../src/antlr-3.4-complete.jar ../src/Var4.g";
     int res = system(compile_grammar);
     if (res == -1) {
-        printf("not ok\n");
+        printf("not ok, failed antlr compiler\n");
     }
     else {
         printf("ok\n");
     }
 
-    pANTLR3_INPUT_STREAM input = antlr3FileStreamNew((pANTLR3_UINT8)"../src/test.txt", ANTLR3_ENC_8BIT);
+    pANTLR3_INPUT_STREAM input = antlr3FileStreamNew((pANTLR3_UINT8)inputFilePath, ANTLR3_ENC_8BIT);
 
     pVar4Lexer lex = Var4LexerNew(input);
 
@@ -37,12 +42,12 @@ int main(int argc, char *argv[]) {
     pANTLR3_BASE_TREE_ADAPTOR treeAdaptor = parser->adaptor;
     pANTLR3_STRING dotString = treeAdaptor->makeDot(treeAdaptor, parseResult.tree);
 
-    generateDot(dotString, "../src/tree.dot");
+    generateDot(dotString, outputFilePath);
     const char *generate_tree = "dot -Tpng ../src/tree.dot -o ../src/output.png";
 
     res = system(generate_tree);
     if (res == -1) {
-        printf("not ok\n");
+        printf("not ok, failed tree generation\n");
     }
     else {
         printf("ok\n");

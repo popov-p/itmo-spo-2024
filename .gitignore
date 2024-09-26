@@ -3,3 +3,4 @@ build/
 antlr*
 src/tree.dot
 src/output.png
+.obsidian

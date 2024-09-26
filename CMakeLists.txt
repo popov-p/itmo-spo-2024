@@ -10,5 +10,3 @@ file(GLOB PROJECT_SOURCES
 
 add_executable(treebuilder ${PROJECT_SOURCES})
 target_link_libraries(treebuilder ${ANTLR3_LIB})
-
-
