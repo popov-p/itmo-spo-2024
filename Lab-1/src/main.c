@@ -4,14 +4,13 @@
 #include "Treebuilder.h"
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        printf("usage: %s <input file> <output file>\n", argv[0]);
-        return 1;
-    }
-
-    char *inputFilePath = argv[1];
-    char *outputFilePath = argv[2];
-    const char* compileGrammar = "java -jar ../../antlr-3.4-complete.jar ../Var4.g";
+    // if (argc != 3) {
+    //     printf("usage: %s <input file> <output file>\n", argv[0]);
+    //     return 1;
+    // }
+    char *inputFilePath = "../src/for2.txt";//argv[1];
+    char *outputFilePath = "../src/tree.dot";//argv[2];
+    const char* compileGrammar = "java -jar /home/pavel/Projects/langparser/antlr-3.4-complete.jar /home/pavel/Projects/langparser/Lab-1/src/Sigma.g";
     int res = system(compileGrammar);
     if (res == -1) {
         printf("not ok, failed antlr compiler\n");
@@ -28,7 +27,7 @@ int main(int argc, char *argv[]) {
     pParseResult parseResult = parse(inputText);
 
     generateDot(parseResult, outputFilePath);
-    const char *generateTree = "dot -Tpng tree.dot -o output.png";
+    const char *generateTree = "dot -Tpng ../src/tree.dot -o ../src/output.png";
 
     res = system(generateTree);
     if (res == -1) {

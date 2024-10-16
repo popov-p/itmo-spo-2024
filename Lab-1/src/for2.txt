@@ -1,0 +1,7 @@
+def calculateSum(a of int array[5], beta of boolean) of int
+  {x = 2;} until (z < 2);
+  while (z < phi)
+    ssd = hdd;
+  end
+
+end

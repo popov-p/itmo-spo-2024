@@ -18,7 +18,3 @@ def calculateSum(a of int array[5], beta of boolean) of int
   meta = z[3..5];
 end
 
-def anotherSign(a of boolean) of int
-  dzeta = false;
-  test = callFunc(m);
-end

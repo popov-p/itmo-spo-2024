@@ -31,9 +31,9 @@ pParseResult parse(const char* text) {
     result->is = antlr3StringStreamNew((pANTLR3_UINT8)text,
                                        ANTLR3_ENC_8BIT, strlen(text),
                                        (pANTLR3_UINT8)"input string");
-    result->l = SigmaLexerNew(result->is);
+    result->l = Var4LexerNew(result->is);
     result->ts = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT, TOKENSOURCE(result->l));
-    result->p = SigmaParserNew(result->ts);
+    result->p = Var4ParserNew(result->ts);
     result->sr = result->p->source(result->p);
     return result;
 }
