@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
     else {
         printf("not ok. cleanup failed\n");
     }
+
     return 0;
 }
 
