@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
     char *inputFilePath = argv[1];
     char *outputFilePath = argv[2];
-    const char* compileGrammar = "java -jar ../src/antlr-3.4-complete.jar ../src/Var4.g";
+    const char* compileGrammar = "java -jar ../../antlr-3.4-complete.jar ../Var4.g";
     int res = system(compileGrammar);
     if (res == -1) {
         printf("not ok, failed antlr compiler\n");
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     pParseResult parseResult = parse(inputText);
 
     generateDot(parseResult, outputFilePath);
-    const char *generateTree = "dot -Tpng ../src/tree.dot -o ../src/output.png";
+    const char *generateTree = "dot -Tpng tree.dot -o output.png";
 
     res = system(generateTree);
     if (res == -1) {

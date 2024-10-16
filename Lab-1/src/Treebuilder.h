@@ -1,8 +1,6 @@
 #ifndef TREEBUILDER_H
 #define TREEBUILDER_H
 
-#include <antlr3.h>
-
 #include "Var4Lexer.h"
 #include "Var4Parser.h"
 

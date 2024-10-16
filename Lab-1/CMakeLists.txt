@@ -8,5 +8,5 @@ file(GLOB PROJECT_SOURCES
   src/*.c
 )
 
-add_executable(treebuilder ${PROJECT_SOURCES})
-target_link_libraries(treebuilder ${ANTLR3_LIB})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${ANTLR3_LIB})
