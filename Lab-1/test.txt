@@ -12,7 +12,7 @@ def calculateSum(a of int array[5], beta of boolean) of int
   } until a < b;
   brt = (x) + (2 * y);
   foo(x+t, 2+2);
-  int x = (z+t) + 4 * (6+7);
+  int x = (z+t) + (4 * (6+7));
   uint t;
   int array[3] x = y[3];
   meta = z[3..5];

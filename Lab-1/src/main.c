@@ -10,6 +10,12 @@ int main(int argc, char *argv[]) {
     // }
     char *inputFilePath = "../src/for2.txt";//argv[1];
     char *outputFilePath = "../src/tree.dot";//argv[2];
+    if (remove(outputFilePath) == 0) {
+        printf("ok. file deleted %s\n", outputFilePath);
+    } else {
+        printf("not ok. file does not exist or deletion failed: %s\n", outputFilePath);
+    }
+
     const char* compileGrammar = "java -jar /home/pavel/Projects/langparser/antlr-3.4-complete.jar /home/pavel/Projects/langparser/Lab-1/src/Sigma.g";
     int res = system(compileGrammar);
     if (res == -1) {
@@ -21,7 +27,7 @@ int main(int argc, char *argv[]) {
 
     char *inputText = readFileToString(inputFilePath);
     if (inputText == NULL) {
-        printf("not ok. failed reading from file\n");
+        printf("not ok, failed reading from file\n");
     }
 
     pParseResult parseResult = parse(inputText);
