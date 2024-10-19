@@ -1,5 +1,5 @@
 def calculateSum() of int
-  foo(bar());
+  x = foo(bar(a + baz()));
   if(z < 3) then
    y =3;
    else

@@ -17,11 +17,14 @@ typedef struct Function {
     char* source_file;
 } Function;
 
-void walk_tree(pANTLR3_BASE_TREE node);
-void walk_parse_tree(pParseResult parseResult);
-void generate_cfg(pANTLR3_BASE_TREE node, FILE* file);
-void generate_cfg_from_CFG(FILE* file);
-void generate_parse_tree(pANTLR3_BASE_TREE tree, FILE* file);
-void cfg_walker(CFG* cfg, pANTLR3_BASE_TREE node, FILE* file, int* id);
-void writeBlock(FILE *file, BasicBlock* block);
+//void walk_tree(pANTLR3_BASE_TREE node);
+//void walk_parse_tree(pParseResult parseResult);
+//void generate_cfg(pANTLR3_BASE_TREE node, FILE* file);
+//void generate_cfg_from_CFG(pANTLR3_BASE_TREE tree, FILE* file);
+//void generate_parse_tree(pANTLR3_BASE_TREE tree, FILE* file);
+void cfg_walker(CFG* cfg, pANTLR3_BASE_TREE_ADAPTOR node, pANTLR3_BASE_TREE tree, int* lastBlockIndex);
+CFG* generateCFG(pParseResult parseResult);
+void outputCFG(CFG* cfg, FILE* file);
+void writeBlock(FILE *file, int num);
+//void writeBlock(FILE *file, BasicBlock* block);
 #endif
