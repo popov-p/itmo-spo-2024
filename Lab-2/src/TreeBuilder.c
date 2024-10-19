@@ -1,4 +1,4 @@
-#include "Treebuilder.h"
+#include "TreeBuilder.h"
 
 char* readFileToString(const char* filePath) {
     FILE *file = fopen(filePath, "r");
@@ -26,7 +26,7 @@ char* readFileToString(const char* filePath) {
 }
 
 pParseResult parse(const char* text) {
-    pParseResult result = (ParseResult*)malloc(sizeof(ParseResult));
+    pParseResult result = (pParseResult)malloc(sizeof(ParseResult));
 
     result->is = antlr3StringStreamNew((pANTLR3_UINT8)text,
                                        ANTLR3_ENC_8BIT, strlen(text),
@@ -51,7 +51,7 @@ void generateDot(pParseResult result, const char* path) {
     }
 }
 
-int cleanup(ParseResult* pr) {
+int cleanup(pParseResult pr) {
     if (pr->p != NULL) {
         pr->p->free(pr->p);
     }

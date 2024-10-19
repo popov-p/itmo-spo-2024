@@ -46,21 +46,26 @@ CFG* generateCFG(pParseResult parseResult) {
     cfg_walker(cfg, parseResult->p->adaptor, parseResult->sr.tree, lastBlockIndex);
     free(lastBlockIndex);
     return cfg;
-
 }
 
+void outputSubgraph(int basicBlockIndex, FILE* file) {
+   fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
+}
 void outputCFG(CFG* cfg, FILE* file) {
     fprintf(file, "digraph G {\n"); //NOLINT
     fprintf(file, "    start [label=\"%s\"];\n", "Начало"); //NOLINT
     fprintf(file, "    end [label=\"%s\"];\n", "Конец");
 
-
     for (int i = 0; i < cfg->block_count; i++) {
         writeBlock(i, file);
     }
+
     writeCFGEdges(cfg, file);
     fprintf(file, "    start -> node%d;\n", 0);
     fprintf(file, "    node%d -> end;\n", cfg->block_count-1);
+
+    //subgraph writing
+
     fprintf(file, "}\n"); //NOLINT
 }
 
