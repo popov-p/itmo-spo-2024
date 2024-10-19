@@ -7,29 +7,27 @@ digraph {
 
 	edge [arrowsize=.5, color="black", style="bold"]
 
-	n0x7743a536dc50[label="SOURCE"]
-	n0x7743a536db18[label="SOURCE_ITEM"]
-	n0x7743a536d8a8[label="FUNC_DEF"]
-	n0x7743a536c3f0[label="FUNC_SIG"]
-	n0x7743a536c180[label="calculateSum"]
-	n0x7743a536c2b8[label="LIST_ARG"]
-	n0x7743a536c528[label="int"]
-	n0x7743a536d500[label="ASSIGN"]
-	n0x7743a536d3c8[label="x"]
-	n0x7743a536d638[label="+"]
-	n0x7743a536d770[label="y"]
-	n0x7743a536d9e0[label="4"]
+	n0x753d5921d770[label="SOURCE"]
+	n0x753d5921d638[label="SOURCE_ITEM"]
+	n0x753d5921d500[label="FUNC_DEF"]
+	n0x753d5921c3f0[label="FUNC_SIG"]
+	n0x753d5921c180[label="calculateSum"]
+	n0x753d5921c2b8[label="LIST_ARG"]
+	n0x753d5921c660[label="int"]
+	n0x753d5921d290[label="VAR_DEC"]
+	n0x753d5921d158[label="int"]
+	n0x753d5921cee8[label="x"]
+	n0x753d5921d3c8[label="4"]
 
-		n0x7743a536dc50 -> n0x7743a536db18		// SOURCE -> SOURCE_ITEM
-		n0x7743a536db18 -> n0x7743a536d8a8		// SOURCE_ITEM -> FUNC_DEF
-		n0x7743a536d8a8 -> n0x7743a536c3f0		// FUNC_DEF -> FUNC_SIG
-		n0x7743a536c3f0 -> n0x7743a536c180		// FUNC_SIG -> calculateSum
-		n0x7743a536c3f0 -> n0x7743a536c2b8		// FUNC_SIG -> LIST_ARG
-		n0x7743a536c3f0 -> n0x7743a536c528		// FUNC_SIG -> int
-		n0x7743a536d8a8 -> n0x7743a536d500		// FUNC_DEF -> ASSIGN
-		n0x7743a536d500 -> n0x7743a536d3c8		// ASSIGN -> x
-		n0x7743a536d500 -> n0x7743a536d638		// ASSIGN -> +
-		n0x7743a536d638 -> n0x7743a536d770		// + -> y
-		n0x7743a536d638 -> n0x7743a536d9e0		// + -> 4
+		n0x753d5921d770 -> n0x753d5921d638		// SOURCE -> SOURCE_ITEM
+		n0x753d5921d638 -> n0x753d5921d500		// SOURCE_ITEM -> FUNC_DEF
+		n0x753d5921d500 -> n0x753d5921c3f0		// FUNC_DEF -> FUNC_SIG
+		n0x753d5921c3f0 -> n0x753d5921c180		// FUNC_SIG -> calculateSum
+		n0x753d5921c3f0 -> n0x753d5921c2b8		// FUNC_SIG -> LIST_ARG
+		n0x753d5921c3f0 -> n0x753d5921c660		// FUNC_SIG -> int
+		n0x753d5921d500 -> n0x753d5921d290		// FUNC_DEF -> VAR_DEC
+		n0x753d5921d290 -> n0x753d5921d158		// VAR_DEC -> int
+		n0x753d5921d290 -> n0x753d5921cee8		// VAR_DEC -> x
+		n0x753d5921d290 -> n0x753d5921d3c8		// VAR_DEC -> 4
 
 }

@@ -1,3 +1,7 @@
-def calculateSum(a of int array[5], beta of boolean) of int
-  int x = (z+t) + 5;
+def calculateSum() of int
+  foo(bar());
+  if(z < 3) then
+   y =3;
+   else
+   t = 2;
 end

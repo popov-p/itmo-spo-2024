@@ -34,6 +34,7 @@ tokens {
   LIST_RANGE;
   VAR_DEC;
   VAR_DEF;
+  DIM;
 }
 
 TRUE: 'true';
@@ -88,8 +89,7 @@ list_arg
   ;
 
 typeRef
-  : builtin
-  | custom
+  : baseType
   | arrayType
   ;
 
@@ -109,8 +109,18 @@ custom
   ;
 
 arrayType
-  : builtin 'array' '[' DEC ']' -> ^(ARR_TYPE builtin DEC)
-  | custom 'array' '[' DEC ']' -> ^(ARR_TYPE custom DEC)
+  : baseType arraySuffix -> ^(ARR_TYPE baseType arraySuffix)
+  ;
+
+arraySuffix
+  : 'array' '[' DEC ']' arraySuffix -> ^(ARR_TYPE DEC arraySuffix)
+  | 'array' '[' DEC ']' -> ^(ARR_TYPE DEC)
+  ;
+
+
+baseType
+  : builtin
+  | custom
   ;
 
 statement
@@ -127,11 +137,11 @@ statement
   ;
 
 variableDefinition
-  : typeRef IDENTIFIER ';' -> ^(VAR_DEF IDENTIFIER)
+  : typeRef IDENTIFIER ';' -> ^(VAR_DEF typeRef IDENTIFIER)
   ;
 
 variableDeclaration
-  : typeRef IDENTIFIER '=' expr ';' -> ^(VAR_DEC IDENTIFIER expr)
+  : typeRef IDENTIFIER '=' expr ';' -> ^(VAR_DEC typeRef IDENTIFIER expr)
   ;
 
 ifStmt

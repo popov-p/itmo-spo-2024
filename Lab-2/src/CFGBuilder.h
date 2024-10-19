@@ -2,6 +2,7 @@
 #define CFGBUILDER_H
 
 #include "Treebuilder.h"
+#include "BasicBlock.h"
 
 typedef struct File {
     char* file_name;
@@ -12,16 +13,15 @@ typedef struct File {
 typedef struct Function {
     char* name;
     char* signature;
-    struct CFG* cfg;
+    CFG* cfg;
     char* source_file;
 } Function;
 
-typedef struct CFG {
-    struct BasicBlock** blocks;
-    int block_count;
-} CFG;
-
 void walk_tree(pANTLR3_BASE_TREE node);
 void walk_parse_tree(pParseResult parseResult);
-
+void generate_cfg(pANTLR3_BASE_TREE node, FILE* file);
+void generate_cfg_from_CFG(FILE* file);
+void generate_parse_tree(pANTLR3_BASE_TREE tree, FILE* file);
+void cfg_walker(CFG* cfg, pANTLR3_BASE_TREE node, FILE* file, int* id);
+void writeBlock(FILE *file, BasicBlock* block);
 #endif
