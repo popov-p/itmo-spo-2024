@@ -48,9 +48,12 @@ CFG* generateCFG(pParseResult parseResult) {
     return cfg;
 }
 
-void outputSubgraph(int basicBlockIndex, FILE* file) {
-   fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
-}
+//void outputOpTree(CFG* cfg, int basicBlockIndex, FILE* file) {
+//   fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
+//   BasicBlock* bb = cfg->blocks[basicBlockIndex];
+//   pANTLR3_BASE_TREE node = getNodeByUniqueID(bb->id);
+
+//}
 void outputCFG(CFG* cfg, FILE* file) {
     fprintf(file, "digraph G {\n"); //NOLINT
     fprintf(file, "    start [label=\"%s\"];\n", "Начало"); //NOLINT
