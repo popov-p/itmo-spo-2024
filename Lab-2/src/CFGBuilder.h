@@ -17,9 +17,9 @@ typedef struct Function {
     char* source_file;
 } Function;
 
-void cfg_walker(CFG* cfg, pANTLR3_BASE_TREE_ADAPTOR node, pANTLR3_BASE_TREE tree, int* lastBlockIndex);
-CFG* generateCFG(pParseResult parseResult);
-void outputCFG(pParseResult parseResult, CFG* cfg, FILE* file);
+void cfg_walker(CFG* cfg, AST* node, int* lastBlockIndex);
+CFG* generateCFG(AST* head);
+void outputCFG(CFG* cfg, FILE* file);
 void writeBlock(int num, FILE *file);
 void writeCFGEdges(CFG* cfg, FILE *file);
 #endif

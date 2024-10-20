@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-BasicBlock* createBasicBlock(uint32_t id) {
+BasicBlock* createBasicBlock(AST* node) {
     BasicBlock* block = (BasicBlock*)malloc(sizeof(BasicBlock));
-    block->id = id;
+    block->node = node;
     block->successors = NULL;
     block->successor_count = 0;
     return block;
@@ -21,6 +21,18 @@ void addBasicBlock(CFG* cfg, BasicBlock* block) {
     cfg->blocks = (BasicBlock**)realloc(cfg->blocks, cfg->block_count * sizeof(BasicBlock*));
     cfg->blocks[cfg->block_count - 1] = block;
 }
+
+void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
+    fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
+    fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
+    BasicBlock* bb = cfg->blocks[basicBlockIndex];
+    //pANTLR3_BASE_TREE result = analyzeOp(parseResult, getNodeByUniqueID(bb->id));
+    AST*  node = findNodeById(bb->node, bb->node->id);
+    outputOpNode(node, basicBlockIndex, file);
+    //outputOpEdge(parseResult->p->adaptor, result, basicBlockIndex, file);
+    fprintf(file, "}\n");
+}
+
 
 CFG* initEmptyCFG() {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
