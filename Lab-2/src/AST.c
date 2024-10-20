@@ -1,5 +1,8 @@
 #include "AST.h"
 
+#include <stdlib.h>
+#include <stdint.h>
+
 AST* createNode(uint32_t id, char* token) {
     AST* node = (AST*)malloc(sizeof(AST));
 
@@ -116,6 +119,78 @@ void outputAST(AST* node, FILE* file) {
     }
 }
 
+void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
+    if (parent == NULL || thatChild == NULL || thisNode == NULL) {
+        return;
+    }
+
+    if (thatChild->parent != parent) {
+        return;
+    }
+
+    thisNode->children = (AST**)malloc(sizeof(AST*));
+    thisNode->children[0] = thatChild;
+    thisNode->child_count = 1;
+    thatChild->parent = thisNode;
+
+    for (size_t i = 0; i < parent->child_count; i++) {
+        if (parent->children[i] == thatChild) {
+            parent->children[i] = thisNode;
+            break;
+        }
+    }
+    thisNode->parent = parent;
+}
+
+
+AST* duplicateTree(AST* head) {
+    if (head == NULL) {
+        return NULL;
+    }
+
+    AST* newNode = createNode(head->id, head->token);
+
+    for (size_t i = 0; i < head->child_count; i++) {
+        AST* childCopy = duplicateTree(head->children[i]);
+        addChild(newNode, childCopy);
+    }
+
+    return newNode;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 AST* buildFromParseResult(pParseResult parseResult) {
@@ -185,24 +260,20 @@ void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
     }
 }
 
-pANTLR3_BASE_TREE analyzeOp (pParseResult parseResult,
-                            pANTLR3_BASE_TREE node) {
-    pANTLR3_BASE_TREE head = (pANTLR3_BASE_TREE)parseResult->p->adaptor->dupTree(parseResult->p->adaptor,
-                                                                                   node);
-
-    if(strcmp((char*)node->getText(node)->chars, "CALL") == 0) {
-        if(parseResult->p->adaptor->getChild(parseResult->p->adaptor, head,  1)) {
-            pANTLR3_BASE_TREE readNode = (pANTLR3_BASE_TREE) parseResult->p->adaptor->dupNode(parseResult->p->adaptor, NULL);
-            parseResult->p->adaptor->getText(parseResult->p->adaptor, readNode);
-        }
-        else {
-            printf("not lol\n");
-        }
+AST* analyzeOp (AST* node) {
+    AST* head = duplicateTree(node);
+    if(strcmp(head->token, "CALL") == 0) {
+        analyzeCall(head);
     }
     return head;
 }
 
-void analyzeCall(pANTLR3_BASE_TREE_ADAPTOR adaptor,
-                 pANTLR3_BASE_TREE node) {
-
+void analyzeCall(AST* call) {
+    AST* list_expr = getChild(call, 1);
+    if (list_expr->child_count) {
+        for(int i = 0; i < list_expr->child_count; i++) {
+            AST* read = createNode(arc4random(), "__read");
+            insertBetween(list_expr, getChild(list_expr, i), read);
+        }
+    }
 }

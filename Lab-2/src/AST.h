@@ -17,7 +17,8 @@ void addChild(AST* parent, AST* child);
 void freeTree(AST* node);
 
 AST* findNodeById(AST* node, uint32_t id);
-
+void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
+AST* duplicateTree(AST* head);
 AST* buildFromParseResult(pParseResult parseResult);
 void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node);
 
@@ -37,9 +38,7 @@ void outputOpEdge(AST* parent,
                   int basicBlockIndex,
                   FILE *file);
 
-pANTLR3_BASE_TREE analyzeOp (pParseResult parseResult,
-                            pANTLR3_BASE_TREE node);
+AST* analyzeOp (AST* node);
 
-void analyzeCall(pANTLR3_BASE_TREE_ADAPTOR adaptor,
-                 pANTLR3_BASE_TREE node);
+void analyzeCall(AST* node);
 #endif
