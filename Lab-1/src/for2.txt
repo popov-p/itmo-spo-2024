@@ -1,4 +1,4 @@
 def calculateSum() of int
-  int x = 4;
+  foo(bar(baz()));
 end
 

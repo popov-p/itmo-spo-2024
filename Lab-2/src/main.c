@@ -1,10 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <antlr3.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "CFGBuilder.h"
+#include "HashTree.h"
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
     char *inputText = readFileToString("../test.txt");
 
     if (inputText == NULL) {
@@ -21,7 +25,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     CFG* cfg = generateCFG(parseResult);
-    outputCFG(cfg, cfg_file);
+    outputCFG(parseResult, cfg, cfg_file);
     fclose(cfg_file);
 
     return 0;

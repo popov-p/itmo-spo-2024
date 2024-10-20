@@ -1,7 +1,8 @@
 #include "CFGBuilder.h"
+#include "OpTree.h"
 
 void writeBlock(int num, FILE *file) {
-    fprintf(file, "    node%d [label=\"%d\"];\n", num, num); //NOLINT
+    fprintf(file, "    node%d [label=\"BB%d\"];\n", num, num); //NOLINT
 }
 
 void writeCFGEdges(CFG* cfg, FILE *file) {
@@ -48,14 +49,9 @@ CFG* generateCFG(pParseResult parseResult) {
     return cfg;
 }
 
-//void outputOpTree(CFG* cfg, int basicBlockIndex, FILE* file) {
-//   fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
-//   BasicBlock* bb = cfg->blocks[basicBlockIndex];
-//   pANTLR3_BASE_TREE node = getNodeByUniqueID(bb->id);
-
-//}
-void outputCFG(CFG* cfg, FILE* file) {
+void outputCFG(pParseResult parseResult, CFG* cfg, FILE* file) {
     fprintf(file, "digraph G {\n"); //NOLINT
+    fprintf(file, "    rankdir=TB;\n"); //NOLINT
     fprintf(file, "    start [label=\"%s\"];\n", "Начало"); //NOLINT
     fprintf(file, "    end [label=\"%s\"];\n", "Конец");
 
@@ -66,8 +62,9 @@ void outputCFG(CFG* cfg, FILE* file) {
     writeCFGEdges(cfg, file);
     fprintf(file, "    start -> node%d;\n", 0);
     fprintf(file, "    node%d -> end;\n", cfg->block_count-1);
-
-    //subgraph writing
+    for (int i = 0; i < cfg->block_count; i++) {
+        outputSubgraph(parseResult, cfg, i, file);
+    }
 
     fprintf(file, "}\n"); //NOLINT
 }

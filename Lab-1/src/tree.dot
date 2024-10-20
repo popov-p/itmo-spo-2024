@@ -7,27 +7,37 @@ digraph {
 
 	edge [arrowsize=.5, color="black", style="bold"]
 
-	n0x7f4f7729a770[label="SOURCE"]
-	n0x7f4f7729a638[label="SOURCE_ITEM"]
-	n0x7f4f7729a500[label="FUNC_DEF"]
-	n0x7f4f772993f0[label="FUNC_SIG"]
-	n0x7f4f77299180[label="calculateSum"]
-	n0x7f4f772992b8[label="LIST_ARG"]
-	n0x7f4f77299660[label="int"]
-	n0x7f4f7729a290[label="VAR_DEC"]
-	n0x7f4f7729a158[label="int"]
-	n0x7f4f77299ee8[label="x"]
-	n0x7f4f7729a3c8[label="4"]
+	n0x717f874a3c20[label="SOURCE"]
+	n0x717f874a3ae8[label="SOURCE_ITEM"]
+	n0x717f874a1c70[label="FUNC_DEF"]
+	n0x717f874993f0[label="FUNC_SIG"]
+	n0x717f87499180[label="calculateSum"]
+	n0x717f874992b8[label="LIST_ARG"]
+	n0x717f87499660[label="int"]
+	n0x717f874a39b0[label="EXPR"]
+	n0x717f874a3878[label="CALL"]
+	n0x717f874a2b10[label="foo"]
+	n0x717f874a3740[label="LIST_EXPR"]
+	n0x717f874a3608[label="CALL"]
+	n0x717f874a2eb8[label="bar"]
+	n0x717f874a34d0[label="LIST_EXPR"]
+	n0x717f874a3398[label="CALL"]
+	n0x717f874a3260[label="baz"]
 
-		n0x7f4f7729a770 -> n0x7f4f7729a638		// SOURCE -> SOURCE_ITEM
-		n0x7f4f7729a638 -> n0x7f4f7729a500		// SOURCE_ITEM -> FUNC_DEF
-		n0x7f4f7729a500 -> n0x7f4f772993f0		// FUNC_DEF -> FUNC_SIG
-		n0x7f4f772993f0 -> n0x7f4f77299180		// FUNC_SIG -> calculateSum
-		n0x7f4f772993f0 -> n0x7f4f772992b8		// FUNC_SIG -> LIST_ARG
-		n0x7f4f772993f0 -> n0x7f4f77299660		// FUNC_SIG -> int
-		n0x7f4f7729a500 -> n0x7f4f7729a290		// FUNC_DEF -> VAR_DEC
-		n0x7f4f7729a290 -> n0x7f4f7729a158		// VAR_DEC -> int
-		n0x7f4f7729a290 -> n0x7f4f77299ee8		// VAR_DEC -> x
-		n0x7f4f7729a290 -> n0x7f4f7729a3c8		// VAR_DEC -> 4
+		n0x717f874a3c20 -> n0x717f874a3ae8		// SOURCE -> SOURCE_ITEM
+		n0x717f874a3ae8 -> n0x717f874a1c70		// SOURCE_ITEM -> FUNC_DEF
+		n0x717f874a1c70 -> n0x717f874993f0		// FUNC_DEF -> FUNC_SIG
+		n0x717f874993f0 -> n0x717f87499180		// FUNC_SIG -> calculateSum
+		n0x717f874993f0 -> n0x717f874992b8		// FUNC_SIG -> LIST_ARG
+		n0x717f874993f0 -> n0x717f87499660		// FUNC_SIG -> int
+		n0x717f874a1c70 -> n0x717f874a39b0		// FUNC_DEF -> EXPR
+		n0x717f874a39b0 -> n0x717f874a3878		// EXPR -> CALL
+		n0x717f874a3878 -> n0x717f874a2b10		// CALL -> foo
+		n0x717f874a3878 -> n0x717f874a3740		// CALL -> LIST_EXPR
+		n0x717f874a3740 -> n0x717f874a3608		// LIST_EXPR -> CALL
+		n0x717f874a3608 -> n0x717f874a2eb8		// CALL -> bar
+		n0x717f874a3608 -> n0x717f874a34d0		// CALL -> LIST_EXPR
+		n0x717f874a34d0 -> n0x717f874a3398		// LIST_EXPR -> CALL
+		n0x717f874a3398 -> n0x717f874a3260		// CALL -> baz
 
 }

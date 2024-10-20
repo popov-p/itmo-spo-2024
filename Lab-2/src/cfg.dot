@@ -1,0 +1,48 @@
+digraph G {
+    rankdir=TB;
+    start [label="Начало"];
+    end [label="Конец"];
+    node0 [label="BB0"];
+    node1 [label="BB1"];
+    node2 [label="BB2"];
+    node0 -> node1;
+    node1 -> node2;
+    start -> node0;
+    node2 -> end;
+subgraph cluster_0 {
+    label="BB0";
+    cluster_0_node4210784064 [label="CALL"];
+    cluster_0_node4210783752 [label="baz"];
+    cluster_0_node4210784064 -> cluster_0_node4210783752;
+}
+subgraph cluster_1 {
+    label="BB1";
+    cluster_1_node4210784688 [label="CALL"];
+    cluster_1_node4210782816 [label="bar"];
+    cluster_1_node4210784376 [label="LIST_EXPR"];
+    cluster_1_node4210784064 [label="CALL"];
+    cluster_1_node4210783752 [label="baz"];
+    cluster_1_node4210784688 -> cluster_1_node4210782816;
+    cluster_1_node4210784688 -> cluster_1_node4210784376;
+    cluster_1_node4210784376 -> cluster_1_node4210784064;
+    cluster_1_node4210784064 -> cluster_1_node4210783752;
+}
+subgraph cluster_2 {
+    label="BB2";
+    cluster_2_node4210785312 [label="CALL"];
+    cluster_2_node4210781880 [label="foo"];
+    cluster_2_node4210785000 [label="LIST_EXPR"];
+    cluster_2_node4210784688 [label="CALL"];
+    cluster_2_node4210782816 [label="bar"];
+    cluster_2_node4210784376 [label="LIST_EXPR"];
+    cluster_2_node4210784064 [label="CALL"];
+    cluster_2_node4210783752 [label="baz"];
+    cluster_2_node4210785312 -> cluster_2_node4210781880;
+    cluster_2_node4210785312 -> cluster_2_node4210785000;
+    cluster_2_node4210785000 -> cluster_2_node4210784688;
+    cluster_2_node4210784688 -> cluster_2_node4210782816;
+    cluster_2_node4210784688 -> cluster_2_node4210784376;
+    cluster_2_node4210784376 -> cluster_2_node4210784064;
+    cluster_2_node4210784064 -> cluster_2_node4210783752;
+}
+}

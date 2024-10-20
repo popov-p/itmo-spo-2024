@@ -2,7 +2,7 @@
 #define HASHTREE_H
 
 #include "uthash.h"
-#include "antlr3.h"
+#include <antlr3.h>
 
 typedef struct {
     uint32_t uniqueID;
