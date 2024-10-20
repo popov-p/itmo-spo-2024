@@ -11,6 +11,7 @@ AST* createNode(uint32_t id, char* token) {
     node->parent = NULL;
     node->children = NULL;
     node->child_count = 0;
+    node->id = id;
     node->token = strdup(token);
     return node;
 }
@@ -39,10 +40,10 @@ void addChild(AST* parent, AST* child) {
         fprintf(stderr, "AST addChild memory allocation failed\n");
         return;
     }
-
-    parent->children[parent->child_count] = child;
-    child->parent = parent;
     parent->child_count++;
+    parent->children[parent->child_count-1] = child;
+    child->parent = parent;
+
 }
 
 void freeAST(AST* node) {
@@ -89,13 +90,31 @@ AST* getParent(AST* node) {
     return node->parent;
 }
 
+void outputASTEdges(AST* node, FILE* file) {
+    for (int i = 0; i < node->child_count; i++) {
+        AST* child = getChild(node, i);
+        writeEdge(node, child, 0, file);
+        outputASTEdges(child, file);
+    }
+}
 
+void printAST(AST* head, FILE* file) {
+    fprintf(file, "digraph AST {\n"); //NOLINT
+    fprintf(file, "    node [shape=box];\n"); //NOLINT
+    outputAST(head, file);
+    outputASTEdges(head, file);
+    fprintf(file, "}\n");
+}
 
-
-
-
-
-
+void outputAST(AST* node, FILE* file) {
+    if (node == NULL) return;
+    printf("Visiting node: %s\n", node->token);
+    writeNode(node, 0, file);
+    for (int i = 0; i < node->child_count; i++) {
+        AST* child = getChild(node, i);
+        outputAST(child, file);
+    }
+}
 
 
 
@@ -104,7 +123,7 @@ AST* buildFromParseResult(pParseResult parseResult) {
                                                                 parseResult->sr.tree),
                            (char*)parseResult->sr.tree->getText(parseResult->sr.tree)->chars);
     int child_count = parseResult->sr.tree->getChildCount(parseResult->sr.tree);
-    head->child_count = child_count;
+    //head->child_count = child_count;
     for(int i = 0; i < child_count; i++) {
         //start process for a i-th child
         setChildFromAntlrNode(head, parseResult->p->adaptor,
@@ -129,30 +148,6 @@ void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTL
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void writeNode(AST* node, int basicBlockIndex, FILE *file) {
     fprintf(file, "    cluster_%d_node%u [label=\"%s\"];\n", basicBlockIndex,
                                                              node->id, node->token); //NOLINT
@@ -175,7 +170,6 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
         outputOpNode(node, basicBlockIndex, file);
     }
 }
-
 
 void outputOpEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
     char* name = parent->token;

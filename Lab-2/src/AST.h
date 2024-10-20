@@ -23,9 +23,8 @@ void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTL
 
 AST* getChild(AST* parent, size_t i);
 AST* getParent(AST* node);
-
-
-
+void printAST(AST* head, FILE* file);
+void outputAST(AST* head, FILE* file);
 void writeNode(AST* node, int basicBlockIndex, FILE *file);
 
 void writeEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file);
