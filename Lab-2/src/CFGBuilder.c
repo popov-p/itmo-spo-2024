@@ -64,7 +64,6 @@ void outputCFG(CFG* cfg, FILE* file) {
     for (int i = 0; i < cfg->block_count; i++) {
         outputSubgraph(cfg, i, file);
     }
-
     fprintf(file, "}\n"); //NOLINT
 }
 

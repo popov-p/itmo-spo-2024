@@ -34,7 +34,6 @@ void outputOpNode(AST* node,
                   FILE *file);
 
 void outputOpEdge(AST* parent,
-                  AST* child,
                   int basicBlockIndex,
                   FILE *file);
 

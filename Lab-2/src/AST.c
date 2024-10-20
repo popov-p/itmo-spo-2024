@@ -167,11 +167,12 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
 
     writeNode(node, basicBlockIndex, file);
     for (int i = 0; i < childCount; i++) {
-        outputOpNode(node, basicBlockIndex, file);
+        AST* child = getChild(node, i);
+        outputOpNode(child, basicBlockIndex, file);
     }
 }
 
-void outputOpEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
+void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
     char* name = parent->token;
     printf("Visiting node: %s\n", name);
     int childCount = parent->child_count;
@@ -180,7 +181,7 @@ void outputOpEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
         AST* child = getChild(parent, i);
 
         writeEdge(parent, child, basicBlockIndex, file);
-        outputOpEdge(parent, child, basicBlockIndex, file);
+        outputOpEdge(child, basicBlockIndex, file);
     }
 }
 

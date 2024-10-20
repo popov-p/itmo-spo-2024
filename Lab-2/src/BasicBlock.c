@@ -27,9 +27,9 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
     BasicBlock* bb = cfg->blocks[basicBlockIndex];
     //pANTLR3_BASE_TREE result = analyzeOp(parseResult, getNodeByUniqueID(bb->id));
-    AST*  node = findNodeById(bb->node, bb->node->id);
-    outputOpNode(node, basicBlockIndex, file);
-    //outputOpEdge(parseResult->p->adaptor, result, basicBlockIndex, file);
+    AST*  op = findNodeById(bb->node, bb->node->id);
+    outputOpNode(op, basicBlockIndex, file);
+    outputOpEdge(op, basicBlockIndex, file);
     fprintf(file, "}\n");
 }
 
