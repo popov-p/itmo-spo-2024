@@ -1,14 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <antlr3.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include "CFGBuilder.h"
 #include "HashTree.h"
 
 int main(int argc, char *argv[]) {
-    srand(time(NULL));
     char *inputText = readFileToString("../test.txt");
 
     if (inputText == NULL) {

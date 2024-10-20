@@ -39,7 +39,6 @@ void cfg_walker(CFG* cfg, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE t
     }
 }
 
-
 CFG* generateCFG(pParseResult parseResult) {
     CFG* cfg = initEmptyCFG();
     int* lastBlockIndex = (int*)malloc(sizeof(int));
