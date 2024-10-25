@@ -213,7 +213,7 @@ void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTL
         return;
     }
     AST* child = createNode(adaptor->getUniqueID(adaptor, node),
-                            (char*)node->getText(node)->chars);
+                            (char*)node->getText(node)->chars); //NOLINT
     addChild(parent, child);
 
     int child_count = node->getChildCount(node);
@@ -269,11 +269,23 @@ AST* analyzeOp (AST* node) {
 }
 
 void analyzeCall(AST* call) {
+    if (strcmp(call->token, "CALL") != 0) {
+        return;
+    }
+
+    char* func_name = getChild(call, 0)->token;
+    printf("ANALYZE: found CALL: %s\n", func_name);
+
     AST* list_expr = getChild(call, 1);
     if (list_expr->child_count) {
-        for(int i = 0; i < list_expr->child_count; i++) {
-            AST* read = createNode(arc4random(), "__read");
-            insertBetween(list_expr, getChild(list_expr, i), read);
+        for (int i = 0; i < list_expr->child_count; i++) {
+            AST* listChild = getChild(list_expr, i);
+            if (listChild != NULL) {
+                AST* read = createNode(arc4random(), "__read"); //NOLINT
+                insertBetween(list_expr, listChild, read);
+                analyzeCall(listChild);
+            }
         }
     }
+
 }

@@ -1,5 +1,6 @@
 #include "CFGBuilder.h"
 #include "AST.h"
+#include "CFGNodeProcessing.h"
 
 void writeBlock(int num, FILE *file) {
     fprintf(file, "    node%d [label=\"BB%d\"];\n", num, num); //NOLINT
@@ -34,7 +35,7 @@ void cfg_walker(CFG* cfg, AST* node, int* lastBlockIndex) {
         }
         *lastBlockIndex = currentBlockIndex;
         char* func_name = getChild(node, 0)->token;
-        printf("found CALL: %s\n", func_name);
+        printf("found CALL-BB: %s\n", func_name);
     }
 }
 
