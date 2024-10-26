@@ -1,13 +1,10 @@
 #include "CFGNodeProcessing.h"
 
 
-void cfgWalkerProcessIfNode(CFG* cfg,
-                            AST* node,
-                            int* lastBlockIndex,
-                            ProcessedNodes* processedNodes,
-                            int* childCount) {
-    BasicBlock* ifBlock = createBasicBlock(node, standard);
-    addBasicBlock(cfg, ifBlock);
+
+int cfgWalkerLinkWithParent(CFG* cfg, AST* current, int* lastBlockIndex) {
+    BasicBlock* bb = createBasicBlock(current, standard);
+    addBasicBlock(cfg, bb);
     int currentBlockIndex = cfg->block_count - 1;
 
     if (*lastBlockIndex != -1) {
@@ -15,6 +12,16 @@ void cfgWalkerProcessIfNode(CFG* cfg,
     }
 
     *lastBlockIndex = currentBlockIndex;
+    return currentBlockIndex;
+}
+
+void cfgWalkerProcessIfNode(CFG* cfg,
+                            AST* node,
+                            int* lastBlockIndex,
+                            ProcessedNodes* processedNodes,
+                            int* childCount) {
+
+    int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
 
     BasicBlock* mergeBlock = createBasicBlock(NULL, merge);
     addBasicBlock(cfg, mergeBlock);
@@ -50,12 +57,7 @@ void cfgWalkerProcessCallNode(CFG* cfg,
                               ProcessedNodes* processedNodes,
                               int* childCount)
 {
-    BasicBlock* block = createBasicBlock(node, standard);
-    addBasicBlock(cfg, block);
-    int currentBlockIndex = cfg->block_count - 1;
-    if (*lastBlockIndex != -1) {
-        addSuccessor(cfg->blocks[*lastBlockIndex], currentBlockIndex);
-    }
+    int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = currentBlockIndex;
     char* func_name = getChild(node, 0)->token;
     printf("Debug :: BB :: found CALL: %s\n", func_name);
@@ -66,27 +68,22 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
                               int* lastBlockIndex,
                               ProcessedNodes* processedNodes,
                               int* childCount) {
-    BasicBlock* whileConditionBlock = createBasicBlock(node, standard);
-    addBasicBlock(cfg, whileConditionBlock);
-    int whileConditionIndex = cfg->block_count - 1;
 
-    if (*lastBlockIndex != -1) {
-        addSuccessor(cfg->blocks[*lastBlockIndex], whileConditionIndex);
-    }
+   int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
 
-    *lastBlockIndex = whileConditionIndex;
+    *lastBlockIndex = currentBlockIndex;
 
-    int bodyBlockIndex = whileConditionIndex;
+    int bodyBlockIndex = currentBlockIndex;
     cfgWalker(cfg, getChild(node, 1), &bodyBlockIndex, processedNodes);
 
-    addSuccessor(cfg->blocks[bodyBlockIndex], whileConditionIndex);
+    addSuccessor(cfg->blocks[bodyBlockIndex], currentBlockIndex);
 
     BasicBlock* exitBlock = createBasicBlock(NULL, loop_exit);
 
     addBasicBlock(cfg, exitBlock);
     int exitBlockIndex = cfg->block_count - 1;
 
-    addSuccessor(cfg->blocks[whileConditionIndex], exitBlockIndex);
+    addSuccessor(cfg->blocks[currentBlockIndex], exitBlockIndex);
 
     *lastBlockIndex = exitBlockIndex;
 
@@ -99,15 +96,9 @@ void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 int* lastBlockIndex,
                                 ProcessedNodes* processedNodes,
                                 int* childCount) {
-    BasicBlock* repeatBodyBlock = createBasicBlock(node, standard);
-    addBasicBlock(cfg, repeatBodyBlock);
-    int repeatBodyIndex = cfg->block_count - 1;
 
-    if (*lastBlockIndex != -1) {
-        addSuccessor(cfg->blocks[*lastBlockIndex], repeatBodyIndex);
-    }
-
-    *lastBlockIndex = repeatBodyIndex;
+    int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
+    *lastBlockIndex = currentBlockIndex;
 
     cfgWalker(cfg, getChild(node, 0), lastBlockIndex, processedNodes);
 
@@ -115,15 +106,63 @@ void cfgWalkerProcessRepeatNode(CFG* cfg,
     BasicBlock* exitBlock = createBasicBlock(NULL, repeat_exit);
     addBasicBlock(cfg, exitBlock);
     int exitBlockIndex = cfg->block_count - 1;
-    addSuccessor(cfg->blocks[*lastBlockIndex], repeatBodyIndex);
-    addSuccessor(cfg->blocks[repeatBodyIndex], exitBlockIndex);
+    addSuccessor(cfg->blocks[*lastBlockIndex], currentBlockIndex);
+    addSuccessor(cfg->blocks[currentBlockIndex], exitBlockIndex);
 
     *lastBlockIndex = exitBlockIndex;
 
     printf("Debug :: BB :: found REPEAT block\n");
 }
 
+void cfgWalkerProcessBlockNode(CFG* cfg,
+                               AST* node,
+                               int* lastBlockIndex,
+                               ProcessedNodes* processedNodes,
+                               int* childCount) {
+    int numStatements = node->child_count;
 
+    for (int i = 0; i < numStatements; ++i) {
+        AST* statementNode = getChild(node, i);
+        cfgWalker(cfg, statementNode, lastBlockIndex, processedNodes);
+    }
+
+    printf("Debug :: BB :: found BLOCK node\n");
+}
+
+
+
+void cfgWalkerProcessVarDecNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount)
+{
+    int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
+    *lastBlockIndex = currentBlockIndex;
+
+    cfgWalker(cfg, getChild(node, 2), lastBlockIndex, processedNodes);
+
+    *lastBlockIndex = currentBlockIndex;
+
+    printf("Debug :: BB :: found VAR_DEC block'\n");
+}
+
+
+void cfgWalkerProcessVarDefNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount) {
+    int currentBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
+
+    *lastBlockIndex = currentBlockIndex;
+
+    cfgWalker(cfg, getChild(node, 2), lastBlockIndex, processedNodes);
+
+    *lastBlockIndex = currentBlockIndex;
+
+    printf("Debug :: BB :: found VAR_DEF block for variable\n");
+}
 
 
 
@@ -162,6 +201,27 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex, ProcessedNodes* process
                                  lastBlockIndex,
                                  processedNodes,
                                  &childCount);
+
+    else if (strcmp(name, "BLOCK") == 0)
+        cfgWalkerProcessBlockNode(cfg,
+                                   node,
+                                   lastBlockIndex,
+                                   processedNodes,
+                                   &childCount);
+
+    else if (strcmp(name, "VAR_DEC") == 0)
+        cfgWalkerProcessVarDecNode(cfg,
+                                   node,
+                                   lastBlockIndex,
+                                   processedNodes,
+                                   &childCount);
+
+    else if (strcmp(name, "VAR_DEF") == 0)
+        cfgWalkerProcessVarDecNode(cfg,
+                                   node,
+                                   lastBlockIndex,
+                                   processedNodes,
+                                   &childCount);
 
     else if (strcmp(name, "=") == 0) {
         if (*lastBlockIndex != -1) {

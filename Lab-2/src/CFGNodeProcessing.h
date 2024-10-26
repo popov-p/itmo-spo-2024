@@ -6,6 +6,7 @@
 #include "ProcessedNodes.h"
 
 void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex, ProcessedNodes* processedNodes);
+int cfgWalkerLinkWithParent(CFG* cfg, AST* current, int* lastBlockIndex);
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
@@ -26,11 +27,28 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
                               int* childCount);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
-                              AST* node,
-                              int* lastBlockIndex,
-                              ProcessedNodes* processedNodes,
-                              int* childCount);
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount);
 
+void cfgWalkerProcessBlockNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount);
+
+void cfgWalkerProcessVarDecNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount);
+
+void cfgWalkerProcessVarDefNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                ProcessedNodes* processedNodes,
+                                int* childCount);
 
 
 #endif

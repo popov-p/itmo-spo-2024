@@ -1,7 +1,5 @@
 def main() of int
   {
-    while b < c
-      baz();
-    end
-  } until x < 10;
+    foo();
+  }
 end

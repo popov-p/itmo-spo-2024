@@ -255,7 +255,7 @@ void analyzeCall(AST* call) {
     }
 
     char* func_name = getChild(call, 0)->token;
-    printf("ANALYZE: found CALL: %s\n", func_name);
+    printf("ANALYZE:: found CALL: %s\n", func_name);
 
     if(call->child_count > 1) {
         AST* list_expr = getChild(call, 1);

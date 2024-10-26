@@ -163,7 +163,7 @@ repeatStmt
 
 repeatSuffix
   : ('while' | 'until') expr ';'
-  -> ^(EXPR expr)
+  -> ^(expr)
   ;
 
 breakStmt

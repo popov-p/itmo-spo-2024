@@ -15,7 +15,6 @@ void writeBlock(int num, FILE *file, enum BasicBlockType type) {
     if (type == repeat_exit) {
         fprintf(file, "    node%d [label=\"RPXT\"];\n", num); //NOLINT
     }
-
 }
 
 void writeCFGEdges(CFG* cfg, FILE *file) {
