@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-BasicBlock* createBasicBlock(AST* node) {
+BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt) {
     BasicBlock* block = (BasicBlock*)malloc(sizeof(BasicBlock));
     block->node = node;
+    block->bt = bt;
     block->successors = NULL;
     block->successor_count = 0;
     return block;

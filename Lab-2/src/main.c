@@ -5,6 +5,16 @@
 #include "CFGBuilder.h"
 #include "AST.h"
 
+void deleteFileIfExists(const char* filename) {
+    if (access(filename, F_OK) != -1) {
+        if (remove(filename) == 0) {
+            printf("Deleted previous file: %s\n", filename);
+        } else {
+            perror("Failed to delete previous file");
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     char *inputText = readFileToString("../src/test.txt");
 
@@ -24,6 +34,12 @@ int main(int argc, char *argv[]) {
     printAST(head, tree_file);
     fclose(tree_file);
 
+    const char* cfgDotFilename = "../src/cfg.dot";
+    const char* cfgPngFilename = "../src/cfg.png";
+    deleteFileIfExists(cfgDotFilename);
+    deleteFileIfExists(cfgPngFilename);
+
+
     const char* cfg_filename = "../src/cfg.dot";
     FILE *cfg_file = fopen(cfg_filename, "w");
     if (cfg_file == NULL) {
@@ -34,6 +50,18 @@ int main(int argc, char *argv[]) {
     CFG* cfg = generateCFG(head);
     outputCFG(cfg, cfg_file);
     fclose(cfg_file);
+
+
+    char dot_command[256];
+    snprintf(dot_command, sizeof(dot_command), "dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
+    int result = system(dot_command);
+
+    if (result == -1) {
+        perror("not ok, failed to generate cfg.png");
+        return -1;
+    } else {
+        printf("cfg.png generated successfully.\n");
+    }
 
     return 0;
 }

@@ -1,7 +1,7 @@
-def calculateSum() of int
-  if x > y then
-    foo(bar(baz()));
-  else
-    t = 1;
-  eax();
+def main() of int
+  {
+    while b < c
+      baz();
+    end
+  } until x < 10;
 end

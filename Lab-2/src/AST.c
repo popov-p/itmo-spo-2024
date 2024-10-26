@@ -243,6 +243,9 @@ AST* analyzeOp (AST* node) {
     if(strcmp(head->token, "IF") == 0) {
         printf("ANALYZE:: debug :: found IF\n");
     }
+    if(strcmp(head->token, "IF") == 0) {
+        printf("ANALYZE:: debug :: found WHILE\n");
+    }
     return head;
 }
 
