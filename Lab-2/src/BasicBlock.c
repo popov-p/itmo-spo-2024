@@ -23,14 +23,17 @@ void addBasicBlock(CFG* cfg, BasicBlock* block) {
 }
 
 void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
-    fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
-    fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
     BasicBlock* bb = cfg->blocks[basicBlockIndex];
-    AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
+    if (!(bb->node == NULL)) {
+        fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
+        fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
 
-    outputOpNode(op, basicBlockIndex, file);
-    outputOpEdge(op, basicBlockIndex, file);
-    fprintf(file, "}\n");
+        AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
+
+        outputOpNode(op, basicBlockIndex, file);
+        outputOpEdge(op, basicBlockIndex, file);
+        fprintf(file, "}\n");
+    }
 }
 
 

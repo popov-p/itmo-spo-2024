@@ -1,0 +1,7 @@
+def calculateSum() of int
+  if x > y then
+    foo(bar(baz()));
+  else
+    t = 1;
+  eax();
+end

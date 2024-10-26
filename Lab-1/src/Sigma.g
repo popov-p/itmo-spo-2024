@@ -12,7 +12,6 @@ tokens {
   SOURCE_ITEM;
   FUNC_SIG;
   RETURN;
-  ASSIGN;
   IF;
   ELSE;
   LIST_ARG;
@@ -194,7 +193,7 @@ statementList
   ;
 
 assignmentStmt
-  : IDENTIFIER '=' expr ';' -> ^(ASSIGN IDENTIFIER expr)
+  : IDENTIFIER '=' expr ';' -> ^('=' IDENTIFIER expr)
   ;
 
 returnStmt

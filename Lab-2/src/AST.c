@@ -158,34 +158,7 @@ AST* duplicateTree(AST* head) {
     return newNode;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// tree ends here ---------------------------------
 
 
 
@@ -261,9 +234,14 @@ void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
 }
 
 AST* analyzeOp (AST* node) {
+    if(!node) //merge block or another service blocks
+        return NULL;
     AST* head = duplicateTree(node);
     if(strcmp(head->token, "CALL") == 0) {
         analyzeCall(head);
+    }
+    if(strcmp(head->token, "IF") == 0) {
+        printf("ANALYZE:: debug :: found IF\n");
     }
     return head;
 }
@@ -276,8 +254,8 @@ void analyzeCall(AST* call) {
     char* func_name = getChild(call, 0)->token;
     printf("ANALYZE: found CALL: %s\n", func_name);
 
-    AST* list_expr = getChild(call, 1);
-    if (list_expr->child_count) {
+    if(call->child_count > 1) {
+        AST* list_expr = getChild(call, 1);
         for (int i = 0; i < list_expr->child_count; i++) {
             AST* listChild = getChild(list_expr, i);
             if (listChild != NULL) {

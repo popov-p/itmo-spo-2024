@@ -7,37 +7,25 @@ digraph {
 
 	edge [arrowsize=.5, color="black", style="bold"]
 
-	n0x7f3ecf36fc20[label="SOURCE"]
-	n0x7f3ecf36fae8[label="SOURCE_ITEM"]
-	n0x7f3ecf36dc70[label="FUNC_DEF"]
-	n0x7f3ecf3653f0[label="FUNC_SIG"]
-	n0x7f3ecf365180[label="calculateSum"]
-	n0x7f3ecf3652b8[label="LIST_ARG"]
-	n0x7f3ecf365660[label="int"]
-	n0x7f3ecf36f9b0[label="EXPR"]
-	n0x7f3ecf36f878[label="CALL"]
-	n0x7f3ecf36eb10[label="foo"]
-	n0x7f3ecf36f740[label="LIST_EXPR"]
-	n0x7f3ecf36f608[label="CALL"]
-	n0x7f3ecf36eeb8[label="bar"]
-	n0x7f3ecf36f4d0[label="LIST_EXPR"]
-	n0x7f3ecf36f398[label="CALL"]
-	n0x7f3ecf36f260[label="baz"]
+	n0x7ca3d8c72770[label="SOURCE"]
+	n0x7ca3d8c72638[label="SOURCE_ITEM"]
+	n0x7ca3d8c72500[label="FUNC_DEF"]
+	n0x7ca3d8c713f0[label="FUNC_SIG"]
+	n0x7ca3d8c71180[label="calculateSum"]
+	n0x7ca3d8c712b8[label="LIST_ARG"]
+	n0x7ca3d8c71660[label="int"]
+	n0x7ca3d8c72290[label="="]
+	n0x7ca3d8c72020[label="x"]
+	n0x7ca3d8c723c8[label="y"]
 
-		n0x7f3ecf36fc20 -> n0x7f3ecf36fae8		// SOURCE -> SOURCE_ITEM
-		n0x7f3ecf36fae8 -> n0x7f3ecf36dc70		// SOURCE_ITEM -> FUNC_DEF
-		n0x7f3ecf36dc70 -> n0x7f3ecf3653f0		// FUNC_DEF -> FUNC_SIG
-		n0x7f3ecf3653f0 -> n0x7f3ecf365180		// FUNC_SIG -> calculateSum
-		n0x7f3ecf3653f0 -> n0x7f3ecf3652b8		// FUNC_SIG -> LIST_ARG
-		n0x7f3ecf3653f0 -> n0x7f3ecf365660		// FUNC_SIG -> int
-		n0x7f3ecf36dc70 -> n0x7f3ecf36f9b0		// FUNC_DEF -> EXPR
-		n0x7f3ecf36f9b0 -> n0x7f3ecf36f878		// EXPR -> CALL
-		n0x7f3ecf36f878 -> n0x7f3ecf36eb10		// CALL -> foo
-		n0x7f3ecf36f878 -> n0x7f3ecf36f740		// CALL -> LIST_EXPR
-		n0x7f3ecf36f740 -> n0x7f3ecf36f608		// LIST_EXPR -> CALL
-		n0x7f3ecf36f608 -> n0x7f3ecf36eeb8		// CALL -> bar
-		n0x7f3ecf36f608 -> n0x7f3ecf36f4d0		// CALL -> LIST_EXPR
-		n0x7f3ecf36f4d0 -> n0x7f3ecf36f398		// LIST_EXPR -> CALL
-		n0x7f3ecf36f398 -> n0x7f3ecf36f260		// CALL -> baz
+		n0x7ca3d8c72770 -> n0x7ca3d8c72638		// SOURCE -> SOURCE_ITEM
+		n0x7ca3d8c72638 -> n0x7ca3d8c72500		// SOURCE_ITEM -> FUNC_DEF
+		n0x7ca3d8c72500 -> n0x7ca3d8c713f0		// FUNC_DEF -> FUNC_SIG
+		n0x7ca3d8c713f0 -> n0x7ca3d8c71180		// FUNC_SIG -> calculateSum
+		n0x7ca3d8c713f0 -> n0x7ca3d8c712b8		// FUNC_SIG -> LIST_ARG
+		n0x7ca3d8c713f0 -> n0x7ca3d8c71660		// FUNC_SIG -> int
+		n0x7ca3d8c72500 -> n0x7ca3d8c72290		// FUNC_DEF -> =
+		n0x7ca3d8c72290 -> n0x7ca3d8c72020		// = -> x
+		n0x7ca3d8c72290 -> n0x7ca3d8c723c8		// = -> y
 
 }

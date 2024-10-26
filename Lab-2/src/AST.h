@@ -13,6 +13,7 @@ typedef struct AST {
 } AST;
 
 AST* createNode(uint32_t id, char* token);
+
 void addChild(AST* parent, AST* child);
 void freeTree(AST* node);
 

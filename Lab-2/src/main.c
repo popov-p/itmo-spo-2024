@@ -6,7 +6,7 @@
 #include "AST.h"
 
 int main(int argc, char *argv[]) {
-    char *inputText = readFileToString("../test.txt");
+    char *inputText = readFileToString("../src/test.txt");
 
     if (inputText == NULL) {
         printf("not ok. failed reading from file\n");

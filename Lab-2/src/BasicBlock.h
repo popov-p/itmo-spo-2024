@@ -3,6 +3,11 @@
 
 #include "AST.h"
 
+enum BasicBlockType {
+    standard = 0,
+    merge = 2
+};
+
 typedef struct CFG {
     struct BasicBlock** blocks;
     int block_count;
