@@ -128,7 +128,7 @@ statement
   | repeatStmt
   | breakStmt
   | returnStmt
-  | expressionStmt
+//  | expressionStmt
   | blockStmt
   | assignmentStmt
   | variableDeclaration

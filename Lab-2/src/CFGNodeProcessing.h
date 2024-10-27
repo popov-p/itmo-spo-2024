@@ -3,52 +3,56 @@
 
 #include "AST.h"
 #include "BasicBlock.h"
-#include "ProcessedNodes.h"
 
-void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex, ProcessedNodes* processedNodes);
-int cfgWalkerLinkWithParent(CFG* cfg, AST* current, int* lastBlockIndex);
+void cfgWalker(CFG* cfg,
+               AST* node,
+               int* lastBlockIndex);
+
+int cfgWalkerLinkWithParent(CFG* cfg,
+                            AST* current,
+                            int* lastBlockIndex);
+
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
-                            ProcessedNodes* processedNodes,
                             int* childCount);
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              ProcessedNodes* processedNodes,
                               int* childCount);
 
 
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              ProcessedNodes* processedNodes,
                               int* childCount);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex,
-                                ProcessedNodes* processedNodes,
                                 int* childCount);
 
 void cfgWalkerProcessBlockNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex,
-                                ProcessedNodes* processedNodes,
                                 int* childCount);
 
 void cfgWalkerProcessVarDecNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex,
-                                ProcessedNodes* processedNodes,
                                 int* childCount);
 
 void cfgWalkerProcessVarDefNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex,
-                                ProcessedNodes* processedNodes,
                                 int* childCount);
+
+void cfgWalkerProcessBreakNode(CFG* cfg,
+                                AST* node,
+                                int* lastBlockIndex,
+                                int* childCount);
+
 
 
 #endif

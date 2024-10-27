@@ -1,4 +1,6 @@
-def calculateSum() of int
-  x = y;
+def main() of int
+    while x < y
+        foo();
+        break;
+    end
 end
-

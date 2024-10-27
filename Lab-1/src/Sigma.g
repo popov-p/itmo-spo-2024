@@ -17,7 +17,6 @@ tokens {
   LIST_ARG;
   ARG;
   BIN_OP;
-  PLACE_EXPR;
   LOOP;
   BREAK;
   BLOCK;
@@ -27,7 +26,6 @@ tokens {
   SLICE;
   UNARY_OP;
   BRACES;
-  EXPR;
   RANGES;
   LIST_EXPR;
   LIST_RANGE;
@@ -163,7 +161,7 @@ repeatStmt
 
 repeatSuffix
   : ('while' | 'until') expr ';'
-  -> ^(EXPR expr)
+  -> ^(expr)
   ;
 
 breakStmt
@@ -172,7 +170,7 @@ breakStmt
   ;
 
 expressionStmt
-  : expr ';' -> ^(EXPR expr)
+  : expr ';' -> ^(expr)
   ;
 
 blockStmt
@@ -262,7 +260,7 @@ list_expr
 
 list_range
   : (ranges (',' ranges)*)?
-//  -> ^(LIST_RANGE (ranges)*)?
+  -> ^(LIST_RANGE (ranges)*)?
   ;
 
 binOp

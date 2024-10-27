@@ -42,6 +42,9 @@ CFG* initEmptyCFG() {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
     cfg->blocks = NULL;
     cfg->block_count = 0;
+    cfg->processedNodes = createProcessedNodes(100);
+    cfg->loopLevelCounter = createLoopLevelCounter();
+
 
     return cfg;
 }

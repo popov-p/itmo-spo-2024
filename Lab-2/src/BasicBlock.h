@@ -2,6 +2,8 @@
 #define BASICBLOCK_H
 
 #include "AST.h"
+#include "ExitStack.h"
+#include "ProcessedNodes.h"
 
 enum BasicBlockType {
     standard = 0,
@@ -13,6 +15,8 @@ enum BasicBlockType {
 typedef struct CFG {
     struct BasicBlock** blocks;
     int block_count;
+    ProcessedNodes* processedNodes;
+    LoopLevelCounter* loopLevelCounter;
 } CFG;
 
 typedef struct BasicBlock {

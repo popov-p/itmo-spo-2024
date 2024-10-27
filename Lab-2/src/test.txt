@@ -1,5 +1,5 @@
 def main() of int
-  {
-    foo();
-  }
+    while x < 3
+        break;
+    end
 end

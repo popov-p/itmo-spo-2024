@@ -1,0 +1,28 @@
+digraph G {
+    rankdir=TB;
+    start [label="Начало"];
+    end [label="Конец"];
+    node0 [label="BB0"];
+    node1 [label="BB1"];
+    node2 [label="LPXT"];
+    node0 -> node1;
+    node1 -> node2;
+    start -> node0;
+    node2 -> end;
+subgraph cluster_0 {
+    label="BB0";
+    cluster_0_node568662848 [label="LOOP"];
+    cluster_0_node568663160 [label="<"];
+    cluster_0_node568663472 [label="x"];
+    cluster_0_node568664096 [label="3"];
+    cluster_0_node568663784 [label="BREAK"];
+    cluster_0_node568662848 -> cluster_0_node568663160;
+    cluster_0_node568663160 -> cluster_0_node568663472;
+    cluster_0_node568663160 -> cluster_0_node568664096;
+    cluster_0_node568662848 -> cluster_0_node568663784;
+}
+subgraph cluster_1 {
+    label="BB1";
+    cluster_1_node568663784 [label="BREAK"];
+}
+}

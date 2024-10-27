@@ -27,12 +27,10 @@ void writeCFGEdges(CFG* cfg, FILE *file) {
 
 CFG* generateCFG(AST* head) {
     CFG* cfg = initEmptyCFG();
-    ProcessedNodes* pn = createProcessedNodes(100);
     int* lastBlockIndex = (int*)malloc(sizeof(int));
     *lastBlockIndex = -1;
-    cfgWalker(cfg, head, lastBlockIndex, pn);
+    cfgWalker(cfg, head, lastBlockIndex);
     free(lastBlockIndex);
-    free(pn);
     return cfg;
 }
 
