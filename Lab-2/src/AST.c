@@ -19,6 +19,22 @@ AST* createNode(uint32_t id, char* token) {
     return node;
 }
 
+void printTree(AST* node, int level) {
+    if (node == NULL) {
+        return;
+    }
+
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+
+    printf("Node ID: %d, Token: %s\n", node->id, node->token);
+
+    for (size_t i = 0; i < node->child_count; i++) {
+        printTree(node->children[i], level + 1);
+    }
+}
+
 size_t getChildCount(AST* node) {
     if (node == NULL) {
         return 0;
@@ -158,13 +174,37 @@ AST* duplicateTree(AST* head) {
     return newNode;
 }
 
+
+AST* duplicateLeftSubtree(AST* head) {
+    if (head == NULL) {
+        return NULL;
+    }
+    AST* newHead = createNode(head->id, head->token);
+
+    if (head->child_count > 0 && head->children[0] != NULL) {
+        AST* leftChildCopy = duplicateTree(head->children[0]);
+        addChild(newHead, leftChildCopy);
+    }
+
+    return newHead;
+}
+
+AST* duplicateRightSubtree(AST* head) {
+    if (head == NULL) {
+        return NULL;
+    }
+    AST* newHead = createNode(head->id, head->token);
+
+    if (head->child_count > 0 && head->children[1] != NULL) {
+        AST* leftChildCopy = duplicateTree(head->children[1]);
+        addChild(newHead, leftChildCopy);
+    }
+
+    return newHead;
+}
+
+
 // tree ends here ---------------------------------
-
-
-
-
-
-
 
 AST* buildFromParseResult(pParseResult parseResult) {
     AST* head = createNode(parseResult->p->adaptor->getUniqueID(parseResult->p->adaptor,
@@ -233,21 +273,39 @@ void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
     }
 }
 
-AST* analyzeOp (AST* node) {
-    if(!node) //merge block or another service blocks
-        return NULL;
-    AST* head = duplicateTree(node);
-    if(strcmp(head->token, "CALL") == 0) {
-        analyzeCall(head);
-    }
-    if(strcmp(head->token, "IF") == 0) {
-        printf("ANALYZE:: debug :: found IF\n");
-    }
-    if(strcmp(head->token, "IF") == 0) {
-        printf("ANALYZE:: debug :: found WHILE\n");
-    }
-    return head;
+void analyzeCutCondition(AST* head) {
+    AST* condition = getChild(head, 0);
+    AST* leftOperand = getChild(condition, 0);
+    AST* rightOperand = getChild(condition, 1);
+    AST* leftRead = createNode(arc4random(), "__read");
+    insertBetween(condition, leftOperand, leftRead);
+
+    AST* rightRead = createNode(arc4random(), "__read");
+    insertBetween(condition, rightOperand, rightRead);
 }
+
+void analyzeIf(AST* ifNode) {
+    if (ifNode->child_count < 2) {
+        return;
+    }
+    analyzeCutCondition(ifNode);
+}
+
+void analyzeLoop(AST* loopNode) {
+    if (loopNode == NULL) {
+        return;
+    }
+
+    analyzeCutCondition(loopNode);
+}
+
+void analyzeRepeat(AST* repeatNode) {
+    if (repeatNode == NULL) {
+        return;
+    }
+    analyzeCutCondition(repeatNode);
+}
+
 
 void analyzeCall(AST* call) {
     if (strcmp(call->token, "CALL") != 0) {
@@ -268,5 +326,27 @@ void analyzeCall(AST* call) {
             }
         }
     }
+}
 
+AST* analyzeOp (AST* node) {
+    if(!node) //merge block or another service blocks
+        return NULL;
+    AST* head = duplicateTree(node);
+    if(strcmp(head->token, "CALL") == 0) {
+        analyzeCall(head);
+    }
+    if(strcmp(head->token, "IF") == 0) {
+        analyzeIf(head);
+    }
+    if(strcmp(head->token, "LOOP") == 0) {
+        head = duplicateLeftSubtree(node);
+        analyzeLoop(head);
+        printTree(head , 0);
+    }
+    if(strcmp(head->token, "REPEAT") == 0) {
+        head = duplicateRightSubtree(node);
+        analyzeLoop(head);
+        printTree(head , 0);
+    }
+    return head;
 }

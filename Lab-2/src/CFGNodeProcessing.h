@@ -53,6 +53,10 @@ void cfgWalkerProcessBreakNode(CFG* cfg,
                                 int* lastBlockIndex,
                                 int* childCount);
 
+void cfgWalkerProcessAssignment(CFG* cfg,
+                               AST* node,
+                               int* lastBlockIndex,
+                               int* childCount);
 
 
 #endif

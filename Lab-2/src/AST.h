@@ -20,6 +20,7 @@ void freeTree(AST* node);
 AST* findNodeById(AST* node, uint32_t id);
 void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
 AST* duplicateTree(AST* head);
+AST* duplicateLeftSubtree(AST* head);
 AST* buildFromParseResult(pParseResult parseResult);
 void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node);
 
