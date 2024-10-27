@@ -1,5 +1,8 @@
 #include "CFGNodeProcessing.h"
 
+int isBreakStatement(AST* node) {
+    return (strcmp(node->token, "BREAK") == 0);
+}
 
 
 int cfgWalkerLinkWithParent(CFG* cfg,
@@ -29,28 +32,47 @@ void cfgWalkerProcessIfNode(CFG* cfg,
     int mergeBlockIndex = cfg->block_count - 1;
 
     int trueBranchIndex = currentBlockIndex;
+    int hasBreakInTrue = 0;
+
+    // Проверка ветки true на наличие break
+    for (int i = 1; i < *childCount; ++i) {
+        if (isBreakStatement(getChild(node, i))) {
+            hasBreakInTrue = 1;
+            break;
+        }
+    }
     cfgWalker(cfg, getChild(node, 1), &trueBranchIndex);
 
     int falseBranchIndex = -1;
+    int hasBreakInFalse = 0;
     if (*childCount > 2) {
         falseBranchIndex = currentBlockIndex;
+
+        // Проверка ветки false на наличие break
+        for (int i = 2; i < *childCount; ++i) {
+            if (isBreakStatement(getChild(node, i))) {
+                hasBreakInFalse = 1;
+                break;
+            }
+        }
         cfgWalker(cfg, getChild(node, 2), &falseBranchIndex);
     } else {
         addSuccessor(cfg->blocks[currentBlockIndex], mergeBlockIndex);
     }
 
     if (trueBranchIndex != -1) {
-        addSuccessor(cfg->blocks[trueBranchIndex], mergeBlockIndex);
+        addSuccessor(cfg->blocks[trueBranchIndex], hasBreakInTrue ? getCurrentExitBlock(cfg->loopLevelStack) : mergeBlockIndex);
     }
 
     if (falseBranchIndex != -1) {
-        addSuccessor(cfg->blocks[falseBranchIndex], mergeBlockIndex);
+        addSuccessor(cfg->blocks[falseBranchIndex], hasBreakInFalse ? getCurrentExitBlock(cfg->loopLevelStack) : mergeBlockIndex);
     }
 
     *lastBlockIndex = mergeBlockIndex;
 
     printf("Debug :: BB :: found IF block\n");
 }
+
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
@@ -63,42 +85,30 @@ void cfgWalkerProcessCallNode(CFG* cfg,
     printf("Debug :: BB :: found CALL: %s\n", func_name);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-int isBreakStatement(AST* node) {
-    return (strcmp(node->token, "BREAK") == 0);
-}
-
-int hasBreakStatementInBody(AST* loopNode) {
-    for (int i = 0; i < loopNode->child_count; ++i) {
-        AST* child = getChild(loopNode, i);
-        if (isBreakStatement(child)) {
-            return 1;
-        }
-    }
-    return 0;
-}
+// int hasBreakStatementInBody(AST* loopNode) {
+//     for (int i = 0; i < loopNode->child_count; ++i) {
+//         AST* child = getChild(loopNode, i);
+//         if (isBreakStatement(child)) {
+//             return 1;
+//         }
+//     }
+//     return 0;
+// }
 
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
                               int* childCount) {
-    enterLoop(cfg->loopLevelCounter);
+    //enterLoop(cfg->loopLevelCounter);
     int hasBreak = 0;
     int loopBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = loopBlockIndex;
+
+    BasicBlock* exitBlock = createBasicBlock(NULL, loop_exit);
+    addBasicBlock(cfg, exitBlock);
+    int exitBlockIndex = cfg->block_count - 1;
+
+    pushExitBlock(cfg->loopLevelStack, exitBlockIndex);
 
     int bodyBlockIndex = loopBlockIndex;
     for (int i = 1; i < node->child_count; ++i) {
@@ -108,10 +118,6 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
         }
         cfgWalker(cfg, child, &bodyBlockIndex);
     }
-
-    BasicBlock* exitBlock = createBasicBlock(NULL, loop_exit);
-    addBasicBlock(cfg, exitBlock);
-    int exitBlockIndex = cfg->block_count - 1;
 
     if (*lastBlockIndex != -1 && !hasBreak) {
         addSuccessor(cfg->blocks[*lastBlockIndex], exitBlockIndex);
@@ -126,8 +132,9 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
 
     *lastBlockIndex = exitBlockIndex;
 
+    //popExitBlock(cfg->loopLevelStack);
     printf("Debug :: BB :: found LOOP block\n");
-    exitLoop(cfg->loopLevelCounter);
+    //exitLoop(cfg->loopLevelCounter);
 }
 
 
@@ -147,7 +154,7 @@ void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 int* lastBlockIndex,
                                 int* childCount) {
 
-    enterLoop(cfg->loopLevelCounter);
+    //enterLoop(cfg->loopLevelCounter);
     int hasBreak = 0;
     int repeatBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = repeatBlockIndex;
@@ -183,7 +190,7 @@ void cfgWalkerProcessRepeatNode(CFG* cfg,
     *lastBlockIndex = exitBlockIndex;
 
     printf("Debug :: BB :: found REPEAT block\n");
-    exitLoop(cfg->loopLevelCounter);
+    //exitLoop(cfg->loopLevelCounter);
 }
 
 

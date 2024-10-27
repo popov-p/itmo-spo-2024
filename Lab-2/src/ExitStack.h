@@ -1,18 +1,20 @@
 #ifndef EXITSTACK_H
 #define EXITSTACK_H
 
-typedef struct {
+typedef struct LoopLevelStack {
+    int* exitBlocks;
     int currentLevel;
-} LoopLevelCounter;
+    int capacity;
+} LoopLevelStack;
 
-LoopLevelCounter* createLoopLevelCounter();
+LoopLevelStack* createLoopLevelStack();
 
-void freeLoopLevelCounter(LoopLevelCounter* counter);
+void freeLoopLevelStack(LoopLevelStack* stack);
 
-void enterLoop(LoopLevelCounter* counter);
+void pushExitBlock(LoopLevelStack* stack, int exitBlockIndex);
 
-void exitLoop(LoopLevelCounter* counter);
+void popExitBlock(LoopLevelStack* stack);
 
-int getCurrentLoopLevel(LoopLevelCounter* counter);
+int getCurrentExitBlock(LoopLevelStack* stack);
 
 #endif

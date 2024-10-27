@@ -3,26 +3,119 @@ digraph G {
     start [label="Начало"];
     end [label="Конец"];
     node0 [label="BB0"];
-    node1 [label="BB1"];
-    node2 [label="LPXT"];
+    node1 [label="LPXT"];
+    node2 [label="BB2"];
+    node3 [label="LPXT"];
+    node4 [label="BB4"];
+    node5 [label="MRG"];
+    node6 [label="BB6"];
+    node7 [label="BB7"];
+    node0 -> node2;
     node0 -> node1;
-    node1 -> node2;
+    node2 -> node4;
+    node2 -> node3;
+    node3 -> node0;
+    node4 -> node6;
+    node4 -> node7;
+    node5 -> node2;
+    node6 -> node3;
+    node7 -> node5;
     start -> node0;
-    node2 -> end;
+    node1 -> end;
 subgraph cluster_0 {
     label="BB0";
-    cluster_0_node568662848 [label="LOOP"];
-    cluster_0_node568663160 [label="<"];
-    cluster_0_node568663472 [label="x"];
-    cluster_0_node568664096 [label="3"];
-    cluster_0_node568663784 [label="BREAK"];
-    cluster_0_node568662848 -> cluster_0_node568663160;
-    cluster_0_node568663160 -> cluster_0_node568663472;
-    cluster_0_node568663160 -> cluster_0_node568664096;
-    cluster_0_node568662848 -> cluster_0_node568663784;
+    cluster_0_node712830928 [label="LOOP"];
+    cluster_0_node712821880 [label="<"];
+    cluster_0_node712822192 [label="x"];
+    cluster_0_node712822816 [label="3"];
+    cluster_0_node712831552 [label="LOOP"];
+    cluster_0_node712823752 [label="<"];
+    cluster_0_node712824064 [label="l"];
+    cluster_0_node712824688 [label="3"];
+    cluster_0_node712833424 [label="IF"];
+    cluster_0_node712825624 [label=">"];
+    cluster_0_node712825936 [label="x"];
+    cluster_0_node712826560 [label="0"];
+    cluster_0_node712826248 [label="BREAK"];
+    cluster_0_node712833112 [label="ELSE"];
+    cluster_0_node712832488 [label="="];
+    cluster_0_node712831864 [label="k"];
+    cluster_0_node712832800 [label="2"];
+    cluster_0_node712830928 -> cluster_0_node712821880;
+    cluster_0_node712821880 -> cluster_0_node712822192;
+    cluster_0_node712821880 -> cluster_0_node712822816;
+    cluster_0_node712830928 -> cluster_0_node712831552;
+    cluster_0_node712831552 -> cluster_0_node712823752;
+    cluster_0_node712823752 -> cluster_0_node712824064;
+    cluster_0_node712823752 -> cluster_0_node712824688;
+    cluster_0_node712831552 -> cluster_0_node712833424;
+    cluster_0_node712833424 -> cluster_0_node712825624;
+    cluster_0_node712825624 -> cluster_0_node712825936;
+    cluster_0_node712825624 -> cluster_0_node712826560;
+    cluster_0_node712833424 -> cluster_0_node712826248;
+    cluster_0_node712833424 -> cluster_0_node712833112;
+    cluster_0_node712833112 -> cluster_0_node712832488;
+    cluster_0_node712832488 -> cluster_0_node712831864;
+    cluster_0_node712832488 -> cluster_0_node712832800;
 }
-subgraph cluster_1 {
-    label="BB1";
-    cluster_1_node568663784 [label="BREAK"];
+subgraph cluster_2 {
+    label="BB2";
+    cluster_2_node712831552 [label="LOOP"];
+    cluster_2_node712823752 [label="<"];
+    cluster_2_node712824064 [label="l"];
+    cluster_2_node712824688 [label="3"];
+    cluster_2_node712833424 [label="IF"];
+    cluster_2_node712825624 [label=">"];
+    cluster_2_node712825936 [label="x"];
+    cluster_2_node712826560 [label="0"];
+    cluster_2_node712826248 [label="BREAK"];
+    cluster_2_node712833112 [label="ELSE"];
+    cluster_2_node712832488 [label="="];
+    cluster_2_node712831864 [label="k"];
+    cluster_2_node712832800 [label="2"];
+    cluster_2_node712831552 -> cluster_2_node712823752;
+    cluster_2_node712823752 -> cluster_2_node712824064;
+    cluster_2_node712823752 -> cluster_2_node712824688;
+    cluster_2_node712831552 -> cluster_2_node712833424;
+    cluster_2_node712833424 -> cluster_2_node712825624;
+    cluster_2_node712825624 -> cluster_2_node712825936;
+    cluster_2_node712825624 -> cluster_2_node712826560;
+    cluster_2_node712833424 -> cluster_2_node712826248;
+    cluster_2_node712833424 -> cluster_2_node712833112;
+    cluster_2_node712833112 -> cluster_2_node712832488;
+    cluster_2_node712832488 -> cluster_2_node712831864;
+    cluster_2_node712832488 -> cluster_2_node712832800;
+}
+subgraph cluster_4 {
+    label="BB4";
+    cluster_4_node712833424 [label="IF"];
+    cluster_4_node712825624 [label=">"];
+    cluster_4_node712825936 [label="x"];
+    cluster_4_node712826560 [label="0"];
+    cluster_4_node712826248 [label="BREAK"];
+    cluster_4_node712833112 [label="ELSE"];
+    cluster_4_node712832488 [label="="];
+    cluster_4_node712831864 [label="k"];
+    cluster_4_node712832800 [label="2"];
+    cluster_4_node712833424 -> cluster_4_node712825624;
+    cluster_4_node712825624 -> cluster_4_node712825936;
+    cluster_4_node712825624 -> cluster_4_node712826560;
+    cluster_4_node712833424 -> cluster_4_node712826248;
+    cluster_4_node712833424 -> cluster_4_node712833112;
+    cluster_4_node712833112 -> cluster_4_node712832488;
+    cluster_4_node712832488 -> cluster_4_node712831864;
+    cluster_4_node712832488 -> cluster_4_node712832800;
+}
+subgraph cluster_6 {
+    label="BB6";
+    cluster_6_node712826248 [label="BREAK"];
+}
+subgraph cluster_7 {
+    label="BB7";
+    cluster_7_node712832488 [label="="];
+    cluster_7_node712831864 [label="k"];
+    cluster_7_node712832800 [label="2"];
+    cluster_7_node712832488 -> cluster_7_node712831864;
+    cluster_7_node712832488 -> cluster_7_node712832800;
 }
 }

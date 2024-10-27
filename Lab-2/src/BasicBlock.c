@@ -43,7 +43,7 @@ CFG* initEmptyCFG() {
     cfg->blocks = NULL;
     cfg->block_count = 0;
     cfg->processedNodes = createProcessedNodes(100);
-    cfg->loopLevelCounter = createLoopLevelCounter();
+    cfg->loopLevelStack = createLoopLevelStack();
 
 
     return cfg;

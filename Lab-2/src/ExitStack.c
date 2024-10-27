@@ -3,29 +3,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-LoopLevelCounter* createLoopLevelCounter() {
-    LoopLevelCounter* counter = (LoopLevelCounter*)malloc(sizeof(LoopLevelCounter));
-    counter->currentLevel = 0;
-    return counter;
+LoopLevelStack* createLoopLevelStack() {
+    LoopLevelStack* stack = (LoopLevelStack*)malloc(sizeof(LoopLevelStack));
+    stack->capacity = 20;
+    stack->currentLevel = 0;
+    stack->exitBlocks = (int*)malloc(stack->capacity * sizeof(int));
+    return stack;
 }
 
-void freeLoopLevelCounter(LoopLevelCounter* counter) {
-    free(counter);
+void freeLoopLevelStack(LoopLevelStack* stack) {
+    free(stack->exitBlocks);
+    free(stack);
 }
 
-void enterLoop(LoopLevelCounter* counter) {
-    counter->currentLevel++;
+void pushExitBlock(LoopLevelStack* stack, int exitBlockIndex) {
+    if (stack->currentLevel + 1 >= stack->capacity) {
+        stack->capacity *= 2;
+        stack->exitBlocks = (int*)realloc(stack->exitBlocks, stack->capacity * sizeof(int));
+    }
+    stack->currentLevel++;
+    stack->exitBlocks[stack->currentLevel] = exitBlockIndex;
 }
 
-void exitLoop(LoopLevelCounter* counter) {
-    if (counter->currentLevel > 0) {
-        counter->currentLevel--;
+void popExitBlock(LoopLevelStack* stack) {
+    if (stack->currentLevel > 0) {
+        stack->currentLevel--;
     } else {
-        fprintf(stderr, "Error: Exiting from a non-existent loop level.\n");
+        fprintf(stderr, "Error: Popping from an empty loop level stack.\n");
     }
 }
 
-int getCurrentLoopLevel(LoopLevelCounter* counter) {
-    return counter->currentLevel;
+int getCurrentExitBlock(LoopLevelStack* stack) {
+    if (stack->currentLevel > 0) {
+        return stack->exitBlocks[stack->currentLevel];
+    } else {
+        fprintf(stderr, "Error: No current exit block in an empty loop level stack.\n");
+        return -1;
+    }
 }
+

@@ -16,7 +16,7 @@ typedef struct CFG {
     struct BasicBlock** blocks;
     int block_count;
     ProcessedNodes* processedNodes;
-    LoopLevelCounter* loopLevelCounter;
+    LoopLevelStack* loopLevelStack;
 } CFG;
 
 typedef struct BasicBlock {
