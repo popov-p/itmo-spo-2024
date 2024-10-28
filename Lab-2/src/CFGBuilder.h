@@ -1,9 +1,7 @@
 #ifndef CFGBUILDER_H
 #define CFGBUILDER_H
 
-#include "TreeBuilder.h"
 #include "BasicBlock.h"
-#include "ProcessedNodes.h"
 
 typedef struct File {
     char* file_name;

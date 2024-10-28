@@ -68,7 +68,7 @@ void cfgWalkerProcessIfNode(CFG* cfg,
         addSuccessor(cfg->blocks[trueBranchIndex], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
         addSuccessor(cfg->blocks[falseBranchIndex], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
 
-        *lastBlockIndex = getCurrentLoopEntry(cfg->loopLevelStack).loopIndex;
+        *lastBlockIndex = trueBranchIndex;
         printf("Debug :: BB :: found IF block with break in both branches\n");
         return;
     }
@@ -76,8 +76,8 @@ void cfgWalkerProcessIfNode(CFG* cfg,
     if (breakDetectedInTrue && !breakDetectedInFalse) {
         addSuccessor(cfg->blocks[trueBranchIndex], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
         addSuccessor(cfg->blocks[falseBranchIndex], getCurrentLoopEntry(cfg->loopLevelStack).loopIndex);
-        addSuccessor(cfg->blocks[getCurrentLoopEntry(cfg->loopLevelStack).loopIndex],
-                     getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
+        //addSuccessor(cfg->blocks[getCurrentLoopEntry(cfg->loopLevelStack).loopIndex],
+        //             getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
         *lastBlockIndex = getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex;
         printf("Debug :: BB :: found IF block with break in true branch\n");
         return;
@@ -125,6 +125,7 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
                               int* childCount,
                               int* breakDetected) {
     int loopBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
+    int loopBlockIter = loopBlockIndex;
     *lastBlockIndex = loopBlockIndex;
 
     BasicBlock* exitBlock = createBasicBlock(NULL, loop_exit);
@@ -138,15 +139,14 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
         AST* child = getChild(node, i);
 
         if (!shouldIgnoreRest) {
-            cfgWalker(cfg, child, &loopBlockIndex);
+            cfgWalker(cfg, child, &loopBlockIter);
 
             if (isBreakStatement(child)) {
                 *breakDetected = 1;
-                shouldIgnoreRest = 1; // Устанавливаем флаг для игнорирования оставшихся узлов
-                addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex); // Добавляем переход к exitBlock
+                shouldIgnoreRest = 1;
+                addSuccessor(cfg->blocks[loopBlockIter], exitBlockIndex);
             }
         } else {
-            // Если break уже найден, игнорируем оставшиеся узлы
             break;
         }
     }
