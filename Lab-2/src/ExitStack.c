@@ -44,3 +44,12 @@ LoopLevelEntry getCurrentLoopEntry(LoopLevelStack* stack) {
         return (LoopLevelEntry){-1, -1};
     }
 }
+
+LoopLevelEntry getLoopEntryAtLevel(LoopLevelStack* stack, int depth) { /*depth = 0 текущий*/
+    if (stack->currentLevel > depth) {
+        return stack->entries[stack->currentLevel - 1 - depth];
+    } else {
+        fprintf(stderr, "Error: No loop entry at level %d in the loop level stack.\n", depth);
+        return (LoopLevelEntry){-1, -1};
+    }
+}

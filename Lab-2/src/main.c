@@ -1,19 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include <antlr3.h>
-
-#include "CFGBuilder.h"
 #include "AST.h"
-
-void deleteFileIfExists(const char* filename) {
-    if (access(filename, F_OK) != -1) {
-        if (remove(filename) == 0) {
-            printf("Deleted previous file: %s\n", filename);
-        } else {
-            perror("Failed to delete previous file");
-        }
-    }
-}
+#include "CFGBuilder.h"
 
 int main(int argc, char *argv[]) {
     // while(true) {
@@ -28,7 +15,7 @@ int main(int argc, char *argv[]) {
         printf("not ok. failed reading from file\n");
     }
 
-    pParseResult parseResult = parse(inputText);
+    ParseResult* parseResult = parse(inputText);
     AST* head = buildFromParseResult(parseResult);
 
     const char* tree_filename = "../src/tree.dot";
@@ -42,8 +29,8 @@ int main(int argc, char *argv[]) {
 
     const char* cfgDotFilename = "../src/cfg.dot";
     const char* cfgPngFilename = "../src/cfg.png";
-    deleteFileIfExists(cfgDotFilename);
-    deleteFileIfExists(cfgPngFilename);
+    // deleteFileIfExists(cfgDotFilename);
+    // deleteFileIfExists(cfgPngFilename);
 
 
     const char* cfg_filename = "../src/cfg.dot";
@@ -71,4 +58,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-

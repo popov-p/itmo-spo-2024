@@ -17,9 +17,4 @@ int isProcessed(ProcessedNodes* p, AST* node);
 
 void addProcessed(ProcessedNodes* p, AST* node);
 
-
-
-
-
-
 #endif

@@ -203,9 +203,6 @@ AST* duplicateRightSubtree(AST* head) {
     return newHead;
 }
 
-
-// tree ends here ---------------------------------
-
 AST* buildFromParseResult(pParseResult parseResult) {
     AST* head = createNode(parseResult->p->adaptor->getUniqueID(parseResult->p->adaptor,
                                                                 parseResult->sr.tree),

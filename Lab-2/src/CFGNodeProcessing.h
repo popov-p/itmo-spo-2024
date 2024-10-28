@@ -27,8 +27,7 @@ void cfgWalkerProcessCallNode(CFG* cfg,
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              int* childCount,
-                              int* breakDetected);
+                              int* childCount);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,
@@ -53,7 +52,8 @@ void cfgWalkerProcessVarDefNode(CFG* cfg,
 void cfgWalkerProcessBreakNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex,
-                                int* childCount);
+                                int* childCount,
+                                int* breakDetected);
 
 void cfgWalkerProcessAssignment(CFG* cfg,
                                AST* node,

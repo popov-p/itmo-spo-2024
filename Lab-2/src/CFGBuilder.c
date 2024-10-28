@@ -64,4 +64,11 @@ void outputCFG(CFG* cfg, FILE* file) {
     fprintf(file, "}\n"); //NOLINT
 }
 
+File* createFile(const char* name) {
+    File* file = malloc(sizeof(File));
 
+    file->file_name = strdup(name);
+    file->functions = NULL;
+    file->function_count = 0;
+    return file;
+}

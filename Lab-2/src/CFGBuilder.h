@@ -20,4 +20,6 @@ CFG* generateCFG(AST* head);
 void outputCFG(CFG* cfg, FILE* file);
 void writeBlock(int num, FILE *file, enum BasicBlockType type);
 void writeCFGEdges(CFG* cfg, FILE *file);
+
+File* createFile(const char* name);
 #endif
