@@ -16,6 +16,12 @@ void deleteFileIfExists(const char* filename) {
 }
 
 int main(int argc, char *argv[]) {
+    // while(true) {
+    //     if(1) {
+    //         break;
+    //     }
+    //     break;
+    // }
     char *inputText = readFileToString("../src/test.txt");
 
     if (inputText == NULL) {

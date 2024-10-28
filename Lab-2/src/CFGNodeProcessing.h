@@ -15,7 +15,8 @@ int cfgWalkerLinkWithParent(CFG* cfg,
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
-                            int* childCount);
+                            int* childCount,
+                            int* breakDetected);
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
@@ -26,7 +27,8 @@ void cfgWalkerProcessCallNode(CFG* cfg,
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              int* childCount);
+                              int* childCount,
+                              int* breakDetected);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,

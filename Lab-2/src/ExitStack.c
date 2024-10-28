@@ -4,41 +4,43 @@
 #include <stdlib.h>
 
 LoopLevelStack* createLoopLevelStack() {
-    LoopLevelStack* stack = (LoopLevelStack*)malloc(sizeof(LoopLevelStack));
-    stack->capacity = 20;
+    LoopLevelStack* stack = malloc(sizeof(LoopLevelStack));
+    stack->entries = malloc(sizeof(LoopLevelEntry) * 20);
     stack->currentLevel = 0;
-    stack->exitBlocks = (int*)malloc(stack->capacity * sizeof(int));
+    stack->capacity = 20;
     return stack;
 }
 
 void freeLoopLevelStack(LoopLevelStack* stack) {
-    free(stack->exitBlocks);
+    free(stack->entries);
     free(stack);
 }
 
-void pushExitBlock(LoopLevelStack* stack, int exitBlockIndex) {
-    if (stack->currentLevel + 1 >= stack->capacity) {
+void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex) {
+    if (stack->currentLevel >= stack->capacity) {
         stack->capacity *= 2;
-        stack->exitBlocks = (int*)realloc(stack->exitBlocks, stack->capacity * sizeof(int));
+        stack->entries = (LoopLevelEntry*)realloc(stack->entries, stack->capacity * sizeof(LoopLevelEntry));
     }
+    stack->entries[stack->currentLevel].exitBlockIndex = exitBlockIndex;
+    stack->entries[stack->currentLevel].loopIndex = loopIndex;
     stack->currentLevel++;
-    stack->exitBlocks[stack->currentLevel] = exitBlockIndex;
 }
 
-void popExitBlock(LoopLevelStack* stack) {
+LoopLevelEntry popLoopEntry(LoopLevelStack* stack) {
     if (stack->currentLevel > 0) {
         stack->currentLevel--;
+        return stack->entries[stack->currentLevel];
     } else {
         fprintf(stderr, "Error: Popping from an empty loop level stack.\n");
+        return (LoopLevelEntry){-1, -1};
     }
 }
 
-int getCurrentExitBlock(LoopLevelStack* stack) {
+LoopLevelEntry getCurrentLoopEntry(LoopLevelStack* stack) {
     if (stack->currentLevel > 0) {
-        return stack->exitBlocks[stack->currentLevel];
+        return stack->entries[stack->currentLevel - 1];
     } else {
-        fprintf(stderr, "Error: No current exit block in an empty loop level stack.\n");
-        return -1;
+        fprintf(stderr, "Error: No current loop entry in an empty loop level stack.\n");
+        return (LoopLevelEntry){-1, -1};
     }
 }
-
