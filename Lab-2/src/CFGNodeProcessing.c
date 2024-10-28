@@ -93,14 +93,13 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
     addBasicBlock(cfg, exitBlock);
     int exitBlockIndex = cfg->block_count - 1;
     pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
-
+    addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
 
     for (int i = 1; i < node->child_count; ++i) {
         AST* child = getChild(node, i);
         cfgWalker(cfg, child, &loopBlockIter);
     }
     addSuccessor(cfg->blocks[loopBlockIter], loopBlockIndex);
-    addSuccessor(cfg->blocks[loopBlockIter], exitBlockIndex);
 
     *lastBlockIndex = exitBlockIndex;
 

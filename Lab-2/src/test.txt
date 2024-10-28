@@ -2,9 +2,11 @@ def main() of int
     while x < 2
         while p < t
             while t < d
-                x = 3;
-                bar();
-                baz();
+            x = 3;
+            if t < d then
+                ps();
+            else
+                asd();
             end
         end
     end
