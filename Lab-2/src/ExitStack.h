@@ -13,7 +13,7 @@ typedef struct LoopLevelStack {
     int capacity;
 } LoopLevelStack;
 
-LoopLevelStack* createLoopLevelStack();
+LoopLevelStack* createLoopLevelStack(int initialCapacity);
 
 void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex);
 LoopLevelEntry popLoopEntry(LoopLevelStack* stack);

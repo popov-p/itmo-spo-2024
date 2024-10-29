@@ -37,13 +37,12 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     }
 }
 
-
 CFG* initEmptyCFG() {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
     cfg->blocks = NULL;
     cfg->block_count = 0;
     cfg->processedNodes = createProcessedNodes(100);
-    cfg->loopLevelStack = createLoopLevelStack();
+    cfg->loopLevelStack = createLoopLevelStack(20);
 
 
     return cfg;

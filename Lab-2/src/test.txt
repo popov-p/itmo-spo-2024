@@ -1,15 +1,6 @@
 def main() of int
     while a > s
-        while p < s
-            while t < d
-                if psi < kxi then {
-                    break;
-                    psi();
-                }
-
-                sd();
-            end
-            fg();
-        end
+        t = d;
+        f = f(g());
     end
 end

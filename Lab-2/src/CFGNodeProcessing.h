@@ -15,50 +15,41 @@ int cfgWalkerLinkWithParent(CFG* cfg,
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
-                            int* childCount,
                             int* breakDetected);
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
-                              int* lastBlockIndex,
-                              int* childCount);
+                              int* lastBlockIndex);
 
 
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              int* childCount,
                               int* breakDetected);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* childCount);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessBlockNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* childCount);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessVarDecNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* childCount);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessVarDefNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* childCount);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessBreakNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* childCount);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessAssignment(CFG* cfg,
                                AST* node,
-                               int* lastBlockIndex,
-                               int* childCount);
+                               int* lastBlockIndex);
 
 
 #endif

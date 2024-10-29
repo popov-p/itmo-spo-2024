@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-LoopLevelStack* createLoopLevelStack() {
+LoopLevelStack* createLoopLevelStack(int initialCapacity) {
     LoopLevelStack* stack = malloc(sizeof(LoopLevelStack));
     stack->entries = malloc(sizeof(LoopLevelEntry) * 20);
     stack->currentLevel = -1;
-    stack->capacity = 20;
+    stack->capacity = initialCapacity;
     return stack;
 }
 

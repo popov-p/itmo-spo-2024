@@ -127,7 +127,7 @@ void printAST(AST* head, FILE* file) {
 
 void outputAST(AST* node, FILE* file) {
     if (node == NULL) return;
-    printf("Visiting node: %s\n", node->token);
+    //printf("Visiting node: %s\n", node->token);
     writeNode(node, 0, file);
     for (int i = 0; i < node->child_count; i++) {
         AST* child = getChild(node, i);
@@ -247,7 +247,7 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
     if (node == NULL) return;
 
     char* name = node->token;
-    printf("Visiting node: %s\n", name);
+    //printf("Visiting node: %s\n", name);
     int childCount = node->child_count;
 
     writeNode(node, basicBlockIndex, file);
@@ -259,7 +259,7 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
 
 void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
     char* name = parent->token;
-    printf("Visiting node: %s\n", name);
+    //printf("Visiting node: %s\n", name);
     int childCount = parent->child_count;
 
     for (int i = 0; i < childCount; i++) {
@@ -310,7 +310,7 @@ void analyzeCall(AST* call) {
     }
 
     char* func_name = getChild(call, 0)->token;
-    printf("ANALYZE:: found CALL: %s\n", func_name);
+    //printf("ANALYZE:: found CALL: %s\n", func_name);
 
     if(call->child_count > 1) {
         AST* list_expr = getChild(call, 1);
@@ -338,12 +338,12 @@ AST* analyzeOp (AST* node) {
     if(strcmp(head->token, "LOOP") == 0) {
         head = duplicateLeftSubtree(node);
         analyzeLoop(head);
-        printTree(head , 0);
+        //printTree(head , 0);
     }
     if(strcmp(head->token, "REPEAT") == 0) {
         head = duplicateRightSubtree(node);
         analyzeLoop(head);
-        printTree(head , 0);
+        //printTree(head , 0);
     }
     return head;
 }
