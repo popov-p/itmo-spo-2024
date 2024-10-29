@@ -1,5 +1,15 @@
 def main() of int
-    while t < d
-
+    while a > s
+        while p < s
+            while t < d
+                if psi < kxi then
+                    break;
+                else
+                    foo();
+                ks();
+                sd();
+            end
+            fg();
+        end
     end
 end

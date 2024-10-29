@@ -18,33 +18,34 @@ int cfgWalkerLinkWithParent(CFG* cfg,
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
-                            int* childCount) {
+                            int* childCount,
+                            int* breakDetected) {
     int ifBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     int ifBlockIter = ifBlockIndex;
 
     BasicBlock* mergeBlock = createBasicBlock(NULL, merge);
     addBasicBlock(cfg, mergeBlock);
     int mergeBlockIndex = cfg->block_count - 1;
+    if (cfg->loopLevelStack->currentLevel >= 0) {
+        if (*childCount > 1) {
+            cfgWalker(cfg, getChild(node, 1), &ifBlockIter);
+            if (!cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
+                addSuccessor(cfg->blocks[ifBlockIter], mergeBlockIndex);
+            } else {
+                addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
+                addSuccessor(cfg->blocks[mergeBlockIndex], getCurrentLoopEntry(cfg->loopLevelStack).loopIndex);
+            }
+            if (*childCount == 2) {
+                addSuccessor(cfg->blocks[ifBlockIndex], mergeBlockIndex);
+            }
+        }
 
-    if (*childCount > 1) {
-        //*breakDetected = 0;
-        cfgWalker(cfg, getChild(node, 1), &ifBlockIter);
-        //if (!(*breakDetected)) {
-            addSuccessor(cfg->blocks[ifBlockIter], mergeBlockIndex);
-        //}
-        //else {
-        //    addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
-        //   addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).loopIndex);
-        //}
-    }
-
-    if (*childCount > 2) {
-        int elseBlockIter = ifBlockIndex;
-        //*breakDetected = 0;
-        cfgWalker(cfg, getChild(node, 2), &elseBlockIter);
-        //if (!(*breakDetected)) {
+        if (*childCount > 2) {
+            int elseBlockIter = ifBlockIndex;
+            cfgWalker(cfg, getChild(node, 2), &elseBlockIter);
             addSuccessor(cfg->blocks[elseBlockIter], mergeBlockIndex);
-        //}
+            //}
+        }
     }
 
     *lastBlockIndex = mergeBlockIndex;
@@ -81,7 +82,7 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
         cfgWalker(cfg, child, &loopBlockIter);
         if (getCurrentLoopEntry(cfg->loopLevelStack).breakDetected) {
             *breakDetected = 1; // запрещаем обработку дальнейших нод
-            break;
+            //break;
         }
     }
     if(!(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected)) {
@@ -239,8 +240,9 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
         cfgWalkerProcessIfNode(cfg,
                                node,
                                lastBlockIndex,
-                               &childCount);
-        if (breakDetected) return;
+                               &childCount,
+                               &breakDetected);
+        //if (breakDetected) return;
     }
     else if (strcmp(name, "LOOP") == 0) {
         cfgWalkerProcessLoopNode(cfg,
