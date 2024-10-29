@@ -18,7 +18,6 @@ void deleteFileIfExists(const char* filename) {
 void processInput(int argc, char** argv) {
     const char* outputDir = argv[1];
     File** files = (File**)malloc((argc-2)*sizeof(File*));
-
     for (int i = 2; i < argc; ++i) {
         char *inputText = readFileToString(argv[i]);
         pParseResult parseResult = parse(inputText);
@@ -54,4 +53,5 @@ void processInput(int argc, char** argv) {
         // Очистка
         free(inputText);
     }
+    free(files);
 }
