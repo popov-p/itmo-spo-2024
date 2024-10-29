@@ -1,16 +1,5 @@
 def main() of int
-    while x < 2
-        while p < t
-            while t < d
-            x = 3;
-            if t < d then
-                ps();
-            else
-                asd();
-            end
-        end
+    while t < d
+
     end
-    foo();
-    bar();
-    bz();
 end

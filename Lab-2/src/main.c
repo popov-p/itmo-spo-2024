@@ -3,12 +3,6 @@
 #include "CFGBuilder.h"
 
 int main(int argc, char *argv[]) {
-    // while(true) {
-    //     if(1) {
-    //         break;
-    //     }
-    //     break;
-    // }
     char *inputText = readFileToString("../src/test.txt");
 
     if (inputText == NULL) {
@@ -29,8 +23,6 @@ int main(int argc, char *argv[]) {
 
     const char* cfgDotFilename = "../src/cfg.dot";
     const char* cfgPngFilename = "../src/cfg.png";
-    // deleteFileIfExists(cfgDotFilename);
-    // deleteFileIfExists(cfgPngFilename);
 
 
     const char* cfg_filename = "../src/cfg.dot";

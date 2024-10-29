@@ -1,23 +1,5 @@
 #include "CFGNodeProcessing.h"
 
-int isBreakStatement(AST* node) {
-    return (strcmp(node->token, "BREAK") == 0);
-}
-
-int hasBreakStatement(AST* node) {
-    if (isBreakStatement(node)) {
-        return 1;
-    }
-
-    for (int i = 0; i < node->child_count; ++i) {
-        if (hasBreakStatement(getChild(node, i))) {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
 int cfgWalkerLinkWithParent(CFG* cfg,
                             AST* current,
                             int* lastBlockIndex) {
@@ -36,8 +18,7 @@ int cfgWalkerLinkWithParent(CFG* cfg,
 void cfgWalkerProcessIfNode(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex,
-                            int* childCount,
-                            int* breakDetected) {
+                            int* childCount) {
     int ifBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     int ifBlockIter = ifBlockIndex;
 
@@ -46,24 +27,24 @@ void cfgWalkerProcessIfNode(CFG* cfg,
     int mergeBlockIndex = cfg->block_count - 1;
 
     if (*childCount > 1) {
-        *breakDetected = 0;
+        //*breakDetected = 0;
         cfgWalker(cfg, getChild(node, 1), &ifBlockIter);
-        if (!(*breakDetected)) {
+        //if (!(*breakDetected)) {
             addSuccessor(cfg->blocks[ifBlockIter], mergeBlockIndex);
-        }
-        else {
-            addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
-            addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).loopIndex);
-        }
+        //}
+        //else {
+        //    addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).exitBlockIndex);
+        //   addSuccessor(cfg->blocks[ifBlockIter], getCurrentLoopEntry(cfg->loopLevelStack).loopIndex);
+        //}
     }
 
     if (*childCount > 2) {
         int elseBlockIter = ifBlockIndex;
-        *breakDetected = 0;
+        //*breakDetected = 0;
         cfgWalker(cfg, getChild(node, 2), &elseBlockIter);
-        if (!(*breakDetected)) {
+        //if (!(*breakDetected)) {
             addSuccessor(cfg->blocks[elseBlockIter], mergeBlockIndex);
-        }
+        //}
     }
 
     *lastBlockIndex = mergeBlockIndex;
@@ -84,7 +65,8 @@ void cfgWalkerProcessCallNode(CFG* cfg,
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
-                              int* childCount) {
+                              int* childCount,
+                              int* breakDetected) {
     int loopBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     int loopBlockIter = loopBlockIndex;
     *lastBlockIndex = loopBlockIndex;
@@ -93,13 +75,23 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
     addBasicBlock(cfg, exitBlock);
     int exitBlockIndex = cfg->block_count - 1;
     pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
-    addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
 
     for (int i = 1; i < node->child_count; ++i) {
         AST* child = getChild(node, i);
         cfgWalker(cfg, child, &loopBlockIter);
+        if (getCurrentLoopEntry(cfg->loopLevelStack).breakDetected) {
+            *breakDetected = 1; // запрещаем обработку дальнейших нод
+            break;
+        }
     }
-    addSuccessor(cfg->blocks[loopBlockIter], loopBlockIndex);
+    if(!(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected)) {
+        addSuccessor(cfg->blocks[loopBlockIter], loopBlockIndex);
+        addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
+    }
+    else
+    {
+        addSuccessor(cfg->blocks[loopBlockIter], exitBlockIndex);
+    }
 
     *lastBlockIndex = exitBlockIndex;
 
@@ -111,10 +103,9 @@ void cfgWalkerProcessLoopNode(CFG* cfg,
 void cfgWalkerProcessBreakNode(CFG* cfg,
                                AST* node,
                                int* lastBlockIndex,
-                               int* childCount,
-                               int* breakDetected)
+                               int* childCount)
 {
-    *breakDetected = 1;
+    cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected = 1;
     int breakIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = breakIndex;
     printf("Debug :: BB :: found BREAK statement\n");
@@ -135,9 +126,9 @@ void cfgWalkerProcessRepeatNode(CFG* cfg,
     AST* blockNode = getChild(node, 0);
     for (int i = 0; i < blockNode->child_count; ++i) {
         AST* child = getChild(blockNode, i);
-        if (isBreakStatement(child)) {
-            hasBreak = 1;  //rewrite this!
-        }
+        // if (isBreakStatement(child)) {
+        //     hasBreak = 1;  //rewrite this!
+        // }
         cfgWalker(cfg, child, &bodyBlockIndex);
     }
 
@@ -248,14 +239,15 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
         cfgWalkerProcessIfNode(cfg,
                                node,
                                lastBlockIndex,
-                               &childCount, &breakDetected);
+                               &childCount);
         if (breakDetected) return;
     }
     else if (strcmp(name, "LOOP") == 0) {
         cfgWalkerProcessLoopNode(cfg,
                                  node,
                                  lastBlockIndex,
-                                 &childCount);
+                                 &childCount,
+                                 &breakDetected);
         if (breakDetected) return;
     }
     else if (strcmp(name, "REPEAT") == 0)
@@ -282,8 +274,7 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
         cfgWalkerProcessBreakNode(cfg,
                                    node,
                                    lastBlockIndex,
-                                   &childCount,
-                                   &breakDetected);
+                                   &childCount);
     else if (strcmp(name, "=") == 0) {
         cfgWalkerProcessAssignment(cfg,
                                         node,

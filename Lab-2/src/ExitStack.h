@@ -4,6 +4,7 @@
 typedef struct LoopLevelEntry {
     int exitBlockIndex;
     int loopIndex;
+    int breakDetected;
 } LoopLevelEntry;
 
 typedef struct LoopLevelStack {
