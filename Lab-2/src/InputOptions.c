@@ -14,7 +14,6 @@ void deleteFileIfExists(const char* filename) {
     }
 }
 
-
 void processInput(int argc, char** argv) {
     const char* outputDir = argv[1];
     File** files = (File**)malloc((argc-2)*sizeof(File*));
@@ -37,11 +36,10 @@ void processInput(int argc, char** argv) {
             continue;
         }
 
-        // Генерация и вывод CFG
         CFG* cfg = generateCFG(head);
         outputCFG(cfg, cfg_file);
 
-        fclose(cfg_file); // Закрываем файл cfg.dot
+        fclose(cfg_file);
         printf("CFG записан в %s\n", cfgDotFilename);
 
         char command[1024];
@@ -50,7 +48,6 @@ void processInput(int argc, char** argv) {
 
         printf("CFG изображение создано в %s\n", cfgPngFilename);
 
-        // Очистка
         free(inputText);
     }
     free(files);

@@ -1,6 +1,15 @@
 def main() of int
-    while a > s
-        t = d;
-        f = f(g());
+    while t < s
+        while psi < phi
+            if a < z then {
+                foo();
+                break;
+                baz();
+            }
+            psi();
+        end
+        must();
     end
+    foo();
+    asddas();
 end

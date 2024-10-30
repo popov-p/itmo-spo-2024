@@ -7,20 +7,20 @@ BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt) {
     block->node = node;
     block->bt = bt;
     block->successors = NULL;
-    block->successor_count = 0;
+    block->successorCount = 0;
     return block;
 }
 
 void addSuccessor(BasicBlock* block, int successorIndex) {
-    block->successor_count++;
-    block->successors = (int*)realloc(block->successors, block->successor_count * sizeof(int));
-    block->successors[block->successor_count - 1] = successorIndex;
+    block->successorCount++;
+    block->successors = (int*)realloc(block->successors, block->successorCount * sizeof(int));
+    block->successors[block->successorCount - 1] = successorIndex;
 }
 
 void addBasicBlock(CFG* cfg, BasicBlock* block) {
-    cfg->block_count++;
-    cfg->blocks = (BasicBlock**)realloc(cfg->blocks, cfg->block_count * sizeof(BasicBlock*));
-    cfg->blocks[cfg->block_count - 1] = block;
+    cfg->blockCount++;
+    cfg->blocks = (BasicBlock**)realloc(cfg->blocks, cfg->blockCount * sizeof(BasicBlock*));
+    cfg->blocks[cfg->blockCount - 1] = block;
 }
 
 void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
@@ -34,13 +34,14 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
         outputOpNode(op, basicBlockIndex, file);
         outputOpEdge(op, basicBlockIndex, file);
         fprintf(file, "}\n");
+        free(op);
     }
 }
 
 CFG* initEmptyCFG() {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
     cfg->blocks = NULL;
-    cfg->block_count = 0;
+    cfg->blockCount = 0;
     cfg->processedNodes = createProcessedNodes(100);
     cfg->loopLevelStack = createLoopLevelStack(20);
 
@@ -49,7 +50,7 @@ CFG* initEmptyCFG() {
 }
 
 void freeCFG(CFG* cfg) {
-    for (int i = 0; i < cfg->block_count; i++) {
+    for (int i = 0; i < cfg->blockCount; i++) {
         free(cfg->blocks[i]->successors);
         free(cfg->blocks[i]);
     }

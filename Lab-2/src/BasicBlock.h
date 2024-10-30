@@ -14,7 +14,7 @@ enum BasicBlockType {
 
 typedef struct CFG {
     struct BasicBlock** blocks;
-    int block_count;
+    int blockCount;
     ProcessedNodes* processedNodes;
     LoopLevelStack* loopLevelStack;
 } CFG;
@@ -23,7 +23,7 @@ typedef struct BasicBlock {
     AST* node;
     enum BasicBlockType bt;
     int* successors; //sucessors` indices in BasicBlock** array
-    int successor_count;
+    int successorCount;
 } BasicBlock;
 
 BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt);

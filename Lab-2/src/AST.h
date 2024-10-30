@@ -9,17 +9,17 @@ typedef struct AST {
     char* token;
     struct AST* parent;
     struct AST** children;
-    size_t child_count;
+    size_t childCount;
 } AST;
 
 AST* createNode(uint32_t id, char* token);
-
 void addChild(AST* parent, AST* child);
-void freeTree(AST* node);
 
-AST* findNodeById(AST* node, uint32_t id);
+void freeTree(AST* head);
 void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
 AST* duplicateTree(AST* head);
+
+AST* findNodeById(AST* node, uint32_t id);
 AST* duplicateLeftSubtree(AST* head);
 AST* buildFromParseResult(pParseResult parseResult);
 void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node);

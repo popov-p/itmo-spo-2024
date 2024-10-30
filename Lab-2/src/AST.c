@@ -6,111 +6,102 @@
 AST* createNode(uint32_t id, char* token) {
     AST* node = (AST*)malloc(sizeof(AST));
 
-    if (node == NULL) {
-        fprintf(stderr, "AST: Memory allocation failed\n");
+    if (!node) {
+        fprintf(stderr, "ERROR :: MALLOC FAIL\n");
         return NULL;
     }
 
     node->parent = NULL;
     node->children = NULL;
-    node->child_count = 0;
+    node->childCount = 0;
     node->id = id;
     node->token = strdup(token);
     return node;
 }
 
 void printTree(AST* node, int level) {
-    if (node == NULL) {
+    if (!node)
         return;
-    }
 
-    for (int i = 0; i < level; i++) {
+    for (int i = 0; i < level; i++)
         printf("  ");
-    }
 
-    printf("Node ID: %d, Token: %s\n", node->id, node->token);
+    printf("printTree :: ID - %d, Token - %s\n", node->id, node->token);
 
-    for (size_t i = 0; i < node->child_count; i++) {
+    for (size_t i = 0; i < node->childCount; i++)
         printTree(node->children[i], level + 1);
-    }
 }
 
 size_t getChildCount(AST* node) {
-    if (node == NULL) {
+    if (!node)
         return 0;
-    }
-    return node->child_count;
+    return node->childCount;
 }
 
 char* getToken(AST* node) {
-    if (node == NULL) {
+    if (!node)
         return NULL;
-    }
     return node->token;
 }
 
 void addChild(AST* parent, AST* child) {
-    if (parent == NULL || child == NULL) {
+    if (!parent)
         return;
-    }
+    if (!child)
+        return;
 
-    parent->children = (AST**)realloc(parent->children, sizeof(AST*) * (parent->child_count + 1));
-    if (parent->children == NULL) {
-        fprintf(stderr, "AST addChild memory allocation failed\n");
+    parent->children = (AST**)realloc(parent->children, sizeof(AST*) * (parent->childCount + 1));
+    if (!parent->children) {
+        fprintf(stderr, "ERROR :: REALLOC FAIL\n");
         return;
     }
-    parent->child_count++;
-    parent->children[parent->child_count-1] = child;
+    parent->childCount++;
+    parent->children[parent->childCount-1] = child;
     child->parent = parent;
-
 }
 
 void freeAST(AST* node) {
-    if (node == NULL) return;
+    if (!node)
+        return;
     free(node->token);
 
-    for (size_t i = 0; i < node->child_count; i++) {
+    for (size_t i = 0; i < node->childCount; i++)
         freeAST(node->children[i]);
-    }
 
     free(node->children);
     free(node);
 }
 
 AST* findNodeById(AST* node, uint32_t id) {
-    if (node == NULL) {
+    if (!node)
         return NULL;
-    }
-    if (node->id == id) {
+    if (node->id == id)
         return node;
-    }
 
-    for (size_t i = 0; i < node->child_count; i++) {
+    for (size_t i = 0; i < node->childCount; i++) {
         AST* foundNode = findNodeById(node->children[i], id);
-        if (foundNode != NULL) {
+        if (foundNode)
             return foundNode;
-        }
     }
 
     return NULL;
 }
 
 AST* getChild(AST* parent, size_t i) {
-    if (parent == NULL || i >= parent->child_count) {
+    if (!parent || i >= parent->childCount) {
         return NULL;
     }
     return parent->children[i];
 }
 
 AST* getParent(AST* node) {
-    if (node == NULL) {
+    if (node == NULL)
         return NULL;
-    }
     return node->parent;
 }
 
 void outputASTEdges(AST* node, FILE* file) {
-    for (int i = 0; i < node->child_count; i++) {
+    for (int i = 0; i < node->childCount; i++) {
         AST* child = getChild(node, i);
         writeEdge(node, child, 0, file);
         outputASTEdges(child, file);
@@ -118,8 +109,8 @@ void outputASTEdges(AST* node, FILE* file) {
 }
 
 void printAST(AST* head, FILE* file) {
-    fprintf(file, "digraph AST {\n"); //NOLINT
-    fprintf(file, "    node [shape=box];\n"); //NOLINT
+    fprintf(file, "digraph AST {\n");
+    fprintf(file, "    node [shape=box];\n");
     outputAST(head, file);
     outputASTEdges(head, file);
     fprintf(file, "}\n");
@@ -127,29 +118,31 @@ void printAST(AST* head, FILE* file) {
 
 void outputAST(AST* node, FILE* file) {
     if (node == NULL) return;
-    //printf("Visiting node: %s\n", node->token);
+    //printf("VISIT:: %s\n", node->token);
     writeNode(node, 0, file);
-    for (int i = 0; i < node->child_count; i++) {
+    for (int i = 0; i < node->childCount; i++) {
         AST* child = getChild(node, i);
         outputAST(child, file);
     }
 }
 
 void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
-    if (parent == NULL || thatChild == NULL || thisNode == NULL) {
+    if (parent == NULL || thatChild == NULL || thisNode == NULL)
         return;
-    }
 
-    if (thatChild->parent != parent) {
+    if (thatChild->parent != parent)
         return;
-    }
 
     thisNode->children = (AST**)malloc(sizeof(AST*));
+    if(!thisNode->children) {
+        fprintf(stderr, "ERROR :: MALLOC FAIL\n");
+        return;
+    }
     thisNode->children[0] = thatChild;
-    thisNode->child_count = 1;
+    thisNode->childCount = 1;
     thatChild->parent = thisNode;
 
-    for (size_t i = 0; i < parent->child_count; i++) {
+    for (size_t i = 0; i < parent->childCount; i++) {
         if (parent->children[i] == thatChild) {
             parent->children[i] = thisNode;
             break;
@@ -160,13 +153,12 @@ void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
 
 
 AST* duplicateTree(AST* head) {
-    if (head == NULL) {
+    if (!head)
         return NULL;
-    }
 
     AST* newNode = createNode(head->id, head->token);
 
-    for (size_t i = 0; i < head->child_count; i++) {
+    for (size_t i = 0; i < head->childCount; i++) {
         AST* childCopy = duplicateTree(head->children[i]);
         addChild(newNode, childCopy);
     }
@@ -176,12 +168,11 @@ AST* duplicateTree(AST* head) {
 
 
 AST* duplicateLeftSubtree(AST* head) {
-    if (head == NULL) {
+    if (!head)
         return NULL;
-    }
     AST* newHead = createNode(head->id, head->token);
 
-    if (head->child_count > 0 && head->children[0] != NULL) {
+    if (head->childCount > 0 && head->children[0]) {
         AST* leftChildCopy = duplicateTree(head->children[0]);
         addChild(newHead, leftChildCopy);
     }
@@ -190,12 +181,11 @@ AST* duplicateLeftSubtree(AST* head) {
 }
 
 AST* duplicateRightSubtree(AST* head) {
-    if (head == NULL) {
+    if (!head)
         return NULL;
-    }
     AST* newHead = createNode(head->id, head->token);
 
-    if (head->child_count > 0 && head->children[1] != NULL) {
+    if (head->childCount > 0 && head->children[1]) {
         AST* leftChildCopy = duplicateTree(head->children[1]);
         addChild(newHead, leftChildCopy);
     }
@@ -207,27 +197,26 @@ AST* buildFromParseResult(pParseResult parseResult) {
     AST* head = createNode(parseResult->p->adaptor->getUniqueID(parseResult->p->adaptor,
                                                                 parseResult->sr.tree),
                            (char*)parseResult->sr.tree->getText(parseResult->sr.tree)->chars);
-    int child_count = parseResult->sr.tree->getChildCount(parseResult->sr.tree);
-    //head->child_count = child_count;
-    for(int i = 0; i < child_count; i++) {
-        //start process for a i-th child
+
+    int childCount = parseResult->sr.tree->getChildCount(parseResult->sr.tree);
+
+    for(int i = 0; i < childCount; i++) {
         setChildFromAntlrNode(head, parseResult->p->adaptor,
-                           parseResult->sr.tree->getChild(parseResult->sr.tree, i));
+                              parseResult->sr.tree->getChild(parseResult->sr.tree, i));
     }
 
     return head;
 }
 
 void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node) {
-    if (node == NULL) {
+    if (!node)
         return;
-    }
     AST* child = createNode(adaptor->getUniqueID(adaptor, node),
-                            (char*)node->getText(node)->chars); //NOLINT
+                            (char*)node->getText(node)->chars);
     addChild(parent, child);
 
-    int child_count = node->getChildCount(node);
-    for (int i = 0; i < child_count; i++) {
+    int childCount = node->getChildCount(node);
+    for (int i = 0; i < childCount; i++) {
         pANTLR3_BASE_TREE child_node = node->getChild(node, i);
         setChildFromAntlrNode(child, adaptor, child_node);
     }
@@ -235,20 +224,19 @@ void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTL
 
 void writeNode(AST* node, int basicBlockIndex, FILE *file) {
     fprintf(file, "    cluster_%d_node%u [label=\"%s\"];\n", basicBlockIndex,
-                                                             node->id, node->token); //NOLINT
+                                                             node->id, node->token);
 }
 
 void writeEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
     fprintf(file, "    cluster_%d_node%u -> cluster_%d_node%u;\n",
-            basicBlockIndex, parent->id, basicBlockIndex, child->id); //NOLINT
+            basicBlockIndex, parent->id, basicBlockIndex, child->id);
 }
 
 void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
     if (node == NULL) return;
 
-    char* name = node->token;
-    //printf("Visiting node: %s\n", name);
-    int childCount = node->child_count;
+    //printf("VISITING :: %s\n", node->token);
+    int childCount = node->childCount;
 
     writeNode(node, basicBlockIndex, file);
     for (int i = 0; i < childCount; i++) {
@@ -258,9 +246,10 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
 }
 
 void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
-    char* name = parent->token;
-    //printf("Visiting node: %s\n", name);
-    int childCount = parent->child_count;
+    //printf("VISITING :: %s\n", parent->token);
+    if(!parent)
+        return;
+    int childCount = parent->childCount;
 
     for (int i = 0; i < childCount; i++) {
         AST* child = getChild(parent, i);
@@ -282,42 +271,38 @@ void analyzeCutCondition(AST* head) {
 }
 
 void analyzeIf(AST* ifNode) {
-    if (ifNode->child_count < 2) {
+    if (ifNode->childCount < 2)
         return;
-    }
     analyzeCutCondition(ifNode);
 }
 
 void analyzeLoop(AST* loopNode) {
-    if (loopNode == NULL) {
+    if (!loopNode)
         return;
-    }
 
     analyzeCutCondition(loopNode);
 }
 
 void analyzeRepeat(AST* repeatNode) {
-    if (repeatNode == NULL) {
+    if (!repeatNode)
         return;
-    }
     analyzeCutCondition(repeatNode);
 }
 
 
 void analyzeCall(AST* call) {
-    if (strcmp(call->token, "CALL") != 0) {
+    if (strcmp(call->token, "CALL")) {
         return;
     }
 
-    char* func_name = getChild(call, 0)->token;
-    //printf("ANALYZE:: found CALL: %s\n", func_name);
+    //printf("AN :: CALL %s\n", getChild(call, 0)->token);
 
-    if(call->child_count > 1) {
+    if(call->childCount > 1) {
         AST* list_expr = getChild(call, 1);
-        for (int i = 0; i < list_expr->child_count; i++) {
+        for (int i = 0; i < list_expr->childCount; i++) {
             AST* listChild = getChild(list_expr, i);
             if (listChild != NULL) {
-                AST* read = createNode(arc4random(), "__read"); //NOLINT
+                AST* read = createNode(arc4random(), "__read");
                 insertBetween(list_expr, listChild, read);
                 analyzeCall(listChild);
             }
@@ -328,22 +313,27 @@ void analyzeCall(AST* call) {
 AST* analyzeOp (AST* node) {
     if(!node) //merge block or another service blocks
         return NULL;
-    AST* head = duplicateTree(node);
-    if(strcmp(head->token, "CALL") == 0) {
+    AST* head = NULL;
+    if(!strcmp(node->token, "CALL")) {
+        head = duplicateLeftSubtree(node);
         analyzeCall(head);
     }
-    if(strcmp(head->token, "IF") == 0) {
+    if(!strcmp(node->token, "IF")) {
+        head = duplicateLeftSubtree(node);
         analyzeIf(head);
     }
-    if(strcmp(head->token, "LOOP") == 0) {
+    if(!strcmp(node->token, "LOOP")) {
         head = duplicateLeftSubtree(node);
         analyzeLoop(head);
         //printTree(head , 0);
     }
-    if(strcmp(head->token, "REPEAT") == 0) {
+    if(!strcmp(node->token, "REPEAT")) {
         head = duplicateRightSubtree(node);
-        analyzeLoop(head);
+        analyzeRepeat(head);
         //printTree(head , 0);
+    }
+    if(!strcmp(node->token, "BREAK")) {
+        head = duplicateTree(node);
     }
     return head;
 }

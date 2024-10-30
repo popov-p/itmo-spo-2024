@@ -4,9 +4,9 @@
 #include "BasicBlock.h"
 
 typedef struct File {
-    char* file_name;
+    char* fileName;
     struct Function** functions;
-    int function_count;
+    int functionCount;
 } File;
 
 typedef struct Function {

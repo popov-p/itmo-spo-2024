@@ -33,8 +33,8 @@ LoopLevelEntry popLoopEntry(LoopLevelStack* stack) {
         stack->currentLevel--;
         return entry;
     } else {
-        fprintf(stderr, "Error: Popping from an empty loop level stack.\n");
-        return (LoopLevelEntry){-1, -1}; // -1, -1 означает, что циклов нет
+        fprintf(stderr, "ERRPR :: POPPING EMPTY STACK\n");
+        return (LoopLevelEntry){-1, -1};
     }
 }
 
@@ -42,8 +42,8 @@ LoopLevelEntry getCurrentLoopEntry(LoopLevelStack* stack) {
     if (stack->currentLevel >= 0) {
         return stack->entries[stack->currentLevel];
     } else {
-        fprintf(stderr, "Error: No current loop entry in an empty loop level stack.\n");
-        return (LoopLevelEntry){-1, -1}; // -1, -1 означает, что циклов нет
+        fprintf(stderr, "ERROR :: STACK EMPTY\n");
+        return (LoopLevelEntry){-1, -1};
     }
 }
 
@@ -51,7 +51,7 @@ LoopLevelEntry getLoopEntryAtLevel(LoopLevelStack* stack, int depth) {
     if (stack->currentLevel >= depth) {
         return stack->entries[stack->currentLevel - depth];
     } else {
-        fprintf(stderr, "Error: No loop entry at level %d in the loop level stack.\n", depth);
-        return (LoopLevelEntry){-1, -1}; // -1, -1 означает, что циклов нет
+        fprintf(stderr, "ERROR: STACK IS LESS THAN %d DEPTH\n", depth);
+        return (LoopLevelEntry){-1, -1};
     }
 }
