@@ -2,10 +2,12 @@ def main() of int
     while x < z
         while t < t
             if x < t then {
-                break;
+                xexe();
                 bre();
             }
         as();
+        ddds();
         end
+        bebe();
     end
 end

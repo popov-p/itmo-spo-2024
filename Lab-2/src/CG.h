@@ -6,13 +6,13 @@
 
 typedef struct CGB { // call graph block
     AST* node;
-    int* successors;
+    int* successors; //sucessors` indices in CGB** array
     int successorCount;
 } CGB;
 
 typedef struct CG
 {
-    CGB** blocks; //sucessors` indices in BasicBlock** array
+    CGB** blocks;
     int blockCount;
 } CG;
 

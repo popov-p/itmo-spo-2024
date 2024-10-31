@@ -27,8 +27,6 @@ void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) 
     }
 }
 
-
-
 void processInput(int argc, char** argv) {
     const char* outputDir = argv[1];
     for (int i = 2; i < argc; ++i) { //for each file
