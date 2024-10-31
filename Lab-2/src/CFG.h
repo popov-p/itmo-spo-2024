@@ -2,14 +2,15 @@
 #define BASICBLOCK_H
 
 #include "AST.h"
-#include "ExitStack.h"
+#include "LevelStack.h"
 #include "ProcessedNodes.h"
 
 enum BasicBlockType {
     standard = 0,
     merge = 1,
     loop_exit = 2,
-    repeat_exit = 3
+    repeat_exit = 3,
+    break_block = 4
 };
 
 typedef struct {
@@ -18,14 +19,6 @@ typedef struct {
     int capacity;
 } ErrorCollection;
 
-typedef struct CFG {
-    struct BasicBlock** blocks;
-    int blockCount;
-    ProcessedNodes* processedNodes;
-    LoopLevelStack* loopLevelStack;
-
-} CFG;
-
 typedef struct BasicBlock {
     AST* node;
     enum BasicBlockType bt;
@@ -33,12 +26,21 @@ typedef struct BasicBlock {
     int successorCount;
 } BasicBlock;
 
+typedef struct CFG {
+    BasicBlock** blocks;
+    int blockCount;
+    ProcessedNodes* processedNodes;
+    LoopLevelStack* loopLevelStack;
+    IfLevelStack* ifLevelStack;
+
+} CFG;
+
 BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt);
 void addSuccessor(BasicBlock* block, int successorIndex);
 void addBasicBlock(CFG* cfg, BasicBlock* block);
 
 
-CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize);
+CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize);
 void freeCFG(CFG* cfg);
 
 #endif

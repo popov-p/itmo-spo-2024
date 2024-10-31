@@ -5,8 +5,7 @@ int main(int argc, char *argv[]) {
     char *emulatedArgs[] = {
         "cfgbuilder-stub",
         "../output",
-        "../input/prog-1.txt",
-        "../input/prog-2.txt",
+        "../input/prog-1.txt"
     };
 
     int emulatedArgc = sizeof(emulatedArgs) / sizeof(emulatedArgs[0]);

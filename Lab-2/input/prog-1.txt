@@ -1,22 +1,11 @@
 def main() of int
-    while t < s
-        while psi < phi
-            if a < z then {
-                foo();
-                psi();
+    while x < z
+        while t < t
+            if x < t then {
+                break;
+                bre();
             }
-            asd();
-            asdsa();
+        as();
         end
     end
 end
-
-def sum(a of int, x of int array[3]) of int
-    x = 2 + 4;
-    while t < d
-        foo(bar(baz()));
-        break;
-        call();
-    end
-end
-

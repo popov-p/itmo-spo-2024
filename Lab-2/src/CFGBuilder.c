@@ -21,7 +21,7 @@ void writeCFGEdges(CFG* cfg, FILE *file) {
 }
 
 CFG* generateCFG(AST* head) {
-    CFG* cfg = initEmptyCFG(100, 20);
+    CFG* cfg = initEmptyCFG(100, 20, 20);
     int lastBlockIndex = -1;
     cfgWalker(cfg, head, &lastBlockIndex);
     return cfg;
@@ -57,7 +57,7 @@ void outputCFG(CFG* cfg, FILE* file) {
 
 void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     BasicBlock* bb = cfg->blocks[basicBlockIndex];
-    if (!(bb->node == NULL)) {
+    if (bb->node) {
         fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
         fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
 
@@ -69,8 +69,6 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
         free(op);
     }
 }
-
-
 
 
 

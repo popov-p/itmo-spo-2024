@@ -1,7 +1,7 @@
 #ifndef CFGBUILDER_H
 #define CFGBUILDER_H
 
-#include "BasicBlock.h"
+#include "CFG.h"
 
 CFG* generateCFG(AST* head);
 void outputCFG(CFG* cfg, FILE* file);

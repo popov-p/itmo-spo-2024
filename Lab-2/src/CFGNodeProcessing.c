@@ -12,99 +12,57 @@ int cfgWalkerLinkWithParent(CFG* cfg,
     }
 
     *lastBlockIndex = currentBlockIndex;
-    printf("WLP :: %s\n", current->token);
+    printf("CFG :: WLP :: %s\n", current->token);
     return currentBlockIndex;
 }
 
-void cfgWalkerProcessIfNode(CFG* cfg,
-                            AST* node,
-                            int* lastBlockIndex) {
+void enteringIf(CFG* cfg,
+                AST* node,
+                int* lastBlockIndex) {
     int ifBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
-    BasicBlock* mergeBlock = createBasicBlock(NULL, merge);
-    addBasicBlock(cfg, mergeBlock);
-    int mergeBlockIndex = cfg->blockCount - 1;
-    if (node->childCount == 2) {
-        int ifBlockIter = ifBlockIndex;
-        cfgWalker(cfg, getChild(node, 1), &ifBlockIter);
-        if(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
-            /*todo*/
-            *lastBlockIndex = mergeBlockIndex;
-        }
-        else {
-            addSuccessor(cfg->blocks[ifBlockIter], mergeBlockIndex);
-            addSuccessor(cfg->blocks[ifBlockIndex], mergeBlockIndex);
-            *lastBlockIndex = mergeBlockIndex;
-        }
-    }
+    pushIfEntry(cfg->ifLevelStack, ifBlockIndex);
 }
 
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
-                              int* lastBlockIndex)
-{
-    int callIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
-    *lastBlockIndex = callIndex;
-    printf("WP :: CALL %s\n", (char*)getChild(node, 0)->token);
+                              int* lastBlockIndex) {
+    if(!cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
+        int callIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
+        *lastBlockIndex = callIndex;
+    }
+    printf("CFG :: WP :: CALL %s\n", (char*)getChild(node, 0)->token);
 }
 
-void cfgWalkerProcessLoopNode(CFG* cfg,
-                              AST* node,
-                              int* lastBlockIndex,
-                              int* breakDetected) {
+void enteringLoop(CFG* cfg,
+                 AST* node,
+                 int* lastBlockIndex) {
     int loopBlockIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
-    int loopBlockIter = loopBlockIndex;
     *lastBlockIndex = loopBlockIndex;
 
     BasicBlock* exitBlock = createBasicBlock(NULL, loop_exit);
     addBasicBlock(cfg, exitBlock);
     int exitBlockIndex = cfg->blockCount - 1;
+    addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
     pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
-
-    for (int i = 1; i < node->childCount; ++i) {
-        AST* child = getChild(node, i);
-        cfgWalker(cfg, child, &loopBlockIter);
-        if (getCurrentLoopEntry(cfg->loopLevelStack).breakDetected) {
-            *breakDetected = 1;
-            break;
-        }
-    }
-    if(!(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected)) {
-        addSuccessor(cfg->blocks[loopBlockIter], loopBlockIndex);
-        addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
-    }
-    else
-    {
-        addSuccessor(cfg->blocks[loopBlockIter], exitBlockIndex);
-    }
-
-    *lastBlockIndex = exitBlockIndex;
-
-    popLoopEntry(cfg->loopLevelStack);
-    printf("WP :: LOOP\n");
+    printf("CFG :: WP :: ENTERING LOOP\n");
 }
-
 
 void cfgWalkerProcessBreakNode(CFG* cfg,
                                AST* node,
-                               int* lastBlockIndex,
-                               int* breakDetected)
-{
-    *breakDetected = 1;
+                               int* lastBlockIndex) {
     cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected = 1;
     int breakIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = breakIndex;
-    printf("WP :: BREAK\n");
+    printf("CFG :: WP :: BREAK\n");
 }
-
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,
                                 int* lastBlockIndex) {
     cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
-    printf("WP :: REPEAT\n");
+    printf("CFG :: WP :: REPEAT\n");
 }
-
 
 void cfgWalkerProcessBlockNode(CFG* cfg,
                                AST* node,
@@ -113,13 +71,12 @@ void cfgWalkerProcessBlockNode(CFG* cfg,
         AST* statementNode = getChild(node, i);
         cfgWalker(cfg, statementNode, lastBlockIndex);
     }
-    printf("WP :: BLOCK\n");
+    printf("CFG :: WP :: BLOCK\n");
 }
 
 void cfgWalkerProcessVarDecNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex)
-{
+                                int* lastBlockIndex) {
     int varDecIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     *lastBlockIndex = varDecIndex;
 
@@ -127,7 +84,7 @@ void cfgWalkerProcessVarDecNode(CFG* cfg,
 
     *lastBlockIndex = varDecIndex;
 
-    printf("WP :: VAR_DEC\n");
+    printf("CFG :: WP :: VAR_DEC\n");
 }
 
 
@@ -137,7 +94,7 @@ void cfgWalkerProcessVarDefNode(CFG* cfg,
     int varDefIndex = cfgWalkerLinkWithParent(cfg, node, lastBlockIndex);
     cfgWalker(cfg, getChild(node, 2), lastBlockIndex);
     *lastBlockIndex = varDefIndex;
-    printf("WP :: VAR_DEF\n");
+    printf("CFG :: WP :: VAR_DEF\n");
 }
 
 void cfgWalkerProcessAssignment(CFG* cfg,
@@ -153,25 +110,22 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
 
     if (isProcessed(cfg->processedNodes, node))
     {
-        printf("WIP :: %s\n", node->token);
+        printf("CFG :: WIP :: %s\n", node->token);
         return;
     }
 
     addProcessed(cfg->processedNodes, node);
-    printf("W :: %s\n", (char*)node->token);
+    //printf("CFG :: W :: %s\n", (char*)node->token);
 
     int breakDetected = 0;
-    if (!strcmp(node->token, "IF")) {
-        cfgWalkerProcessIfNode(cfg,
-                               node,
-                               lastBlockIndex);
-    }
-    if (!strcmp(node->token, "LOOP")) {
-        cfgWalkerProcessLoopNode(cfg,
-                                 node,
-                                 lastBlockIndex, &breakDetected);
-        // if(breakDetected) return;
-    }
+    if (!strcmp(node->token, "IF"))
+        enteringIf(cfg,
+                   node,
+                   lastBlockIndex);
+    if (!strcmp(node->token, "LOOP"))
+        enteringLoop(cfg,
+                    node,
+                    lastBlockIndex);
     if (!strcmp(node->token, "REPEAT"))
         cfgWalkerProcessRepeatNode(cfg,
                                  node,
@@ -188,27 +142,67 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
         cfgWalkerProcessVarDecNode(cfg,
                                    node,
                                    lastBlockIndex);
-    if (!strcmp(node->token, "BREAK")) {
+    if (!strcmp(node->token, "BREAK"))
         cfgWalkerProcessBreakNode(cfg,
                                    node,
-                                   lastBlockIndex,
-                                   &breakDetected);
-    }
+                                   lastBlockIndex);
 
-    if (!cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
-        for (int i = 0; i < node->childCount; i++) {
-            cfgWalker(cfg, getChild(node, i), lastBlockIndex);
-        }
-    }
+    for (int i = 0; i < node->childCount; i++)
+        cfgWalker(cfg, getChild(node, i), lastBlockIndex);
 
-    if (!strcmp(node->token, "CALL")) {
+    if (!strcmp(node->token, "CALL"))
         cfgWalkerProcessCallNode(cfg,
                                  node,
                                  lastBlockIndex);
-    }
-    if (strcmp(node->token, "=") == 0) {
+    if (strcmp(node->token, "=") == 0)
         cfgWalkerProcessAssignment(cfg,
                                    node,
                                    lastBlockIndex);
+
+    if (!strcmp(node->token, "LOOP")) {
+        printf("CFG :: W :: EXITING LOOP\n");
+        if(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
+            addSuccessor(cfg->blocks[*lastBlockIndex],
+                         cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].exitBlockIndex);
+            *lastBlockIndex = cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].exitBlockIndex;
+        }
+        else {
+            addSuccessor(cfg->blocks[*lastBlockIndex],
+                         cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].loopIndex);
+            addSuccessor(cfg->blocks[*lastBlockIndex],
+                         cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].exitBlockIndex);
+            *lastBlockIndex = cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].exitBlockIndex;
+        }
+        popLoopEntry(cfg->loopLevelStack);
+    }
+    if (!strcmp(node->token, "IF")) {
+        if (node->childCount == 2) {
+            if(cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected) {
+                //cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].breakDetected = 0; // break elimination
+                /*todo*/
+                //printf("WP :: IF CURLEVEL - %d, IFDETECTED - %d\n",
+                //       cfg->ifLevelStack->currentLevel,
+                //       cfg->ifLevelStack->entries[cfg->ifLevelStack->currentLevel].ifBlockIndex);
+
+                addSuccessor(cfg->blocks[*lastBlockIndex],
+                             cfg->loopLevelStack->entries[cfg->loopLevelStack->currentLevel].exitBlockIndex);
+
+            }
+            else { //break not detected case
+                //printf("WP :: IF CURLEVEL - %d, IFDETECTED - %d\n",
+                //       cfg->ifLevelStack->currentLevel,
+                //       cfg->ifLevelStack->entries[cfg->ifLevelStack->currentLevel].ifBlockIndex);
+                BasicBlock* mergeBlock = createBasicBlock(NULL, merge);
+                addBasicBlock(cfg, mergeBlock);
+                int mergeBlockIndex = cfg->blockCount - 1;
+
+                addSuccessor(cfg->blocks[*lastBlockIndex], mergeBlockIndex);
+                addSuccessor(cfg->blocks[cfg->ifLevelStack->entries[cfg->ifLevelStack->currentLevel].ifBlockIndex], mergeBlockIndex);
+                *lastBlockIndex = mergeBlockIndex;
+            }
+        }
+        printf("CFG :: W :: EXITING IF\n");
+
+        popIfEntry(cfg->ifLevelStack);
     }
 }

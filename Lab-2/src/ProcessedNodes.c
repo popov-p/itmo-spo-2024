@@ -2,7 +2,13 @@
 
 ProcessedNodes* createProcessedNodes(int initialCapacity) {
     ProcessedNodes* p = malloc(sizeof(ProcessedNodes));
+    if (!p)
+        return NULL;
     p->nodes = malloc(sizeof(AST*) * initialCapacity);
+    if (!p->nodes) {
+        free(p);
+        return NULL;
+    }
     p->count = 0;
     p->capacity = initialCapacity;
     return p;
@@ -16,9 +22,8 @@ void freeProcessedNodes(ProcessedNodes* p) {
 
 int isProcessed(ProcessedNodes* p, AST* node) {
     for (int i = 0; i < p->count; i++) {
-        if (p->nodes[i] == node) {
+        if (p->nodes[i] == node)
             return 1;
-        }
     }
     return 0;
 }

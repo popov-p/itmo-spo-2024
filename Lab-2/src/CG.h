@@ -1,0 +1,27 @@
+#ifndef CG_H
+#define CG_H
+
+#include "AST.h"
+#include "Functions.h"
+
+typedef struct CGB { // call graph block
+    AST* node;
+    int* successors;
+    int successorCount;
+} CGB;
+
+typedef struct CG
+{
+    CGB** blocks; //sucessors` indices in BasicBlock** array
+    int blockCount;
+} CG;
+
+CG* initEmptyCG(FunctionList* declaredFunctions);
+
+CGB* createCallGraphBlock(AST* node);
+void addCallGraphBlock(CG* cg, CGB* block);
+
+void cgWalker(CG* cg, AST* current, int* lastBlockIndex);
+int cgWalkerLinkWithParent(CG* cg, AST* current, int* lastBlockIndex);
+CG* generateCG(AST* head, FunctionList* declaredFunctions);
+#endif

@@ -7,5 +7,8 @@ digraph G {
     node0 -> end;
 subgraph cluster_0 {
     label="BB0";
+    cluster_0_node2480504000 [label="CALL"];
+    cluster_0_node2480503688 [label="foo"];
+    cluster_0_node2480504000 -> cluster_0_node2480503688;
 }
 }

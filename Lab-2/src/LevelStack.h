@@ -13,10 +13,25 @@ typedef struct LoopLevelStack {
     int capacity;
 } LoopLevelStack;
 
+typedef struct IfLevelEntry {
+    int ifBlockIndex; //индекс в структуе BasicBlocks
+} IfLevelEntry;
+
+typedef struct IfLevelStack {
+    IfLevelEntry* entries;
+    int currentLevel;
+    int capacity;
+} IfLevelStack;
+
+
 LoopLevelStack* createLoopLevelStack(int initialCapacity);
 
 void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex);
 LoopLevelEntry popLoopEntry(LoopLevelStack* stack);
-LoopLevelEntry getCurrentLoopEntry(LoopLevelStack* stack);
-LoopLevelEntry getLoopEntryAtLevel(LoopLevelStack* stack, int depth); /*depth = 0 текущий*/
+
+
+IfLevelStack* createIfLevelStack(int capacity);
+void freeIfLevelStack(IfLevelStack* stack);
+void pushIfEntry(IfLevelStack* stack, int ifBlockIndex);
+IfLevelEntry popIfEntry(IfLevelStack* stack);
 #endif

@@ -24,7 +24,7 @@ void printTree(AST* node, int level) {
         return;
     for (int i = 0; i < level; i++)
         printf("  ");
-    printf("printTree :: ID - %d, Token - %s\n", node->id, node->token);
+    printf("PT :: ID - %d, TOKEN - %s\n", node->id, node->token);
 
     for (size_t i = 0; i < node->childCount; i++)
         printTree(node->children[i], level + 1);
@@ -38,7 +38,7 @@ void addChild(AST* parent, AST* child) {
 
     parent->children = (AST**)realloc(parent->children, sizeof(AST*) * (parent->childCount + 1));
     if (!parent->children) {
-        fprintf(stderr, "ERROR :: REALLOC FAIL\n");
+        fprintf(stderr, "ERROR :: REALLOC FAILED\n");
         return;
     }
     parent->childCount++;
@@ -115,7 +115,7 @@ void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
 
     thisNode->children = (AST**)malloc(sizeof(AST*));
     if(!thisNode->children) {
-        fprintf(stderr, "ERROR :: MALLOC FAIL\n");
+        fprintf(stderr, "ERROR :: MALLOC FAILED\n");
         return;
     }
     thisNode->children[0] = thatChild;
@@ -248,12 +248,14 @@ void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
 void analyzeCutCondition(AST* head) {
     AST* condition = getChild(head, 0);
     AST* leftOperand = getChild(condition, 0);
-    AST* rightOperand = getChild(condition, 1);
-    AST* leftRead = createNode(arc4random(), "__read");
-    insertBetween(condition, leftOperand, leftRead);
+    AST* valuePlaceQualifier = createNode(arc4random(), "__value_place");
+    insertBetween(condition, leftOperand, valuePlaceQualifier);
+    for (int i = 1; i < condition->childCount; i++) {
+        AST* element = getChild(condition, i);
+        AST* readQualifier = createNode(arc4random(), "__read");
+        insertBetween(condition, element, readQualifier);
+    }
 
-    AST* rightRead = createNode(arc4random(), "__read");
-    insertBetween(condition, rightOperand, rightRead);
 }
 
 void analyzeIf(AST* ifNode) {

@@ -1,4 +1,4 @@
-#include "BasicBlock.h"
+#include "CFG.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -13,22 +13,35 @@ BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt) {
 
 void addSuccessor(BasicBlock* block, int successorIndex) {
     block->successorCount++;
-    block->successors = (int*)realloc(block->successors, block->successorCount * sizeof(int));
+    int* newSuccessors = (int*)realloc(block->successors, block->successorCount * sizeof(int));
+    if (!newSuccessors) {
+        fprintf(stderr, "ERROR :: REALLOC FAILED\n");
+        block->successorCount--;
+        return;
+    }
+    block->successors = newSuccessors;
     block->successors[block->successorCount - 1] = successorIndex;
 }
 
 void addBasicBlock(CFG* cfg, BasicBlock* block) {
     cfg->blockCount++;
-    cfg->blocks = (BasicBlock**)realloc(cfg->blocks, cfg->blockCount * sizeof(BasicBlock*));
+    BasicBlock** newBlocks = (BasicBlock**)realloc(cfg->blocks, cfg->blockCount * sizeof(BasicBlock*));
+    if (!newBlocks) {
+        fprintf(stderr, "ERROR :: REALLOC FAILED\n");
+        cfg->blockCount--;
+        return;
+    }
+    cfg->blocks = newBlocks;
     cfg->blocks[cfg->blockCount - 1] = block;
 }
 
-CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize) {
+CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize) {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
     cfg->blocks = NULL;
     cfg->blockCount = 0;
     cfg->processedNodes = createProcessedNodes(processedNodesSize);
     cfg->loopLevelStack = createLoopLevelStack(loopLevelStackSize);
+    cfg->ifLevelStack = createIfLevelStack(ifLevelStackSize);
     return cfg;
 }
 

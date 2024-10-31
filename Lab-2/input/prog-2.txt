@@ -1,9 +1,0 @@
-
-def theta(a of int) of int
-    x = 2 + 4;
-    while t < d
-        foo(bar(baz()));
-        break;
-        call();
-    end
-end

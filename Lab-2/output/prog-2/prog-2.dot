@@ -1,0 +1,34 @@
+digraph AST {
+    node [shape=box];
+    cluster_0_node2279567560 [label="SOURCE"];
+    cluster_0_node2279567248 [label="SOURCE_ITEM"];
+    cluster_0_node2279563816 [label="FUNC_DEF"];
+    cluster_0_node2279555080 [label="FUNC_SIG"];
+    cluster_0_node2279554144 [label="main"];
+    cluster_0_node2279554768 [label="LIST_ARG"];
+    cluster_0_node2279553832 [label="ARG"];
+    cluster_0_node2279553520 [label="a"];
+    cluster_0_node2279554456 [label="int"];
+    cluster_0_node2279555704 [label="int"];
+    cluster_0_node2279566936 [label="EXPR"];
+    cluster_0_node2279566624 [label="CALL"];
+    cluster_0_node2279564752 [label="beta"];
+    cluster_0_node2279566312 [label="LIST_EXPR"];
+    cluster_0_node2279566000 [label="CALL"];
+    cluster_0_node2279565688 [label="gamma"];
+    cluster_0_node2279567560 -> cluster_0_node2279567248;
+    cluster_0_node2279567248 -> cluster_0_node2279563816;
+    cluster_0_node2279563816 -> cluster_0_node2279555080;
+    cluster_0_node2279555080 -> cluster_0_node2279554144;
+    cluster_0_node2279555080 -> cluster_0_node2279554768;
+    cluster_0_node2279554768 -> cluster_0_node2279553832;
+    cluster_0_node2279553832 -> cluster_0_node2279553520;
+    cluster_0_node2279553832 -> cluster_0_node2279554456;
+    cluster_0_node2279555080 -> cluster_0_node2279555704;
+    cluster_0_node2279563816 -> cluster_0_node2279566936;
+    cluster_0_node2279566936 -> cluster_0_node2279566624;
+    cluster_0_node2279566624 -> cluster_0_node2279564752;
+    cluster_0_node2279566624 -> cluster_0_node2279566312;
+    cluster_0_node2279566312 -> cluster_0_node2279566000;
+    cluster_0_node2279566000 -> cluster_0_node2279565688;
+}

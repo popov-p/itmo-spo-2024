@@ -2,7 +2,7 @@
 #define CFGNODEPROCESSING_H
 
 #include "AST.h"
-#include "BasicBlock.h"
+#include "CFG.h"
 
 void cfgWalker(CFG* cfg,
                AST* node,
@@ -12,7 +12,7 @@ int cfgWalkerLinkWithParent(CFG* cfg,
                             AST* current,
                             int* lastBlockIndex);
 
-void cfgWalkerProcessIfNode(CFG* cfg,
+void enteringIf(CFG* cfg,
                             AST* node,
                             int* lastBlockIndex);
 
@@ -20,10 +20,9 @@ void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex);
 
-void cfgWalkerProcessLoopNode(CFG* cfg,
-                              AST* node,
-                              int* lastBlockIndex,
-                              int* breakDetected);
+void enteringLoop(CFG* cfg,
+                 AST* node,
+                 int* lastBlockIndex);
 
 void cfgWalkerProcessRepeatNode(CFG* cfg,
                                 AST* node,
@@ -43,8 +42,7 @@ void cfgWalkerProcessVarDefNode(CFG* cfg,
 
 void cfgWalkerProcessBreakNode(CFG* cfg,
                                 AST* node,
-                                int* lastBlockIndex,
-                                int* breakDetected);
+                                int* lastBlockIndex);
 
 void cfgWalkerProcessAssignment(CFG* cfg,
                                AST* node,
