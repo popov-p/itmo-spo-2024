@@ -33,25 +33,25 @@ LoopLevelEntry popLoopEntry(LoopLevelStack* stack) {
         stack->currentLevel--;
         return entry;
     } else {
-        fprintf(stderr, "ERRPR :: POPPING EMPTY STACK\n");
+        fprintf(stderr, "LLS :: ERROR :: POPPING EMPTY STACK\n");
         return (LoopLevelEntry){-1, -1};
     }
 }
 
 LoopLevelEntry getCurrentLoopEntry(LoopLevelStack* stack) {
-    if (stack->currentLevel >= 0) {
+    if (stack->currentLevel >= 0)
         return stack->entries[stack->currentLevel];
-    } else {
-        fprintf(stderr, "ERROR :: STACK EMPTY\n");
+    else {
+        fprintf(stderr, "LLS :: ERROR :: STACK EMPTY\n");
         return (LoopLevelEntry){-1, -1};
     }
 }
 
 LoopLevelEntry getLoopEntryAtLevel(LoopLevelStack* stack, int depth) {
-    if (stack->currentLevel >= depth) {
+    if (stack->currentLevel >= depth)
         return stack->entries[stack->currentLevel - depth];
-    } else {
-        fprintf(stderr, "ERROR: STACK IS LESS THAN %d DEPTH\n", depth);
+    else {
+        fprintf(stderr, "LLS :: ERROR :: STACK IS LESS THAN %d DEPTH\n", depth);
         return (LoopLevelEntry){-1, -1};
     }
 }

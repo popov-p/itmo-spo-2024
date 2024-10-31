@@ -3,7 +3,7 @@
 char* readFileToString(const char* filePath) {
     FILE *file = fopen(filePath, "r");
     if (file == NULL) {
-        perror("not ok. error opening file\n");
+        fprintf(stderr, "\n");
         return NULL;
     }
 
@@ -13,7 +13,7 @@ char* readFileToString(const char* filePath) {
 
     char *buffer = (char *)malloc(fileSize + 1);
     if (buffer == NULL) {
-        perror("not ok. memory allocation failed\n");
+        fprintf(stderr, "not ok. memory allocation failed\n");
         fclose(file);
         return NULL;
     }
@@ -46,29 +46,22 @@ void generateDot(pParseResult result, const char* path) {
     if (dotFile != NULL) {
         fprintf(dotFile, "%s", (char *)dotString->chars);
         fclose(dotFile);
-    } else {
+    } else
         printf("not ok. trouble with opening .dot file\n");
-    }
 }
 
 int cleanup(pParseResult pr) {
-    if (pr->p != NULL) {
+    if (pr->p)
         pr->p->free(pr->p);
-    }
-    if (pr->ts != NULL) {
+    if (pr->ts)
         pr->ts->free(pr->ts);
-    }
-    if (pr->l != NULL) {
+    if (pr->l)
         pr->l->free(pr->l);
-    }
-    if (pr->is != NULL) {
+    if (pr->is)
         pr->is->close(pr->is);
-    }
-    if (pr == NULL) {
+    if (!pr)
         return 1;
-    }
-    else {
+    else
         free(pr);
-    }
     return 0;
 }

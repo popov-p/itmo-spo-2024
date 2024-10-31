@@ -13,8 +13,10 @@ end
 
 def sum(a of int, x of int array[3]) of int
     x = 2 + 4;
+    while t < d
+        foo(bar(baz()));
+        break;
+        call();
+    end
 end
 
-def theta() of uint
-    foo();
-end

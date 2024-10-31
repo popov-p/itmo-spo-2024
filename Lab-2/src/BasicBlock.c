@@ -23,29 +23,12 @@ void addBasicBlock(CFG* cfg, BasicBlock* block) {
     cfg->blocks[cfg->blockCount - 1] = block;
 }
 
-void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
-    BasicBlock* bb = cfg->blocks[basicBlockIndex];
-    if (!(bb->node == NULL)) {
-        fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
-        fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
-
-        AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
-
-        outputOpNode(op, basicBlockIndex, file);
-        outputOpEdge(op, basicBlockIndex, file);
-        fprintf(file, "}\n");
-        free(op);
-    }
-}
-
-CFG* initEmptyCFG() {
+CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize) {
     CFG* cfg = (CFG*)malloc(sizeof(CFG));
     cfg->blocks = NULL;
     cfg->blockCount = 0;
-    cfg->processedNodes = createProcessedNodes(100);
-    cfg->loopLevelStack = createLoopLevelStack(20);
-
-
+    cfg->processedNodes = createProcessedNodes(processedNodesSize);
+    cfg->loopLevelStack = createLoopLevelStack(loopLevelStackSize);
     return cfg;
 }
 

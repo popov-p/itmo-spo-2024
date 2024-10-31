@@ -22,26 +22,12 @@ AST* createNode(uint32_t id, char* token) {
 void printTree(AST* node, int level) {
     if (!node)
         return;
-
     for (int i = 0; i < level; i++)
         printf("  ");
-
     printf("printTree :: ID - %d, Token - %s\n", node->id, node->token);
 
     for (size_t i = 0; i < node->childCount; i++)
         printTree(node->children[i], level + 1);
-}
-
-size_t getChildCount(AST* node) {
-    if (!node)
-        return 0;
-    return node->childCount;
-}
-
-char* getToken(AST* node) {
-    if (!node)
-        return NULL;
-    return node->token;
 }
 
 void addChild(AST* parent, AST* child) {
@@ -92,12 +78,6 @@ AST* getChild(AST* parent, size_t i) {
         return NULL;
     }
     return parent->children[i];
-}
-
-AST* getParent(AST* node) {
-    if (node == NULL)
-        return NULL;
-    return node->parent;
 }
 
 void outputASTEdges(AST* node, FILE* file) {
@@ -171,10 +151,16 @@ AST* duplicateLeftSubtree(AST* head) {
     if (!head)
         return NULL;
     AST* newHead = createNode(head->id, head->token);
-
+    if (!newHead)
+        return NULL;
     if (head->childCount > 0 && head->children[0]) {
         AST* leftChildCopy = duplicateTree(head->children[0]);
         addChild(newHead, leftChildCopy);
+        if (!leftChildCopy) {
+            freeAST(leftChildCopy);
+            freeAST(newHead);
+            return NULL;
+        }
     }
 
     return newHead;

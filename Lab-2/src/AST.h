@@ -25,7 +25,6 @@ AST* buildFromParseResult(pParseResult parseResult);
 void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node);
 
 AST* getChild(AST* parent, size_t i);
-AST* getParent(AST* node);
 void printAST(AST* head, FILE* file);
 void outputAST(AST* head, FILE* file);
 void writeNode(AST* node, int basicBlockIndex, FILE *file);

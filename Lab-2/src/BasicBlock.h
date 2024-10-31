@@ -12,11 +12,18 @@ enum BasicBlockType {
     repeat_exit = 3
 };
 
+typedef struct {
+    char **errors;
+    int count;
+    int capacity;
+} ErrorCollection;
+
 typedef struct CFG {
     struct BasicBlock** blocks;
     int blockCount;
     ProcessedNodes* processedNodes;
     LoopLevelStack* loopLevelStack;
+
 } CFG;
 
 typedef struct BasicBlock {
@@ -27,16 +34,11 @@ typedef struct BasicBlock {
 } BasicBlock;
 
 BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt);
-
 void addSuccessor(BasicBlock* block, int successorIndex);
-
 void addBasicBlock(CFG* cfg, BasicBlock* block);
 
-void outputSubgraph(CFG* cfg,
-                    int basicBlockIndex, FILE* file);
 
-CFG* initEmptyCFG();
-
+CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize);
 void freeCFG(CFG* cfg);
 
 #endif

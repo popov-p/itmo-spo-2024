@@ -20,7 +20,6 @@ void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex);
 
-
 void cfgWalkerProcessLoopNode(CFG* cfg,
                               AST* node,
                               int* lastBlockIndex,
@@ -50,6 +49,4 @@ void cfgWalkerProcessBreakNode(CFG* cfg,
 void cfgWalkerProcessAssignment(CFG* cfg,
                                AST* node,
                                int* lastBlockIndex);
-
-
 #endif
