@@ -37,6 +37,15 @@ void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) 
 
 void processInput(int argc, char** argv) {
     const char* outputDir = argv[1];
+
+    struct stat st = {0};
+    if (stat(outputDir, &st) == -1) {
+        if (mkdir(outputDir, 0777) == -1) {
+            perror("PI :: ERROR :: FAILED TO CREATE OUTPUT DIRECTORY");
+            return;
+        }
+    }
+
     for (int i = 2; i < argc; ++i) { //for each file
         char *inputFilename = basename(argv[i]);
         char filenameNoExt[128];
