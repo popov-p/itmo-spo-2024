@@ -1,30 +1,30 @@
+def repeatCallExample() of int
+    {
+        {
+            f(g(h(x,y())));
+        } until x < 3;
 
-
-def baz() of int
-    x = k;
+    } while t < d;
 end
 
-def bar() of int
-    t = d;
-end
 
-def foo() of int
-    baz();
-    baz();
-    foo();
-end
 
 def main() of int
-    foo();
-    bar();
-    baz();
+    x = t;
+    while a < b
+        while c < d
+            if x > y then {
+                foo();
+                break;
+                bar();
+            }
+            else {
+                baz();
+            }
+            phi();
+            break;
+            psi();
+    end
+    omega();
+    end
 end
-
-
-
-
-
-
-
-
-

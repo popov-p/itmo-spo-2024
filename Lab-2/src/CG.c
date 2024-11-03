@@ -65,7 +65,7 @@ CG* generateCG(FunctionList* declaredFunctions) {
         CGB* currentFunction = createCallGraphBlock(declaredFunctions->items[i]->signature);
         addCallGraphBlock(cg, currentFunction);
         for(int j = 0; j < declaredFunctions->items[i]->cfg->blockCount; j++) {
-            if(!strcmp(declaredFunctions->items[i]->cfg->blocks[j]->node->token, "CALL")) {
+            if((declaredFunctions->items[i]->cfg->blocks[j]->node) && !strcmp(declaredFunctions->items[i]->cfg->blocks[j]->node->token, "CALL")) {
                 int currentCallIndex = findIndexByName(declaredFunctions,
                                                   getChild(declaredFunctions->items[i]->cfg->blocks[j]->node, 0));
                 if(currentCallIndex != -1) {
