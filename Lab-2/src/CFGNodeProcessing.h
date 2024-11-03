@@ -12,9 +12,17 @@ int cfgWalkerLinkWithParent(CFG* cfg,
                             AST* current,
                             int* lastBlockIndex);
 
+int cfgWalkerLinkWithSpecific(CFG* cfg,
+                              AST* current,
+                              int specificBlockIndex);
+
 void enteringIf(CFG* cfg,
-                            AST* node,
-                            int* lastBlockIndex);
+                AST* node,
+                int* lastBlockIndex);
+
+void enteringElse(CFG* cfg,
+                  AST* node,
+                  int* lastBlockIndex);
 
 void cfgWalkerProcessCallNode(CFG* cfg,
                               AST* node,

@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
     char *emulatedArgs[] = {
-        "cfgbuilder-stub",
+        "cfgbuilder-stub-name",
         "../output",
         "../input/prog-1.txt"
     };

@@ -310,6 +310,9 @@ AST* analyzeOp (AST* node) {
         head = duplicateLeftSubtree(node);
         analyzeIf(head);
     }
+    if(!strcmp(node->token, "ELSE")) {
+        head = duplicateTree(node);
+    }
     if(!strcmp(node->token, "LOOP")) {
         head = duplicateLeftSubtree(node);
         analyzeLoop(head);

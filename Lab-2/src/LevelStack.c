@@ -61,13 +61,15 @@ void freeIfLevelStack(IfLevelStack* stack) {
     free(stack);
 }
 
-void pushIfEntry(IfLevelStack* stack, int ifBlockIndex) {
+void pushIfEntry(IfLevelStack* stack, int ifBlockIndex, int elseBlockIndex, int mergeBlockIndex) {
     if (stack->currentLevel + 1 >= stack->capacity) {
         stack->capacity *= 2;
         stack->entries = (IfLevelEntry*)realloc(stack->entries, stack->capacity * sizeof(IfLevelEntry));
     }
     stack->currentLevel++;
     stack->entries[stack->currentLevel].ifBlockIndex = ifBlockIndex;
+    stack->entries[stack->currentLevel].elseBlockIndex = elseBlockIndex;
+    stack->entries[stack->currentLevel].mergeBlockIndex = mergeBlockIndex;
 }
 
 IfLevelEntry popIfEntry(IfLevelStack* stack) {

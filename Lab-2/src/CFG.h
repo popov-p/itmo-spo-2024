@@ -9,8 +9,7 @@ enum BasicBlockType {
     standard = 0,
     merge = 1,
     loop_exit = 2,
-    repeat_exit = 3,
-    break_block = 4
+    repeat_exit = 3
 };
 
 typedef struct {

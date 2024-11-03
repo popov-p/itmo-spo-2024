@@ -13,8 +13,10 @@ typedef struct LoopLevelStack {
     int capacity;
 } LoopLevelStack;
 
-typedef struct IfLevelEntry {
-    int ifBlockIndex; //индекс в структуе BasicBlocks
+typedef struct IfLevelEntry { //индексы в массиве BasicBlocks
+    int ifBlockIndex;
+    int elseBlockIndex;
+    int mergeBlockIndex;
 } IfLevelEntry;
 
 typedef struct IfLevelStack {
@@ -32,6 +34,6 @@ LoopLevelEntry popLoopEntry(LoopLevelStack* stack);
 
 IfLevelStack* createIfLevelStack(int capacity);
 void freeIfLevelStack(IfLevelStack* stack);
-void pushIfEntry(IfLevelStack* stack, int ifBlockIndex);
+void pushIfEntry(IfLevelStack* stack, int ifBlockIndex, int elseBlockIndex, int mergeBlockIndex);
 IfLevelEntry popIfEntry(IfLevelStack* stack);
 #endif

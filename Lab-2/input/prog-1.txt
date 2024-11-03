@@ -2,8 +2,11 @@ def main() of int
     while x < z
         while t < t
             if x < t then {
-                xexe();
-                bre();
+                ure();
+                eesketit();
+            }
+            else {
+            kek();
             }
         as();
         ddds();

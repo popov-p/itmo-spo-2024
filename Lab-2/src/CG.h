@@ -6,7 +6,7 @@
 
 typedef struct CGB { // call graph block
     AST* node;
-    int* successors; //sucessors` indices in CGB** array
+    int* successors; //sucessors` indices in CGB2** array
     int successorCount;
 } CGB;
 
