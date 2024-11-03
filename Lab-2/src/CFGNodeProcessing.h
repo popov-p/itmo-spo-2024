@@ -32,9 +32,9 @@ void enteringLoop(CFG* cfg,
                  AST* node,
                  int* lastBlockIndex);
 
-void cfgWalkerProcessRepeatNode(CFG* cfg,
-                                AST* node,
-                                int* lastBlockIndex);
+void enteringRepeat(CFG* cfg,
+                    AST* node,
+                    int* lastBlockIndex);
 
 void cfgWalkerProcessBlockNode(CFG* cfg,
                                 AST* node,

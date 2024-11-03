@@ -1,16 +1,8 @@
 def main() of int
-    while x < z
-        while t < t
-            if x < t then {
-                ure();
-                eesketit();
-            }
-            else {
-            kek();
-            }
-        as();
-        ddds();
-        end
-        bebe();
-    end
+    {
+        foo();
+        break;
+        boo();
+    } until kek < lol;
+    ksks();
 end

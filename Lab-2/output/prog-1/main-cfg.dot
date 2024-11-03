@@ -3,119 +3,38 @@ digraph G {
     start [label="Начало"];
     end [label="Конец"];
     node0 [label="BB0"];
-    node1 [label="LPXT"];
+    node1 [label="RPXT"];
     node2 [label="BB2"];
-    node3 [label="LPXT"];
-    node4 [label="MRG"];
-    node5 [label="BB5"];
-    node6 [label="BB6"];
-    node7 [label="BB7"];
-    node8 [label="BB8"];
-    node9 [label="BB9"];
-    node10 [label="BB10"];
-    node11 [label="BB11"];
-    node12 [label="BB12"];
-    node0 -> node1;
+    node3 [label="BB3"];
     node0 -> node2;
-    node2 -> node3;
-    node2 -> node5;
-    node3 -> node12;
-    node4 -> node10;
-    node5 -> node6;
-    node5 -> node8;
-    node6 -> node7;
-    node7 -> node4;
-    node8 -> node9;
-    node9 -> node4;
-    node10 -> node11;
-    node11 -> node2;
-    node12 -> node0;
+    node1 -> node3;
+    node2 -> node1;
     start -> node0;
-    node1 -> end;
+    node3 -> end;
 subgraph cluster_0 {
     label="BB0";
-    cluster_0_node3027978904 [label="LOOP"];
-    cluster_0_node3027930232 [label="<"];
-    cluster_0_node2146564396 [label="__value_place"];
-    cluster_0_node3027930544 [label="x"];
-    cluster_0_node3537436360 [label="__read"];
-    cluster_0_node3027931168 [label="z"];
-    cluster_0_node3027978904 -> cluster_0_node3027930232;
-    cluster_0_node3027930232 -> cluster_0_node2146564396;
-    cluster_0_node2146564396 -> cluster_0_node3027930544;
-    cluster_0_node3027930232 -> cluster_0_node3537436360;
-    cluster_0_node3537436360 -> cluster_0_node3027931168;
+    cluster_0_node1239556944 [label="REPEAT"];
+    cluster_0_node1239557256 [label="<"];
+    cluster_0_node236964769 [label="__value_place"];
+    cluster_0_node1239557568 [label="kek"];
+    cluster_0_node1319021679 [label="__read"];
+    cluster_0_node1239558192 [label="lol"];
+    cluster_0_node1239556944 -> cluster_0_node1239557256;
+    cluster_0_node1239557256 -> cluster_0_node236964769;
+    cluster_0_node236964769 -> cluster_0_node1239557568;
+    cluster_0_node1239557256 -> cluster_0_node1319021679;
+    cluster_0_node1319021679 -> cluster_0_node1239558192;
 }
 subgraph cluster_2 {
     label="BB2";
-    cluster_2_node3027976096 [label="LOOP"];
-    cluster_2_node3027932104 [label="<"];
-    cluster_2_node4128651591 [label="__value_place"];
-    cluster_2_node3027932416 [label="t"];
-    cluster_2_node1333902995 [label="__read"];
-    cluster_2_node3027933040 [label="t"];
-    cluster_2_node3027976096 -> cluster_2_node3027932104;
-    cluster_2_node3027932104 -> cluster_2_node4128651591;
-    cluster_2_node4128651591 -> cluster_2_node3027932416;
-    cluster_2_node3027932104 -> cluster_2_node1333902995;
-    cluster_2_node1333902995 -> cluster_2_node3027933040;
+    cluster_2_node1239552264 [label="CALL"];
+    cluster_2_node1239551952 [label="foo"];
+    cluster_2_node1239552264 -> cluster_2_node1239551952;
 }
-subgraph cluster_5 {
-    label="BB5";
-    cluster_5_node3027972040 [label="IF"];
-    cluster_5_node3027933976 [label="<"];
-    cluster_5_node3027934288 [label="x"];
-    cluster_5_node3027934912 [label="t"];
-    cluster_5_node3027972040 -> cluster_5_node3027933976;
-    cluster_5_node3027933976 -> cluster_5_node3027934288;
-    cluster_5_node3027933976 -> cluster_5_node3027934912;
-}
-subgraph cluster_6 {
-    label="BB6";
-    cluster_6_node3027948640 [label="CALL"];
-    cluster_6_node3027948328 [label="ure"];
-    cluster_6_node3027948640 -> cluster_6_node3027948328;
-}
-subgraph cluster_7 {
-    label="BB7";
-    cluster_7_node3027951448 [label="CALL"];
-    cluster_7_node3027951136 [label="eesketit"];
-    cluster_7_node3027951448 -> cluster_7_node3027951136;
-}
-subgraph cluster_8 {
-    label="BB8";
-    cluster_8_node3027969856 [label="ELSE"];
-    cluster_8_node3027970168 [label="BLOCK"];
-    cluster_8_node3027971728 [label="EXPR"];
-    cluster_8_node3027971416 [label="CALL"];
-    cluster_8_node3027971104 [label="kek"];
-    cluster_8_node3027969856 -> cluster_8_node3027970168;
-    cluster_8_node3027970168 -> cluster_8_node3027971728;
-    cluster_8_node3027971728 -> cluster_8_node3027971416;
-    cluster_8_node3027971416 -> cluster_8_node3027971104;
-}
-subgraph cluster_9 {
-    label="BB9";
-    cluster_9_node3027971416 [label="CALL"];
-    cluster_9_node3027971104 [label="kek"];
-    cluster_9_node3027971416 -> cluster_9_node3027971104;
-}
-subgraph cluster_10 {
-    label="BB10";
-    cluster_10_node3027974536 [label="CALL"];
-    cluster_10_node3027974224 [label="as"];
-    cluster_10_node3027974536 -> cluster_10_node3027974224;
-}
-subgraph cluster_11 {
-    label="BB11";
-    cluster_11_node3027977344 [label="CALL"];
-    cluster_11_node3027977032 [label="ddds"];
-    cluster_11_node3027977344 -> cluster_11_node3027977032;
-}
-subgraph cluster_12 {
-    label="BB12";
-    cluster_12_node3027980152 [label="CALL"];
-    cluster_12_node3027979840 [label="bebe"];
-    cluster_12_node3027980152 -> cluster_12_node3027979840;
+subgraph cluster_3 {
+    label="BB3";
+    cluster_3_node1239560376 [label="CALL"];
+    cluster_3_node1239560064 [label="ksks"];
+    cluster_3_node1239560376 -> cluster_3_node1239560064;
 }
 }
