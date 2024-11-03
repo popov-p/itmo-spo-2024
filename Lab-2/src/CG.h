@@ -16,12 +16,14 @@ typedef struct CG
     int blockCount;
 } CG;
 
-CG* initEmptyCG(FunctionList* declaredFunctions);
+CG* initEmptyCG();
 
 CGB* createCallGraphBlock(AST* node);
 void addCallGraphBlock(CG* cg, CGB* block);
 
-void cgWalker(CG* cg, AST* current, int* lastBlockIndex);
-int cgWalkerLinkWithParent(CG* cg, AST* current, int* lastBlockIndex);
-CG* generateCG(AST* head, FunctionList* declaredFunctions);
+int findIndexByName(FunctionList* declaredFunctions, AST* name);
+CG* generateCG(FunctionList* declaredFunctions);
+void outputCG(CG* cg, FILE* file);
+void outputCgNodes(CG* cg, FILE* file);
+void outputCgEdges(CG* cg, FILE* file);
 #endif

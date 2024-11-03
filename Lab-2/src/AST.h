@@ -39,7 +39,11 @@ void outputOpEdge(AST* parent,
                   int basicBlockIndex,
                   FILE *file);
 
-AST* analyzeOp (AST* node);
 
+AST* analyzeOp (AST* node);
 void analyzeCall(AST* node);
+void analyzeLoop(AST* node);
+void analyzeRepeat(AST* node);
+void analyzeAssign(AST* node);
+void analyzeIf(AST* node);
 #endif

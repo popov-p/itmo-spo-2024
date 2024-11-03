@@ -1,8 +1,9 @@
 #include "InputOptions.h"
 #include "AST.h"
 #include "Functions.h"
-
 #include "CFGBuilder.h"
+#include "CG.h"
+
 #include "libgen.h"
 
 FunctionList* findFunctions(AST* head, char* filename) {
@@ -19,8 +20,15 @@ void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) 
         AST* funcName = getChild(signature, 0);
         CFG* cfg = generateCFG(node);
 
-        Function* func = createFunction(funcName->token, signature, cfg, filename);
-        addFunction(functions, func);
+        if (!functionExists(functions, funcName->token)) {
+            CFG* cfg = generateCFG(node);
+
+            Function* func = createFunction(funcName->token, signature, cfg, filename);
+            addFunction(functions, func);
+        }
+        else{
+            fprintf(stderr, "FFR :: DEFINITION OF FUNCTIONS WITH EQUAL NAMES IS PROHIBITED\n");
+        }
     }
     for(int i = 0; i < node->childCount; ++i) {
         findFunctionsRecursive(functions, getChild(node, i), filename);
@@ -54,7 +62,7 @@ void processInput(int argc, char** argv) {
         if (!treeFile) {
             fprintf(stderr, "PI :: ERROR :: FILE NOT OPENED\n");
             free(inputText);
-            continue;
+            return;
         }
         printAST(head, treeFile);
         fclose(treeFile);
@@ -69,11 +77,34 @@ void processInput(int argc, char** argv) {
         }
 
         FunctionList* functionList = findFunctions(head, argv[i]);
+        CG* cg = generateCG(functionList);
+
         if(!functionList->count) {
             fprintf(stderr, "PI :: WARNING :: NO FUNCTIONS DETECTED\n");
             free(functionList);
             return;
         }
+
+        char cgDotFilename[128];
+        snprintf(cgDotFilename, sizeof(cgDotFilename), "%s/%s-cg.dot", outputSubDir, filenameNoExt);
+
+        FILE* cgFile = fopen(cgDotFilename, "w");
+        if (!cgFile) {
+            perror("PI:: ERROR :: CG DOT CREATION FAILED\n");
+            return;
+        }
+        outputCG(cg, cgFile);
+        fclose(cgFile);
+
+        char cgPngFilename[128];
+        snprintf(cgPngFilename, sizeof(cgPngFilename), "%s/%s-cg.png", outputSubDir, filenameNoExt);
+
+        snprintf(command, sizeof(command), "dot -Tpng %s -o %s", cgDotFilename, cgPngFilename);
+        result = system(command);
+        if (result) {
+            fprintf(stderr, "PI :: ERROR :: CALL GRAPH PNG GENERATION FAILED \n");
+        }
+
 
         for(int j = 0; j < functionList->count; j++) {
             char cfgDotFilename[128];
@@ -97,6 +128,7 @@ void processInput(int argc, char** argv) {
         free(inputText);
         free(functionList);
         cleanup(parseResult);
+        free(cg);
     }
 }
 

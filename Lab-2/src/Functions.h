@@ -23,6 +23,6 @@ Function* createFunction(const char* name,
 FunctionList* createFunctionList();
 void freeFunctionList(FunctionList* list);
 void freeFunction(Function* func);
-
 void addFunction(FunctionList* list, Function* func);
+int functionExists(FunctionList* functions, char* funcName);
 #endif

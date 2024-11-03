@@ -232,7 +232,6 @@ void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
 }
 
 void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
-    //printf("VISITING :: %s\n", parent->token);
     if(!parent)
         return;
     int childCount = parent->childCount;
@@ -277,13 +276,20 @@ void analyzeRepeat(AST* repeatNode) {
     analyzeCutCondition(repeatNode);
 }
 
+void analyzeAssign(AST* assignNode) {
+    AST* lvalue = getChild(assignNode, 0);
+    AST* rvalue = getChild(assignNode, 1);
+    AST* vp = createNode(arc4random(), "__value_place");
+    AST* read = createNode(arc4random(), "__read");
+
+    insertBetween(assignNode, lvalue, vp);
+    insertBetween(assignNode, rvalue, read);
+}
 
 void analyzeCall(AST* call) {
     if (strcmp(call->token, "CALL")) {
         return;
     }
-
-    //printf("AN :: CALL %s\n", getChild(call, 0)->token);
 
     if(call->childCount > 1) {
         AST* list_expr = getChild(call, 1);
@@ -316,15 +322,17 @@ AST* analyzeOp (AST* node) {
     if(!strcmp(node->token, "LOOP")) {
         head = duplicateLeftSubtree(node);
         analyzeLoop(head);
-        //printTree(head , 0);
     }
     if(!strcmp(node->token, "REPEAT")) {
         head = duplicateRightSubtree(node);
         analyzeRepeat(head);
-        //printTree(head , 0);
     }
-    if(!strcmp(node->token, "BREAK")) {
+    if(!strcmp(node->token, "VAR_DEF")) {
         head = duplicateTree(node);
+    }
+    if(!strcmp(node->token, "=")) {
+        head = duplicateTree(node);
+        analyzeAssign(head);
     }
     return head;
 }

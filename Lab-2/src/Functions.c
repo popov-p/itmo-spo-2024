@@ -64,3 +64,14 @@ Function* createFunction(const char* name, AST* signature, CFG* cfg, const char*
 
     return func;
 }
+
+int functionExists(FunctionList* functions, char* funcName) {
+    for (int i = 0; i < functions->count; ++i) {
+        if (strcmp(functions->items[i]->name, funcName) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+

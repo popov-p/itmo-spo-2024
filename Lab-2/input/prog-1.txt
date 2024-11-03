@@ -1,8 +1,30 @@
-def main() of int
-    {
-        foo();
-        break;
-        boo();
-    } until kek < lol;
-    ksks();
+
+
+def baz() of int
+    x = k;
 end
+
+def bar() of int
+    t = d;
+end
+
+def foo() of int
+    baz();
+    baz();
+    foo();
+end
+
+def main() of int
+    foo();
+    bar();
+    baz();
+end
+
+
+
+
+
+
+
+
+
