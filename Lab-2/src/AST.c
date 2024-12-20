@@ -81,7 +81,7 @@ AST* getChild(AST* parent, size_t i) {
 }
 
 void outputASTEdges(AST* node, FILE* file) {
-    for (int i = 0; i < node->childCount; i++) {
+    for (size_t i = 0; i < node->childCount; i++) {
         AST* child = getChild(node, i);
         writeEdge(node, child, 0, file);
         outputASTEdges(child, file);
@@ -100,7 +100,7 @@ void outputAST(AST* node, FILE* file) {
     if (node == NULL) return;
     //printf("VISIT:: %s\n", node->token);
     writeNode(node, 0, file);
-    for (int i = 0; i < node->childCount; i++) {
+    for (size_t i = 0; i < node->childCount; i++) {
         AST* child = getChild(node, i);
         outputAST(child, file);
     }
@@ -247,9 +247,9 @@ void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
 void analyzeCutCondition(AST* head) {
     AST* condition = getChild(head, 0);
     AST* leftOperand = getChild(condition, 0);
-    AST* valuePlaceQualifier = createNode(arc4random(), "__value_place");
+    AST* valuePlaceQualifier = createNode(arc4random(), "__read");
     insertBetween(condition, leftOperand, valuePlaceQualifier);
-    for (int i = 1; i < condition->childCount; i++) {
+    for (size_t i = 1; i < condition->childCount; i++) {
         AST* element = getChild(condition, i);
         AST* readQualifier = createNode(arc4random(), "__read");
         insertBetween(condition, element, readQualifier);
@@ -279,7 +279,7 @@ void analyzeRepeat(AST* repeatNode) {
 void analyzeAssign(AST* assignNode) {
     AST* lvalue = getChild(assignNode, 0);
     AST* rvalue = getChild(assignNode, 1);
-    AST* vp = createNode(arc4random(), "__value_place");
+    AST* vp = createNode(arc4random(), "__read");
     AST* read = createNode(arc4random(), "__read");
 
     insertBetween(assignNode, lvalue, vp);
@@ -293,7 +293,7 @@ void analyzeCall(AST* call) {
 
     if(call->childCount > 1) {
         AST* list_expr = getChild(call, 1);
-        for (int i = 0; i < list_expr->childCount; i++) {
+        for (size_t i = 0; i < list_expr->childCount; i++) {
             AST* listChild = getChild(list_expr, i);
             if (listChild != NULL) {
                 AST* read = createNode(arc4random(), "__read");
