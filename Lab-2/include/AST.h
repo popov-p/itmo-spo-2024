@@ -22,7 +22,9 @@ AST* duplicateTree(AST* head);
 AST* findNodeById(AST* node, uint32_t id);
 AST* duplicateLeftSubtree(AST* head);
 AST* buildFromParseResult(pParseResult parseResult);
-void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node);
+void setChildFromAntlrNode(AST* parent,
+                           pANTLR3_BASE_TREE_ADAPTOR adaptor,
+                           pANTLR3_BASE_TREE node);
 
 AST* getChild(AST* parent, size_t i);
 void printAST(AST* head, FILE* file);

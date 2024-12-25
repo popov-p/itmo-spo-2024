@@ -9,12 +9,15 @@ if (CMAKE_C_COMPILER_ID STREQUAL "clang")
     add_compile_options(-Wno-insecureAPI)
 endif()
 
-find_library(ANTLR3_LIB antlr3c PATHS /usr/local/lib /usr/lib)
+ find_library(ANTLR3_LIB antlr3c PATHS /usr/local/lib /usr/lib)
 
-file(GLOB PROJECT_SOURCES
-  src/*.h
-  src/*.c
-)
+file(GLOB PROJECT_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB PROJECT_SOURCES "${CMAKE_SOURCE_DIR}/src/*.c")
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+source_group("Headers" FILES ${PROJECT_HEADERS})
+source_group("Sources" FILES ${PROJECT_SOURCES})
+
+
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(${PROJECT_NAME} ${ANTLR3_LIB})
