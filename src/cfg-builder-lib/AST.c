@@ -132,19 +132,27 @@ void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
 }
 
 
-AST* duplicateTree(AST* head) {
-    if (!head)
-        return NULL;
+AST* duplicateTreeRecursive(AST* head) {
+    if (!head) return NULL;
 
     AST* newNode = createNode(head->id, head->token);
 
     for (size_t i = 0; i < head->childCount; i++) {
-        AST* childCopy = duplicateTree(head->children[i]);
+        AST* childCopy = duplicateTreeRecursive(head->children[i]);
         addChild(newNode, childCopy);
     }
 
     return newNode;
 }
+
+
+AST* duplicateTree(AST* head) {
+    if (!head) {
+        return NULL;
+    }
+    return duplicateTreeRecursive(head);
+}
+
 
 
 AST* duplicateLeftSubtree(AST* head) {

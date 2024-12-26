@@ -18,6 +18,7 @@ void addChild(AST* parent, AST* child);
 void freeAST(AST* head);
 void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
 AST* duplicateTree(AST* head);
+AST* duplicateTreeRecursive(AST* head);
 
 AST* findNodeById(AST* node, uint32_t id);
 AST* duplicateLeftSubtree(AST* head);

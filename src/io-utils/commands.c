@@ -43,11 +43,7 @@ char* getBaseName(const char* inputFilePath) {
     return baseName;
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-void executeCommand(const char* errorMessage, const char* commandFormat, ...) {
+void executeCommand(const char* commandFormat, ...) {
     va_list args;
     va_start(args, commandFormat);
 
@@ -68,11 +64,10 @@ void executeCommand(const char* errorMessage, const char* commandFormat, ...) {
 
     int result = system(command);
 
-    if (result != 0) {
-        fprintf(stderr, "%s\n", errorMessage);
-    } else {
+    if (result != 0)
+        fprintf(stderr, "Error occurred. Result code: %d\n", result);
+    else
         printf("Command executed successfully.\n");
-    }
 
     free(command);
 

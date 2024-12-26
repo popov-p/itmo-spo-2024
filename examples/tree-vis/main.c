@@ -1,7 +1,8 @@
 #include "TreeBuilder.h"
 #include "commands.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     if (argc != 3) {
         printf("usage: %s <input file> <output dir>\n", argv[0]);
         return 1;
@@ -22,13 +23,9 @@ int main(int argc, char** argv) {
 
     generateDot(parseResult, dotFilePath);
 
-    executeCommand("Failed to generate PNG from dot file.",
-                   "dot -Tpng %s -o %s",
-                    dotFilePath, pngFilePath);
+    executeCommand("dot -Tpng %s -o %s", dotFilePath, pngFilePath);
 
-    executeCommand("Failed to open PNG file with xdg-open.",
-                   "xdg-open %s",
-                   pngFilePath);
+    executeCommand("xdg-open %s", pngFilePath);
 
     free(pngFilePath);
     free(dotFilePath);
