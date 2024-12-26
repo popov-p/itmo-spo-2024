@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         printf("not ok. file does not exist or deletion failed: %s\n", outputFilePath);
     }
 
-    const char* compileGrammar = "java -jar /home/pavel/Projects/langparser/antlr-3.4-complete.jar /home/pavel/Projects/langparser/Lab-1/src/Sigma.g";
+    const char* compileGrammar = "antlr3 /home/pavel-ub/devel/itmo-spo-2024/Lab-1/src/Sigma.g";
     int res = system(compileGrammar);
     if (res == -1) {
         printf("not ok, failed antlr compiler\n");
