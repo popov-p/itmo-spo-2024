@@ -12,14 +12,12 @@ typedef struct ParseResult {
     V4Parser_source_return sr;
 } ParseResult;
 
-typedef ParseResult* pParseResult;
-
 char* readFileToString(const char* filePath);
 
-pParseResult parse(const char* text);
+ParseResult* parse(const char* text);
 
-void generateDot(pParseResult result, const char* path);
+void generateDot(ParseResult* result, const char* path);
 
-int cleanup(pParseResult pr);
+int cleanup(ParseResult* pr);
 
 #endif // TREEBUILDER_H

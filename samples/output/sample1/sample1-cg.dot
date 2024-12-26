@@ -1,0 +1,3 @@
+digraph CallGraph {
+    node2720734176 [label="main"];
+}

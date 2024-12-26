@@ -18,17 +18,23 @@ int main(int argc, char** argv) {
         *dot = '\0';
 
 
-    char dotFilePath[256];
-    snprintf(dotFilePath, sizeof(dotFilePath), "%s/%s.dot", outputDir, baseName);
+    size_t dotLen = snprintf(NULL, 0, "%s/%s.dot", outputDir, baseName) + 1;
+    char* dotFilePath = (char*)malloc(dotLen);
+    if (!dotFilePath)
+        fprintf(stderr, "not onemory allocation failed\n");
+    snprintf(dotFilePath, dotLen, "%s/%s.dot", outputDir, baseName);
 
-    char pngFilePath[256];
-    snprintf(pngFilePath, sizeof(pngFilePath), "%s/%s.png", outputDir, baseName);
+    size_t pngLen = snprintf(NULL, 0, "%s/%s.png", outputDir, baseName) + 1;
+    char* pngFilePath = (char*)malloc(pngLen);
+    if (!pngFilePath)
+        fprintf(stderr, "Memory allocation failed\n");
+    snprintf(pngFilePath, pngLen, "%s/%s.png", outputDir, baseName);
 
     char *inputText = readFileToString(inputFilePath);
     if (!inputText)
         printf("not ok, failed reading from file\n");
 
-        pParseResult parseResult = parse(inputText);
+    ParseResult* parseResult = parse(inputText);
 
     generateDot(parseResult, dotFilePath);
 

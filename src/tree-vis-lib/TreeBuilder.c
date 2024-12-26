@@ -25,8 +25,8 @@ char* readFileToString(const char* filePath) {
     return buffer;
 }
 
-pParseResult parse(const char* text) {
-    pParseResult result = (pParseResult)malloc(sizeof(ParseResult));
+ParseResult* parse(const char* text) {
+    ParseResult* result = (ParseResult*)malloc(sizeof(ParseResult));
 
     result->is = antlr3StringStreamNew((pANTLR3_UINT8)text,
                                        ANTLR3_ENC_8BIT, strlen(text),
@@ -38,7 +38,7 @@ pParseResult parse(const char* text) {
     return result;
 }
 
-void generateDot(pParseResult result, const char* path) {
+void generateDot(ParseResult* result, const char* path) {
     pANTLR3_BASE_TREE_ADAPTOR treeAdaptor = result->p->adaptor;
     pANTLR3_STRING dotString = treeAdaptor->makeDot(treeAdaptor, result->sr.tree);
 
@@ -50,7 +50,7 @@ void generateDot(pParseResult result, const char* path) {
         printf("not ok. trouble with opening .dot file\n");
 }
 
-int cleanup(pParseResult pr) {
+int cleanup(ParseResult* pr) {
     if (pr->p)
         pr->p->free(pr->p);
     if (pr->ts)
