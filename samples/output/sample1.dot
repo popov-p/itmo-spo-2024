@@ -7,51 +7,33 @@ digraph {
 
 	edge [arrowsize=.5, color="black", style="bold"]
 
-	n0x7ba0a8f708f8[label="SOURCE"]
-	n0x7ba0a8f6ea80[label="SOURCE_ITEM"]
-	n0x7ba0a8f6e948[label="FUNC_DEF"]
-	n0x7ba0a8f6dbe0[label="FUNC_SIG"]
-	n0x7ba0a8f6d970[label="alpha"]
-	n0x7ba0a8f6daa8[label="LIST_ARG"]
-	n0x7ba0a8f6de50[label="bool"]
-	n0x7ba0a8f6e6d8[label="="]
-	n0x7ba0a8f6e468[label="x"]
-	n0x7ba0a8f6e810[label="2"]
-	n0x7ba0a8f707c0[label="SOURCE_ITEM"]
-	n0x7ba0a8f70688[label="FUNC_DEF"]
-	n0x7ba0a8f6ecf0[label="FUNC_SIG"]
-	n0x7ba0a8f6e330[label="main"]
-	n0x7ba0a8f6ebb8[label="LIST_ARG"]
-	n0x7ba0a8f6ef60[label="int"]
-	n0x7ba0a8f6f7e8[label="="]
-	n0x7ba0a8f6f578[label="x"]
-	n0x7ba0a8f6f920[label="t"]
-	n0x7ba0a8f70550[label="="]
-	n0x7ba0a8f6ff38[label="f"]
-	n0x7ba0a8f70418[label="CALL"]
-	n0x7ba0a8f702e0[label="t"]
+	n0x7c134beb37e8[label="SOURCE"]
+	n0x7c134beb36b0[label="SOURCE_ITEM"]
+	n0x7c134beb3578[label="FUNC_DEF"]
+	n0x7c134beb1be0[label="FUNC_SIG"]
+	n0x7c134beb1970[label="main"]
+	n0x7c134beb1aa8[label="LIST_ARG"]
+	n0x7c134beb1e50[label="int"]
+	n0x7c134beb26d8[label="="]
+	n0x7c134beb2468[label="x"]
+	n0x7c134beb2810[label="t"]
+	n0x7c134beb3440[label="="]
+	n0x7c134beb2e28[label="f"]
+	n0x7c134beb3308[label="CALL"]
+	n0x7c134beb31d0[label="t"]
 
-		n0x7ba0a8f708f8 -> n0x7ba0a8f6ea80		// SOURCE -> SOURCE_ITEM
-		n0x7ba0a8f6ea80 -> n0x7ba0a8f6e948		// SOURCE_ITEM -> FUNC_DEF
-		n0x7ba0a8f6e948 -> n0x7ba0a8f6dbe0		// FUNC_DEF -> FUNC_SIG
-		n0x7ba0a8f6dbe0 -> n0x7ba0a8f6d970		// FUNC_SIG -> alpha
-		n0x7ba0a8f6dbe0 -> n0x7ba0a8f6daa8		// FUNC_SIG -> LIST_ARG
-		n0x7ba0a8f6dbe0 -> n0x7ba0a8f6de50		// FUNC_SIG -> bool
-		n0x7ba0a8f6e948 -> n0x7ba0a8f6e6d8		// FUNC_DEF -> =
-		n0x7ba0a8f6e6d8 -> n0x7ba0a8f6e468		// = -> x
-		n0x7ba0a8f6e6d8 -> n0x7ba0a8f6e810		// = -> 2
-		n0x7ba0a8f708f8 -> n0x7ba0a8f707c0		// SOURCE -> SOURCE_ITEM
-		n0x7ba0a8f707c0 -> n0x7ba0a8f70688		// SOURCE_ITEM -> FUNC_DEF
-		n0x7ba0a8f70688 -> n0x7ba0a8f6ecf0		// FUNC_DEF -> FUNC_SIG
-		n0x7ba0a8f6ecf0 -> n0x7ba0a8f6e330		// FUNC_SIG -> main
-		n0x7ba0a8f6ecf0 -> n0x7ba0a8f6ebb8		// FUNC_SIG -> LIST_ARG
-		n0x7ba0a8f6ecf0 -> n0x7ba0a8f6ef60		// FUNC_SIG -> int
-		n0x7ba0a8f70688 -> n0x7ba0a8f6f7e8		// FUNC_DEF -> =
-		n0x7ba0a8f6f7e8 -> n0x7ba0a8f6f578		// = -> x
-		n0x7ba0a8f6f7e8 -> n0x7ba0a8f6f920		// = -> t
-		n0x7ba0a8f70688 -> n0x7ba0a8f70550		// FUNC_DEF -> =
-		n0x7ba0a8f70550 -> n0x7ba0a8f6ff38		// = -> f
-		n0x7ba0a8f70550 -> n0x7ba0a8f70418		// = -> CALL
-		n0x7ba0a8f70418 -> n0x7ba0a8f702e0		// CALL -> t
+		n0x7c134beb37e8 -> n0x7c134beb36b0		// SOURCE -> SOURCE_ITEM
+		n0x7c134beb36b0 -> n0x7c134beb3578		// SOURCE_ITEM -> FUNC_DEF
+		n0x7c134beb3578 -> n0x7c134beb1be0		// FUNC_DEF -> FUNC_SIG
+		n0x7c134beb1be0 -> n0x7c134beb1970		// FUNC_SIG -> main
+		n0x7c134beb1be0 -> n0x7c134beb1aa8		// FUNC_SIG -> LIST_ARG
+		n0x7c134beb1be0 -> n0x7c134beb1e50		// FUNC_SIG -> int
+		n0x7c134beb3578 -> n0x7c134beb26d8		// FUNC_DEF -> =
+		n0x7c134beb26d8 -> n0x7c134beb2468		// = -> x
+		n0x7c134beb26d8 -> n0x7c134beb2810		// = -> t
+		n0x7c134beb3578 -> n0x7c134beb3440		// FUNC_DEF -> =
+		n0x7c134beb3440 -> n0x7c134beb2e28		// = -> f
+		n0x7c134beb3440 -> n0x7c134beb3308		// = -> CALL
+		n0x7c134beb3308 -> n0x7c134beb31d0		// CALL -> t
 
 }

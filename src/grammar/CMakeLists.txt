@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.21.0)
-
 find_package(Java REQUIRED)
 set(GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/V4.g)
 message(STATUS "Grammar: ${GRAMMAR_FILE}")
