@@ -39,3 +39,23 @@ if(NOT ANTLR_EXIT_CODE EQUAL 0)
 else()
     message(STATUS "ANTLR файлы успешно сгенерированы.")
 endif()
+
+find_library(ANTLR_LIBRARY NAMES antlr3c)
+message(STATUS "ANTLR3_LIB:" ${ANTLR_LIBRARY})
+
+add_library(${GRAMMAR_RUNTIME_LIB} STATIC)
+
+file(GLOB GRAMMAR_RUNTIME_LIB_SOURCES 
+    ${CMAKE_CURRENT_BINARY_DIR}/*.c
+)
+file(GLOB GRAMMAR_RUNTIME_LIB_HEADERS 
+    ${CMAKE_CURRENT_BINARY_DIR}/*.h
+)
+
+message(STATUS "GRAMMAR_RUNTIME_LIB_CONTENTS:" ${GRAMMAR_RUNTIME_LIB_SOURCES}
+                                               ${GRAMMAR_RUNTIME_LIB_HEADERS})
+                                             
+target_include_directories(${GRAMMAR_RUNTIME_LIB} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_sources(${GRAMMAR_RUNTIME_LIB} PRIVATE ${GRAMMAR_RUNTIME_LIB_SOURCES})
+
+target_link_libraries(${GRAMMAR_RUNTIME_LIB} ${ANTLR_LIBRARY})
