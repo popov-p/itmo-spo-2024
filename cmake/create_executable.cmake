@@ -1,11 +1,12 @@
-function(create_executable exec_name ${ARGN})
+function(create_executable exec_name)
     add_executable(${exec_name} main.c)
     
-    target_link_libraries(${exec_name} ${ARGN})
+    target_link_libraries(${exec_name} PRIVATE ${ARGN})
+    target_compile_options(${exec_name} PRIVATE
+        $<$<AND:$<CONFIG:Debug>,$<BOOL:${USE_SANITIZERS}>>:-fsanitize=address -fno-omit-frame-pointer>
+    )
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_options(${exec_name} PRIVATE -fsanitize=address -fno-omit-frame-pointer)
-        target_link_options(${exec_name} PRIVATE -fsanitize=address)
-    endif()
+    target_link_options(${exec_name} PRIVATE
+        $<$<AND:$<CONFIG:Debug>,$<BOOL:${USE_SANITIZERS}>>:-fsanitize=address>
+    )
 endfunction()
-    

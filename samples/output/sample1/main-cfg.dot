@@ -4,41 +4,216 @@ digraph G {
     end [label="Конец"];
     node0 [label="BB0"];
     node1 [label="BB1"];
-    node2 [label="BB2"];
+    node2 [label="LPXT"];
+    node3 [label="BB3"];
+    node4 [label="LPXT"];
+    node5 [label="MRG"];
+    node6 [label="BB6"];
+    node7 [label="BB7"];
+    node8 [label="BB8"];
+    node9 [label="BB9"];
+    node10 [label="BB10"];
+    node11 [label="BB11"];
+    node12 [label="BB12"];
+    node13 [label="BB13"];
+    node14 [label="BB14"];
+    node15 [label="BB15"];
+    node16 [label="BB16"];
+    node17 [label="BB17"];
     node0 -> node1;
     node1 -> node2;
+    node1 -> node3;
+    node3 -> node4;
+    node3 -> node6;
+    node4 -> node16;
+    node5 -> node4;
+    node5 -> node13;
+    node6 -> node7;
+    node6 -> node10;
+    node6 -> node5;
+    node7 -> node8;
+    node8 -> node9;
+    node9 -> node5;
+    node10 -> node11;
+    node11 -> node12;
+    node12 -> node5;
+    node13 -> node14;
+    node14 -> node15;
+    node15 -> node4;
+    node16 -> node17;
+    node17 -> node1;
     start -> node0;
     node2 -> end;
 subgraph cluster_0 {
     label="BB0";
-    cluster_0_node4047189992 [label="="];
-    cluster_0_node4200870108 [label="__read"];
-    cluster_0_node4047189368 [label="x"];
-    cluster_0_node3769689743 [label="__read"];
-    cluster_0_node4047190304 [label="t"];
-    cluster_0_node4047189992 -> cluster_0_node4200870108;
-    cluster_0_node4200870108 -> cluster_0_node4047189368;
-    cluster_0_node4047189992 -> cluster_0_node3769689743;
-    cluster_0_node3769689743 -> cluster_0_node4047190304;
+    cluster_0_node2713314552 [label="="];
+    cluster_0_node2626127730 [label="__read"];
+    cluster_0_node2713313928 [label="x"];
+    cluster_0_node3728058193 [label="__read"];
+    cluster_0_node2713314864 [label="t"];
+    cluster_0_node2713314552 -> cluster_0_node2626127730;
+    cluster_0_node2626127730 -> cluster_0_node2713313928;
+    cluster_0_node2713314552 -> cluster_0_node3728058193;
+    cluster_0_node3728058193 -> cluster_0_node2713314864;
 }
 subgraph cluster_1 {
     label="BB1";
-    cluster_1_node4047193112 [label="CALL"];
-    cluster_1_node4047192800 [label="t"];
-    cluster_1_node4047193112 -> cluster_1_node4047192800;
+    cluster_1_node2713369776 [label="LOOP"];
+    cluster_1_node2713316424 [label="<"];
+    cluster_1_node1173269988 [label="__read"];
+    cluster_1_node2713316736 [label="a"];
+    cluster_1_node2278332421 [label="__read"];
+    cluster_1_node2713317360 [label="b"];
+    cluster_1_node2713369776 -> cluster_1_node2713316424;
+    cluster_1_node2713316424 -> cluster_1_node1173269988;
+    cluster_1_node1173269988 -> cluster_1_node2713316736;
+    cluster_1_node2713316424 -> cluster_1_node2278332421;
+    cluster_1_node2278332421 -> cluster_1_node2713317360;
 }
-subgraph cluster_2 {
-    label="BB2";
-    cluster_2_node4047193424 [label="="];
-    cluster_2_node1052093005 [label="__read"];
-    cluster_2_node4047191864 [label="f"];
-    cluster_2_node2009119384 [label="__read"];
-    cluster_2_node4047193112 [label="CALL"];
-    cluster_2_node4047192800 [label="t"];
-    cluster_2_node4047193424 -> cluster_2_node1052093005;
-    cluster_2_node1052093005 -> cluster_2_node4047191864;
-    cluster_2_node4047193424 -> cluster_2_node2009119384;
-    cluster_2_node2009119384 -> cluster_2_node4047193112;
-    cluster_2_node4047193112 -> cluster_2_node4047192800;
+subgraph cluster_3 {
+    label="BB3";
+    cluster_3_node2713366656 [label="LOOP"];
+    cluster_3_node2713318296 [label="<"];
+    cluster_3_node1178488242 [label="__read"];
+    cluster_3_node2713318608 [label="c"];
+    cluster_3_node4082883424 [label="__read"];
+    cluster_3_node2713319232 [label="d"];
+    cluster_3_node2713366656 -> cluster_3_node2713318296;
+    cluster_3_node2713318296 -> cluster_3_node1178488242;
+    cluster_3_node1178488242 -> cluster_3_node2713318608;
+    cluster_3_node2713318296 -> cluster_3_node4082883424;
+    cluster_3_node4082883424 -> cluster_3_node2713319232;
+}
+subgraph cluster_6 {
+    label="BB6";
+    cluster_6_node2713360104 [label="IF"];
+    cluster_6_node2713320168 [label=">"];
+    cluster_6_node2713320480 [label="x"];
+    cluster_6_node2713321104 [label="y"];
+    cluster_6_node2713360104 -> cluster_6_node2713320168;
+    cluster_6_node2713320168 -> cluster_6_node2713320480;
+    cluster_6_node2713320168 -> cluster_6_node2713321104;
+}
+subgraph cluster_7 {
+    label="BB7";
+    cluster_7_node2713335456 [label="CALL"];
+    cluster_7_node2713335144 [label="foo"];
+    cluster_7_node2713335456 -> cluster_7_node2713335144;
+}
+subgraph cluster_8 {
+    label="BB8";
+    cluster_8_node2713335768 [label="="];
+    cluster_8_node910447865 [label="__read"];
+    cluster_8_node2713334208 [label="m"];
+    cluster_8_node667651238 [label="__read"];
+    cluster_8_node2713335456 [label="CALL"];
+    cluster_8_node2713335144 [label="foo"];
+    cluster_8_node2713335768 -> cluster_8_node910447865;
+    cluster_8_node910447865 -> cluster_8_node2713334208;
+    cluster_8_node2713335768 -> cluster_8_node667651238;
+    cluster_8_node667651238 -> cluster_8_node2713335456;
+    cluster_8_node2713335456 -> cluster_8_node2713335144;
+}
+subgraph cluster_9 {
+    label="BB9";
+    cluster_9_node2713339200 [label="="];
+    cluster_9_node1608733914 [label="__read"];
+    cluster_9_node2713337640 [label="m"];
+    cluster_9_node2655766828 [label="__read"];
+    cluster_9_node2713338888 [label="CALL"];
+    cluster_9_node2713338576 [label="bar"];
+    cluster_9_node2713339200 -> cluster_9_node1608733914;
+    cluster_9_node1608733914 -> cluster_9_node2713337640;
+    cluster_9_node2713339200 -> cluster_9_node2655766828;
+    cluster_9_node2655766828 -> cluster_9_node2713338888;
+    cluster_9_node2713338888 -> cluster_9_node2713338576;
+}
+subgraph cluster_10 {
+    label="BB10";
+    cluster_10_node2713357608 [label="ELSE"];
+    cluster_10_node2713359792 [label="BLOCK"];
+    cluster_10_node2713359480 [label="="];
+    cluster_10_node2713357920 [label="m"];
+    cluster_10_node2713359168 [label="CALL"];
+    cluster_10_node2713358856 [label="baz"];
+    cluster_10_node2713357608 -> cluster_10_node2713359792;
+    cluster_10_node2713359792 -> cluster_10_node2713359480;
+    cluster_10_node2713359480 -> cluster_10_node2713357920;
+    cluster_10_node2713359480 -> cluster_10_node2713359168;
+    cluster_10_node2713359168 -> cluster_10_node2713358856;
+}
+subgraph cluster_11 {
+    label="BB11";
+    cluster_11_node2713359168 [label="CALL"];
+    cluster_11_node2713358856 [label="baz"];
+    cluster_11_node2713359168 -> cluster_11_node2713358856;
+}
+subgraph cluster_12 {
+    label="BB12";
+    cluster_12_node2713359480 [label="="];
+    cluster_12_node3004835687 [label="__read"];
+    cluster_12_node2713357920 [label="m"];
+    cluster_12_node3303008015 [label="__read"];
+    cluster_12_node2713359168 [label="CALL"];
+    cluster_12_node2713358856 [label="baz"];
+    cluster_12_node2713359480 -> cluster_12_node3004835687;
+    cluster_12_node3004835687 -> cluster_12_node2713357920;
+    cluster_12_node2713359480 -> cluster_12_node3303008015;
+    cluster_12_node3303008015 -> cluster_12_node2713359168;
+    cluster_12_node2713359168 -> cluster_12_node2713358856;
+}
+subgraph cluster_13 {
+    label="BB13";
+    cluster_13_node2713362600 [label="CALL"];
+    cluster_13_node2713362288 [label="phi"];
+    cluster_13_node2713362600 -> cluster_13_node2713362288;
+}
+subgraph cluster_14 {
+    label="BB14";
+    cluster_14_node2713362912 [label="="];
+    cluster_14_node3465620630 [label="__read"];
+    cluster_14_node2713361352 [label="m"];
+    cluster_14_node1766910558 [label="__read"];
+    cluster_14_node2713362600 [label="CALL"];
+    cluster_14_node2713362288 [label="phi"];
+    cluster_14_node2713362912 -> cluster_14_node3465620630;
+    cluster_14_node3465620630 -> cluster_14_node2713361352;
+    cluster_14_node2713362912 -> cluster_14_node1766910558;
+    cluster_14_node1766910558 -> cluster_14_node2713362600;
+    cluster_14_node2713362600 -> cluster_14_node2713362288;
+}
+subgraph cluster_15 {
+    label="BB15";
+    cluster_15_node2713366344 [label="="];
+    cluster_15_node1488697477 [label="__read"];
+    cluster_15_node2713364784 [label="m"];
+    cluster_15_node1214472250 [label="__read"];
+    cluster_15_node2713366032 [label="CALL"];
+    cluster_15_node2713365720 [label="psi"];
+    cluster_15_node2713366344 -> cluster_15_node1488697477;
+    cluster_15_node1488697477 -> cluster_15_node2713364784;
+    cluster_15_node2713366344 -> cluster_15_node1214472250;
+    cluster_15_node1214472250 -> cluster_15_node2713366032;
+    cluster_15_node2713366032 -> cluster_15_node2713365720;
+}
+subgraph cluster_16 {
+    label="BB16";
+    cluster_16_node2713369152 [label="CALL"];
+    cluster_16_node2713368840 [label="omega"];
+    cluster_16_node2713369152 -> cluster_16_node2713368840;
+}
+subgraph cluster_17 {
+    label="BB17";
+    cluster_17_node2713369464 [label="="];
+    cluster_17_node460185248 [label="__read"];
+    cluster_17_node2713367904 [label="m"];
+    cluster_17_node1984899445 [label="__read"];
+    cluster_17_node2713369152 [label="CALL"];
+    cluster_17_node2713368840 [label="omega"];
+    cluster_17_node2713369464 -> cluster_17_node460185248;
+    cluster_17_node460185248 -> cluster_17_node2713367904;
+    cluster_17_node2713369464 -> cluster_17_node1984899445;
+    cluster_17_node1984899445 -> cluster_17_node2713369152;
+    cluster_17_node2713369152 -> cluster_17_node2713368840;
 }
 }

@@ -8,6 +8,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
+set(SRCDIR src)
+set(EXAMPLEDIR examples)
 
 set(GRAMMAR grammar)
 set(GRAMMAR_RUNTIME_LIB runtime-lib)
@@ -17,5 +19,11 @@ set(CFG_BUILDER_LIB cfg-builder-lib)
 set(CFG_BUILDER cfg-builder)
 set(IO_UTILS io-utils)
 
-add_subdirectory(src)
-add_subdirectory(examples)
+add_subdirectory(${SRCDIR}/${GRAMMAR})
+add_subdirectory(${SRCDIR}/${TREE_VIS_LIB})
+add_subdirectory(${SRCDIR}/${CFG_BUILDER_LIB})
+add_subdirectory(${SRCDIR}/${IO_UTILS})
+
+add_subdirectory(${EXAMPLEDIR}/${TREE_VIS})
+add_subdirectory(${EXAMPLEDIR}/${CFG_BUILDER})
+

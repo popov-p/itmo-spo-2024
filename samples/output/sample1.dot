@@ -7,33 +7,167 @@ digraph {
 
 	edge [arrowsize=.5, color="black", style="bold"]
 
-	n0x72912ccc9ff8[label="SOURCE"]
-	n0x72912ccc9ec0[label="SOURCE_ITEM"]
-	n0x72912ccc9d88[label="FUNC_DEF"]
-	n0x72912ccc83f0[label="FUNC_SIG"]
-	n0x72912ccc8180[label="main"]
-	n0x72912ccc82b8[label="LIST_ARG"]
-	n0x72912ccc8660[label="int"]
-	n0x72912ccc8ee8[label="="]
-	n0x72912ccc8c78[label="x"]
-	n0x72912ccc9020[label="t"]
-	n0x72912ccc9c50[label="="]
-	n0x72912ccc9638[label="f"]
-	n0x72912ccc9b18[label="CALL"]
-	n0x72912ccc99e0[label="t"]
+	n0x7f43090c2f20[label="SOURCE"]
+	n0x7f43090b4658[label="SOURCE_ITEM"]
+	n0x7f43090b4178[label="FUNC_DEF"]
+	n0x7f43090853f0[label="FUNC_SIG"]
+	n0x7f4309085180[label="repeatCallExample"]
+	n0x7f43090852b8[label="LIST_ARG"]
+	n0x7f4309085660[label="int"]
+	n0x7f43090b42b0[label="REPEAT"]
+	n0x7f43090b3a28[label="BLOCK"]
+	n0x7f43090b3b60[label="REPEAT"]
+	n0x7f43090b37b8[label="BLOCK"]
+	n0x7f43090b3680[label="="]
+	n0x7f43090b00e0[label="m"]
+	n0x7f43090b3548[label="CALL"]
+	n0x7f43090b16d0[label="f"]
+	n0x7f43090b3410[label="LIST_EXPR"]
+	n0x7f43090b32d8[label="CALL"]
+	n0x7f43090b21c8[label="g"]
+	n0x7f43090b31a0[label="LIST_EXPR"]
+	n0x7f43090b3068[label="CALL"]
+	n0x7f43090b27e0[label="h"]
+	n0x7f43090b2f30[label="LIST_EXPR"]
+	n0x7f43090b2918[label="x"]
+	n0x7f43090b2df8[label="CALL"]
+	n0x7f43090b2cc0[label="y"]
+	n0x7f43090b3c98[label="<"]
+	n0x7f43090b3dd0[label="x"]
+	n0x7f43090b4040[label="3"]
+	n0x7f43090b43e8[label="<"]
+	n0x7f43090b4520[label="t"]
+	n0x7f43090b4790[label="d"]
+	n0x7f43090c2de8[label="SOURCE_ITEM"]
+	n0x7f43090c2428[label="FUNC_DEF"]
+	n0x7f43090b4a00[label="FUNC_SIG"]
+	n0x7f43090b3f08[label="main"]
+	n0x7f43090b48c8[label="LIST_ARG"]
+	n0x7f43090b4c70[label="int"]
+	n0x7f43090b54f8[label="="]
+	n0x7f43090b5288[label="x"]
+	n0x7f43090b5630[label="t"]
+	n0x7f43090c2cb0[label="LOOP"]
+	n0x7f43090b5c48[label="<"]
+	n0x7f43090b5d80[label="a"]
+	n0x7f43090b5ff0[label="b"]
+	n0x7f43090c2080[label="LOOP"]
+	n0x7f43090b6398[label="<"]
+	n0x7f43090b64d0[label="c"]
+	n0x7f43090b6740[label="d"]
+	n0x7f43090c06e8[label="IF"]
+	n0x7f43090b6ae8[label=">"]
+	n0x7f43090b6c20[label="x"]
+	n0x7f43090b6e90[label="y"]
+	n0x7f43090bb7b0[label="BLOCK"]
+	n0x7f43090ba7d8[label="="]
+	n0x7f43090ba1c0[label="m"]
+	n0x7f43090ba6a0[label="CALL"]
+	n0x7f43090ba568[label="foo"]
+	n0x7f43090baa48[label="BREAK"]
+	n0x7f43090bb540[label="="]
+	n0x7f43090baf28[label="m"]
+	n0x7f43090bb408[label="CALL"]
+	n0x7f43090bb2d0[label="bar"]
+	n0x7f43090bfd28[label="ELSE"]
+	n0x7f43090c05b0[label="BLOCK"]
+	n0x7f43090c0478[label="="]
+	n0x7f43090bfe60[label="m"]
+	n0x7f43090c0340[label="CALL"]
+	n0x7f43090c0208[label="baz"]
+	n0x7f43090c11e0[label="="]
+	n0x7f43090c0bc8[label="m"]
+	n0x7f43090c10a8[label="CALL"]
+	n0x7f43090c0f70[label="phi"]
+	n0x7f43090c1450[label="BREAK"]
+	n0x7f43090c1f48[label="="]
+	n0x7f43090c1930[label="m"]
+	n0x7f43090c1e10[label="CALL"]
+	n0x7f43090c1cd8[label="psi"]
+	n0x7f43090c2b78[label="="]
+	n0x7f43090c2560[label="m"]
+	n0x7f43090c2a40[label="CALL"]
+	n0x7f43090c2908[label="omega"]
 
-		n0x72912ccc9ff8 -> n0x72912ccc9ec0		// SOURCE -> SOURCE_ITEM
-		n0x72912ccc9ec0 -> n0x72912ccc9d88		// SOURCE_ITEM -> FUNC_DEF
-		n0x72912ccc9d88 -> n0x72912ccc83f0		// FUNC_DEF -> FUNC_SIG
-		n0x72912ccc83f0 -> n0x72912ccc8180		// FUNC_SIG -> main
-		n0x72912ccc83f0 -> n0x72912ccc82b8		// FUNC_SIG -> LIST_ARG
-		n0x72912ccc83f0 -> n0x72912ccc8660		// FUNC_SIG -> int
-		n0x72912ccc9d88 -> n0x72912ccc8ee8		// FUNC_DEF -> =
-		n0x72912ccc8ee8 -> n0x72912ccc8c78		// = -> x
-		n0x72912ccc8ee8 -> n0x72912ccc9020		// = -> t
-		n0x72912ccc9d88 -> n0x72912ccc9c50		// FUNC_DEF -> =
-		n0x72912ccc9c50 -> n0x72912ccc9638		// = -> f
-		n0x72912ccc9c50 -> n0x72912ccc9b18		// = -> CALL
-		n0x72912ccc9b18 -> n0x72912ccc99e0		// CALL -> t
+		n0x7f43090c2f20 -> n0x7f43090b4658		// SOURCE -> SOURCE_ITEM
+		n0x7f43090b4658 -> n0x7f43090b4178		// SOURCE_ITEM -> FUNC_DEF
+		n0x7f43090b4178 -> n0x7f43090853f0		// FUNC_DEF -> FUNC_SIG
+		n0x7f43090853f0 -> n0x7f4309085180		// FUNC_SIG -> repeatCallExample
+		n0x7f43090853f0 -> n0x7f43090852b8		// FUNC_SIG -> LIST_ARG
+		n0x7f43090853f0 -> n0x7f4309085660		// FUNC_SIG -> int
+		n0x7f43090b4178 -> n0x7f43090b42b0		// FUNC_DEF -> REPEAT
+		n0x7f43090b42b0 -> n0x7f43090b3a28		// REPEAT -> BLOCK
+		n0x7f43090b3a28 -> n0x7f43090b3b60		// BLOCK -> REPEAT
+		n0x7f43090b3b60 -> n0x7f43090b37b8		// REPEAT -> BLOCK
+		n0x7f43090b37b8 -> n0x7f43090b3680		// BLOCK -> =
+		n0x7f43090b3680 -> n0x7f43090b00e0		// = -> m
+		n0x7f43090b3680 -> n0x7f43090b3548		// = -> CALL
+		n0x7f43090b3548 -> n0x7f43090b16d0		// CALL -> f
+		n0x7f43090b3548 -> n0x7f43090b3410		// CALL -> LIST_EXPR
+		n0x7f43090b3410 -> n0x7f43090b32d8		// LIST_EXPR -> CALL
+		n0x7f43090b32d8 -> n0x7f43090b21c8		// CALL -> g
+		n0x7f43090b32d8 -> n0x7f43090b31a0		// CALL -> LIST_EXPR
+		n0x7f43090b31a0 -> n0x7f43090b3068		// LIST_EXPR -> CALL
+		n0x7f43090b3068 -> n0x7f43090b27e0		// CALL -> h
+		n0x7f43090b3068 -> n0x7f43090b2f30		// CALL -> LIST_EXPR
+		n0x7f43090b2f30 -> n0x7f43090b2918		// LIST_EXPR -> x
+		n0x7f43090b2f30 -> n0x7f43090b2df8		// LIST_EXPR -> CALL
+		n0x7f43090b2df8 -> n0x7f43090b2cc0		// CALL -> y
+		n0x7f43090b3b60 -> n0x7f43090b3c98		// REPEAT -> <
+		n0x7f43090b3c98 -> n0x7f43090b3dd0		// < -> x
+		n0x7f43090b3c98 -> n0x7f43090b4040		// < -> 3
+		n0x7f43090b42b0 -> n0x7f43090b43e8		// REPEAT -> <
+		n0x7f43090b43e8 -> n0x7f43090b4520		// < -> t
+		n0x7f43090b43e8 -> n0x7f43090b4790		// < -> d
+		n0x7f43090c2f20 -> n0x7f43090c2de8		// SOURCE -> SOURCE_ITEM
+		n0x7f43090c2de8 -> n0x7f43090c2428		// SOURCE_ITEM -> FUNC_DEF
+		n0x7f43090c2428 -> n0x7f43090b4a00		// FUNC_DEF -> FUNC_SIG
+		n0x7f43090b4a00 -> n0x7f43090b3f08		// FUNC_SIG -> main
+		n0x7f43090b4a00 -> n0x7f43090b48c8		// FUNC_SIG -> LIST_ARG
+		n0x7f43090b4a00 -> n0x7f43090b4c70		// FUNC_SIG -> int
+		n0x7f43090c2428 -> n0x7f43090b54f8		// FUNC_DEF -> =
+		n0x7f43090b54f8 -> n0x7f43090b5288		// = -> x
+		n0x7f43090b54f8 -> n0x7f43090b5630		// = -> t
+		n0x7f43090c2428 -> n0x7f43090c2cb0		// FUNC_DEF -> LOOP
+		n0x7f43090c2cb0 -> n0x7f43090b5c48		// LOOP -> <
+		n0x7f43090b5c48 -> n0x7f43090b5d80		// < -> a
+		n0x7f43090b5c48 -> n0x7f43090b5ff0		// < -> b
+		n0x7f43090c2cb0 -> n0x7f43090c2080		// LOOP -> LOOP
+		n0x7f43090c2080 -> n0x7f43090b6398		// LOOP -> <
+		n0x7f43090b6398 -> n0x7f43090b64d0		// < -> c
+		n0x7f43090b6398 -> n0x7f43090b6740		// < -> d
+		n0x7f43090c2080 -> n0x7f43090c06e8		// LOOP -> IF
+		n0x7f43090c06e8 -> n0x7f43090b6ae8		// IF -> >
+		n0x7f43090b6ae8 -> n0x7f43090b6c20		// > -> x
+		n0x7f43090b6ae8 -> n0x7f43090b6e90		// > -> y
+		n0x7f43090c06e8 -> n0x7f43090bb7b0		// IF -> BLOCK
+		n0x7f43090bb7b0 -> n0x7f43090ba7d8		// BLOCK -> =
+		n0x7f43090ba7d8 -> n0x7f43090ba1c0		// = -> m
+		n0x7f43090ba7d8 -> n0x7f43090ba6a0		// = -> CALL
+		n0x7f43090ba6a0 -> n0x7f43090ba568		// CALL -> foo
+		n0x7f43090bb7b0 -> n0x7f43090baa48		// BLOCK -> BREAK
+		n0x7f43090bb7b0 -> n0x7f43090bb540		// BLOCK -> =
+		n0x7f43090bb540 -> n0x7f43090baf28		// = -> m
+		n0x7f43090bb540 -> n0x7f43090bb408		// = -> CALL
+		n0x7f43090bb408 -> n0x7f43090bb2d0		// CALL -> bar
+		n0x7f43090c06e8 -> n0x7f43090bfd28		// IF -> ELSE
+		n0x7f43090bfd28 -> n0x7f43090c05b0		// ELSE -> BLOCK
+		n0x7f43090c05b0 -> n0x7f43090c0478		// BLOCK -> =
+		n0x7f43090c0478 -> n0x7f43090bfe60		// = -> m
+		n0x7f43090c0478 -> n0x7f43090c0340		// = -> CALL
+		n0x7f43090c0340 -> n0x7f43090c0208		// CALL -> baz
+		n0x7f43090c2080 -> n0x7f43090c11e0		// LOOP -> =
+		n0x7f43090c11e0 -> n0x7f43090c0bc8		// = -> m
+		n0x7f43090c11e0 -> n0x7f43090c10a8		// = -> CALL
+		n0x7f43090c10a8 -> n0x7f43090c0f70		// CALL -> phi
+		n0x7f43090c2080 -> n0x7f43090c1450		// LOOP -> BREAK
+		n0x7f43090c2080 -> n0x7f43090c1f48		// LOOP -> =
+		n0x7f43090c1f48 -> n0x7f43090c1930		// = -> m
+		n0x7f43090c1f48 -> n0x7f43090c1e10		// = -> CALL
+		n0x7f43090c1e10 -> n0x7f43090c1cd8		// CALL -> psi
+		n0x7f43090c2cb0 -> n0x7f43090c2b78		// LOOP -> =
+		n0x7f43090c2b78 -> n0x7f43090c2560		// = -> m
+		n0x7f43090c2b78 -> n0x7f43090c2a40		// = -> CALL
+		n0x7f43090c2a40 -> n0x7f43090c2908		// CALL -> omega
 
 }

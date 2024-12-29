@@ -1,5 +1,4 @@
 digraph CallGraph {
-    node4047182816 [label="t"];
-    node4047187184 [label="main"];
-    node4047187184 -> node4047182816;
+    node2713117680 [label="repeatCallExample"];
+    node2713311744 [label="main"];
 }

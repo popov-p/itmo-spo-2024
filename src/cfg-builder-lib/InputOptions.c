@@ -84,6 +84,7 @@ void processInput(int argc, char** argv) {
             }
             char* cfgPngFilename = createFilePath("%s/%s-cfg.png", outputSubDir, functionList->items[j]->name);
             executeCommand("dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
+            executeCommand("xdg-open %s", cfgPngFilename);
             free(cfgPngFilename);
         }
         free(inputText);
