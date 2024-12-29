@@ -5,33 +5,6 @@
 #include "CG.h"
 #include "commands.h"
 
-FunctionList* findFunctions(AST* head, char* filename) {
-    FunctionList* functionList = createFunctionList();
-    if(!functionList)
-        return NULL;
-    findFunctionsRecursive(functionList,head, filename);
-    return functionList;
-}
-
-void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) {
-    if(!strcmp(node->token, "FUNC_DEF")) {
-        AST* signature = getChild(node, 0);
-        AST* funcName = getChild(signature, 0);
-
-        if (!functionExists(functions, funcName->token)) {
-            CFG* cfg = generateCFG(node);
-
-            Function* func = createFunction(funcName->token, signature, cfg, filename);
-            addFunction(functions, func);
-        }
-        else
-            perror("FFR :: DEFINITION OF FUNCTIONS WITH EQUAL NAMES IS PROHIBITED\n");
-    }
-    for(int i = 0; i < node->childCount; ++i) {
-        findFunctionsRecursive(functions, getChild(node, i), filename);
-    }
-}
-
 void processInput(int argc, char** argv) {
     const char* outputDir = argv[1];
 
@@ -58,6 +31,7 @@ void processInput(int argc, char** argv) {
         if(!functionList->count) {
             perror("PI :: WARNING :: NO FUNCTIONS DETECTED\n");
             free(functionList);
+            free(filename);
             return;
         }
 
@@ -86,12 +60,15 @@ void processInput(int argc, char** argv) {
             executeCommand("dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
             executeCommand("xdg-open %s", cfgPngFilename);
             free(cfgPngFilename);
+            free(cfgDotFilename);
         }
         free(inputText);
-        free(functionList);
+        freeFunctionList(functionList);
         cleanup(parseResult);
-        free(cg);
+        freeCG(cg);
         freeAST(head);
+        free(filename);
+        free(outputSubDir);
     }
 }
 

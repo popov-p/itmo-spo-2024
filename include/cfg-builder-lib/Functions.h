@@ -25,4 +25,7 @@ void freeFunctionList(FunctionList* list);
 void freeFunction(Function* func);
 void addFunction(FunctionList* list, Function* func);
 int functionExists(FunctionList* functions, char* funcName);
+
+FunctionList* findFunctions(AST* head, char* filename);
+void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename);
 #endif

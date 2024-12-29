@@ -42,7 +42,6 @@ void addCallGraphBlock(CG* cg, CGB* block) {
     cg->blocks = (CGB**)realloc(cg->blocks, (cg->blockCount + 1) * sizeof(CGB*));
     if (!cg->blocks) {
         fprintf(stderr, "ERROR :: REALLOC FAILED\n");
-        free(block);
         return;
     }
     cg->blocks[cg->blockCount] = block;

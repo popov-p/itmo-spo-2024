@@ -23,6 +23,7 @@ void addCallGraphBlock(CG* cg, CGB* block);
 
 int findIndexByName(FunctionList* declaredFunctions, AST* name);
 CG* generateCG(FunctionList* declaredFunctions);
+void freeCG(CG* cg);
 void outputCG(CG* cg, FILE* file);
 void outputCgNodes(CG* cg, FILE* file);
 void outputCgEdges(CG* cg, FILE* file);

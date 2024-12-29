@@ -50,6 +50,11 @@ void freeCFG(CFG* cfg) {
         free(cfg->blocks[i]->successors);
         free(cfg->blocks[i]);
     }
+
+    freeIfLevelStack(cfg->ifLevelStack);
+    freeLoopLevelStack(cfg->loopLevelStack);
+    freeProcessedNodes(cfg->processedNodes);
+
     free(cfg->blocks);
     free(cfg);
 }

@@ -27,7 +27,7 @@ typedef struct IfLevelStack {
 
 
 LoopLevelStack* createLoopLevelStack(int initialCapacity);
-
+void freeLoopLevelStack(LoopLevelStack* stack);
 void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex);
 LoopLevelEntry popLoopEntry(LoopLevelStack* stack);
 

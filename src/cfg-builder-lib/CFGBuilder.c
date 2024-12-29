@@ -66,7 +66,7 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
         outputOpNode(op, basicBlockIndex, file);
         outputOpEdge(op, basicBlockIndex, file);
         fprintf(file, "}\n");
-        free(op);
+        freeAST(op);
     }
 }
 

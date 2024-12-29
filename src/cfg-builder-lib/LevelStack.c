@@ -11,7 +11,10 @@ LoopLevelStack* createLoopLevelStack(int initialCapacity) {
 }
 
 void freeLoopLevelStack(LoopLevelStack* stack) {
-    free(stack->entries);
+    if (!stack)
+        return;
+    if (stack->entries)
+        free(stack->entries);
     free(stack);
 }
 
