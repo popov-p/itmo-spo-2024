@@ -63,6 +63,7 @@ source
 
 sourceItem
   : funcDef -> ^(SOURCE_ITEM funcDef)
+  | expr
   ;
 
 funcDef
@@ -128,7 +129,6 @@ statement
   | repeatStmt
   | breakStmt
   | returnStmt
-//  | expressionStmt
   | blockStmt
   | assignmentStmt
   | variableDeclaration
@@ -202,17 +202,21 @@ returnStmt
   ;
 
 expr
-  : binaryExpr
-  | unaryExpr
+  :   additiveExpression
   ;
 
-binaryExpr
-  : unaryExpr (binOp unaryExpr)*
-  -> ^(binOp unaryExpr (unaryExpr)*)
+additiveExpression
+  :   multiplicativeExpression ( ('+'^ | '-'^) multiplicativeExpression )*
   ;
 
-unaryExpr
-  : call
+multiplicativeExpression
+  :   primaryExpression ( ('*'^ | '/'^) primaryExpression )*
+  ;
+
+primaryExpression
+  :   DEC
+  |   '(' additiveExpression ')' -> ^(additiveExpression)
+  | call
   | slice
   | braces
   | place
@@ -262,7 +266,7 @@ list_expr
 
 list_range
   : (ranges (',' ranges)*)?
-//  -> ^(LIST_RANGE (ranges)*)?
+  -> ^(LIST_RANGE (ranges)*)?
   ;
 
 binOp

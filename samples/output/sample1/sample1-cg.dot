@@ -1,5 +1,0 @@
-digraph CallGraph {
-    node3233487840 [label="t"];
-    node3233492208 [label="main"];
-    node3233492208 -> node3233487840;
-}

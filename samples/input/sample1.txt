@@ -1,8 +1,1 @@
-def t() of boolean
-	x = 3;
-end
-
-def main() of int
-    x = t;
-	f = t();
-end
+(x+2) * qwe + 1
