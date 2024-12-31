@@ -1,4 +1,0 @@
-	def main() of int
-    x = t;
-	f = t();
-end
