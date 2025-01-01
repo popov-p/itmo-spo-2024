@@ -14,8 +14,8 @@ typedef struct AST {
 
 AST* createNode(uint32_t id, char* token);
 void addChild(AST* parent, AST* child);
-
 void freeAST(AST* head);
+
 void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
 AST* duplicateTree(AST* head);
 AST* duplicateTreeRecursive(AST* head);

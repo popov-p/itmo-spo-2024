@@ -169,14 +169,7 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
     cfgWalkerProcessBlockNode(cfg,
                               node,
                               lastBlockIndex);
-  if (!strcmp(node->token, "VAR_DEC"))
-    cfgWalkerProcessVarDecNode(cfg,
-                               node,
-                               lastBlockIndex);
-  if (!strcmp(node->token, "VAR_DEF"))
-    cfgWalkerProcessVarDecNode(cfg,
-                               node,
-                               lastBlockIndex);
+
   if (!strcmp(node->token, "BREAK"))
     cfgWalkerProcessBreakNode(cfg,
                               node,
@@ -191,6 +184,15 @@ void cfgWalker(CFG* cfg, AST* node, int* lastBlockIndex)
                              lastBlockIndex);
   if (strcmp(node->token, "=") == 0)
     cfgWalkerProcessAssignment(cfg,
+                               node,
+                               lastBlockIndex);
+
+  if (!strcmp(node->token, "VAR_DEC"))
+    cfgWalkerProcessVarDecNode(cfg,
+                               node,
+                               lastBlockIndex);
+  if (!strcmp(node->token, "VAR_DEF"))
+    cfgWalkerProcessVarDecNode(cfg,
                                node,
                                lastBlockIndex);
 

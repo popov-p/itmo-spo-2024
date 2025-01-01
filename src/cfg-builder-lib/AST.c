@@ -31,8 +31,9 @@ void printTree(AST* node, int level) {
 }
 
 void addChild(AST* parent, AST* child) {
-  if (!parent)
-    return;
+  if (!parent) {
+    freeAST(child);
+  }
   if (!child)
     return;
 
@@ -287,7 +288,7 @@ void analyzeRepeat(AST* repeatNode) {
 void analyzeAssign(AST* assignNode) {
   AST* lvalue = getChild(assignNode, 0);
   AST* rvalue = getChild(assignNode, 1);
-  AST* vp = createNode(arc4random(), "__read");
+  AST* vp = createNode(arc4random(), "__value_place");
   AST* read = createNode(arc4random(), "__read");
 
   insertBetween(assignNode, lvalue, vp);
@@ -336,6 +337,10 @@ AST* analyzeOp (AST* node) {
     analyzeRepeat(head);
   }
   if(!strcmp(node->token, "VAR_DEF")) {
+    head = duplicateTree(node);
+  }
+
+  if(!strcmp(node->token, "VAR_DEC")) {
     head = duplicateTree(node);
   }
   if(!strcmp(node->token, "=")) {

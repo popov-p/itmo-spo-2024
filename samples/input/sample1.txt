@@ -1,3 +1,5 @@
-def x() of int 
-    int t = fo() + (x+2)*2;
+def x() of int
+    if x * 0 then
+        d = k + 1;
+    end 
 end

@@ -1,10 +1,11 @@
 #include "ProcessedNodes.h"
+#include "safe_mem.h"
 
 ProcessedNodes* createProcessedNodes(int initialCapacity) {
-  ProcessedNodes* p = malloc(sizeof(ProcessedNodes));
+  ProcessedNodes* p = safe_malloc(sizeof(ProcessedNodes));
   if (!p)
     return NULL;
-  p->nodes = malloc(sizeof(AST*) * initialCapacity);
+  p->nodes = safe_malloc(sizeof(AST*) * initialCapacity);
   if (!p->nodes) {
     free(p);
     return NULL;
@@ -31,7 +32,7 @@ int isProcessed(ProcessedNodes* p, AST* node) {
 void addProcessed(ProcessedNodes* p, AST* node) {
   if (p->count >= p->capacity) {
     p->capacity *= 2;
-    p->nodes = realloc(p->nodes, sizeof(AST*) * p->capacity);
+    p->nodes = safe_realloc(p->nodes, sizeof(AST*) * p->capacity);
   }
   p->nodes[p->count++] = node;
 }

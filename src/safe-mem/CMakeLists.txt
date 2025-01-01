@@ -1,0 +1,1 @@
+create_library(${SAFE_MEM} "")

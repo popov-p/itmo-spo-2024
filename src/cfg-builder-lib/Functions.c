@@ -24,6 +24,8 @@ void freeFunctionList(FunctionList* list) {
 
 void addFunction(FunctionList* list, Function* func) {
   list->items = (Function**)realloc(list->items, (list->count + 1) * sizeof(Function*));
+  if(!list->items)
+    exit(EXIT_FAILURE);
   if (list->items) {
     list->items[list->count] = func;
     list->count++;

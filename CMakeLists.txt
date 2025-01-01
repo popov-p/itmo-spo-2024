@@ -18,11 +18,13 @@ set(TREE_VIS tree-vis)
 set(CFG_BUILDER_LIB cfg-builder-lib)
 set(CFG_BUILDER cfg-builder)
 set(IO_UTILS io-utils)
+set(SAFE_MEM safe-mem)
 
 add_subdirectory(${SRCDIR}/${GRAMMAR})
 add_subdirectory(${SRCDIR}/${TREE_VIS_LIB})
 add_subdirectory(${SRCDIR}/${CFG_BUILDER_LIB})
 add_subdirectory(${SRCDIR}/${IO_UTILS})
+add_subdirectory(${SRCDIR}/${SAFE_MEM})
 
 add_subdirectory(${EXAMPLEDIR}/${TREE_VIS})
 add_subdirectory(${EXAMPLEDIR}/${CFG_BUILDER})
