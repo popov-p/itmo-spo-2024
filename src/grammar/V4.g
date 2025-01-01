@@ -16,8 +16,6 @@ tokens {
   ELSE;
   LIST_ARG;
   ARG;
-  BIN_OP;
-  PLACE_EXPR;
   LOOP;
   BREAK;
   BLOCK;
@@ -25,15 +23,13 @@ tokens {
   ARR_TYPE;
   CALL;
   SLICE;
-  UNARY_OP;
   BRACES;
-  EXPR;
   RANGES;
   LIST_EXPR;
   LIST_RANGE;
   VAR_DEC;
   VAR_DEF;
-  DIM;
+  ASSIGNMENT;
 }
 
 TRUE: 'true';
@@ -46,8 +42,6 @@ ULONG_T: 'ulong';
 CHAR_T: 'char';
 STRING_T: 'string';
 BOOL_T: 'boolean';
-
-//common part
 
 IDENTIFIER: ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')*;
 STRING: '"' (~('"'|'\\') | '\\' .)* '"';
@@ -130,11 +124,16 @@ statement
   | breakStmt
   | returnStmt
   | blockStmt
+  | expressionStmt
   | assignmentStmt
   | variableDeclaration
   | variableDefinition
   ;
 
+expressionStmt
+  : expr ';'
+  -> ^(expr)
+  ;
 variableDefinition
   : typeRef IDENTIFIER ';' -> ^(VAR_DEF typeRef IDENTIFIER)
   ;
@@ -171,9 +170,6 @@ breakStmt
   -> ^(BREAK)
   ;
 
-expressionStmt
-  : expr ';' -> ^(EXPR expr)
-  ;
 
 blockStmt
   : blockStart statementList blockEnd
@@ -193,7 +189,7 @@ statementList
   ;
 
 assignmentStmt
-  : IDENTIFIER '=' expr ';' -> ^('=' IDENTIFIER expr)
+  : IDENTIFIER '=' expr ';' -> ^(ASSIGNMENT IDENTIFIER expr)
   ;
 
 returnStmt
@@ -202,20 +198,25 @@ returnStmt
   ;
 
 expr
-  :   additiveExpression
+  : comparisonExpression
+  ;
+
+comparisonExpression
+  : additiveExpression (('>'^ | '<'^ | '>='^ | '<='^ | '=='^ | '!='^) additiveExpression)*
   ;
 
 additiveExpression
-  :   multiplicativeExpression ( ('+'^ | '-'^) multiplicativeExpression )*
+  : multiplicativeExpression (('+'^ | '-'^) multiplicativeExpression)*
   ;
 
 multiplicativeExpression
-  :   primaryExpression ( ('*'^ | '/'^) primaryExpression )*
+  : primaryExpression (('*'^ | '/'^) primaryExpression)*
   ;
 
+
 primaryExpression
-  :   DEC
-  |   '(' additiveExpression ')' -> ^(additiveExpression)
+  : DEC
+  | '(' additiveExpression ')' -> ^(additiveExpression)
   | call
   | slice
   | braces
@@ -267,22 +268,4 @@ list_expr
 list_range
   : (ranges (',' ranges)*)?
   -> ^(LIST_RANGE (ranges)*)?
-  ;
-
-binOp
-  : '+' -> ^('+')
-  | '-' -> ^('-')
-  | '*' -> ^('*')
-  | '/' -> ^('/')
-  | '>' -> ^('>')
-  | '<' -> ^('<')
-  | '>=' -> ^('>=')
-  | '<=' -> ^('<=')
-  | '==' -> ^('==')
-  ;
-
-unOp
-  : '-' -> ^('-')
-  | '!' -> ^('!')
-  | '~' -> ^('~')
   ;
