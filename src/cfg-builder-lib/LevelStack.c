@@ -1,10 +1,11 @@
 #include "LevelStack.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "safe_mem.h"
 
 LoopLevelStack* createLoopLevelStack(int initialCapacity) {
-  LoopLevelStack* stack = malloc(sizeof(LoopLevelStack));
-  stack->entries = malloc(sizeof(LoopLevelEntry) * 20);
+  LoopLevelStack* stack = safe_malloc(sizeof(LoopLevelStack));
+  stack->entries = safe_malloc(sizeof(LoopLevelEntry) * 20);
   stack->currentLevel = -1;
   stack->capacity = initialCapacity;
   return stack;
@@ -21,7 +22,7 @@ void freeLoopLevelStack(LoopLevelStack* stack) {
 void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex) {
   if (stack->currentLevel + 1 >= stack->capacity) {
     stack->capacity *= 2;
-    stack->entries = (LoopLevelEntry*)realloc(stack->entries, stack->capacity * sizeof(LoopLevelEntry));
+    stack->entries = (LoopLevelEntry*)safe_realloc(stack->entries, stack->capacity * sizeof(LoopLevelEntry));
   }
   stack->currentLevel++;
   stack->entries[stack->currentLevel].exitBlockIndex = exitBlockIndex;
@@ -42,14 +43,9 @@ LoopLevelEntry popLoopEntry(LoopLevelStack* stack) {
 
 
 IfLevelStack* createIfLevelStack(int capacity) {
-  IfLevelStack* stack = (IfLevelStack*)malloc(sizeof(IfLevelStack));
-  if (!stack) return NULL;
+  IfLevelStack* stack = (IfLevelStack*)safe_malloc(sizeof(IfLevelStack));
 
-  stack->entries = (IfLevelEntry*)malloc(capacity * sizeof(IfLevelEntry));
-  if (!stack->entries) {
-    free(stack);
-    return NULL;
-  }
+  stack->entries = (IfLevelEntry*)safe_malloc(capacity * sizeof(IfLevelEntry));
 
   stack->currentLevel = -1;
   stack->capacity = capacity;
@@ -64,10 +60,14 @@ void freeIfLevelStack(IfLevelStack* stack) {
   free(stack);
 }
 
-void pushIfEntry(IfLevelStack* stack, int ifBlockIndex, int elseBlockIndex, int mergeBlockIndex) {
+void pushIfEntry(IfLevelStack* stack,
+                 int ifBlockIndex,
+                 int elseBlockIndex,
+                 int mergeBlockIndex) {
   if (stack->currentLevel + 1 >= stack->capacity) {
     stack->capacity *= 2;
-    stack->entries = (IfLevelEntry*)realloc(stack->entries, stack->capacity * sizeof(IfLevelEntry));
+    stack->entries = (IfLevelEntry*)safe_realloc(stack->entries,
+                                                 stack->capacity * sizeof(IfLevelEntry));
   }
   stack->currentLevel++;
   stack->entries[stack->currentLevel].ifBlockIndex = ifBlockIndex;

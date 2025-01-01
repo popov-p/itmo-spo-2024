@@ -2,7 +2,7 @@
 #include "AST.h"
 #include "CFGNodeProcessing.h"
 
-void writeBlock(int num, FILE *file, enum BasicBlockType type) {
+void writeBlock(int num, FILE *file, BB_t type) {
   if (type == standard)
     fprintf(file, "    node%d [label=\"BB%d\"];\n", num, num);
   if (type == merge)
@@ -22,8 +22,8 @@ void writeCFGEdges(CFG* cfg, FILE *file) {
 
 CFG* generateCFG(AST* head) {
   CFG* cfg = initEmptyCFG(100, 20, 20);
-  int lastBlockIndex = -1;
-  cfgWalker(cfg, head, &lastBlockIndex);
+  int lastProcessedIndex = -1;
+  cfgWalker(cfg, head);
   return cfg;
 }
 
@@ -39,14 +39,14 @@ void outputCFG(CFG* cfg, FILE* file) {
   }
 
   for (int i = 0; i < cfg->blockCount; i++) {
-    BasicBlock* bb = cfg->blocks[i];
+    BB* bb = cfg->blocks[i];
     writeBlock(i, file, bb->bt);
   }
 
   writeCFGEdges(cfg, file);
   fprintf(file, "    start -> node%d;\n", 0);
   for (int i = 0; i < cfg->blockCount; i++) {
-    BasicBlock* bb = cfg->blocks[i];
+    BB* bb = cfg->blocks[i];
     if (!bb->successorCount)
       fprintf(file, "    node%d -> end;\n", i);
   }
@@ -56,7 +56,7 @@ void outputCFG(CFG* cfg, FILE* file) {
 }
 
 void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
-  BasicBlock* bb = cfg->blocks[basicBlockIndex];
+  BB* bb = cfg->blocks[basicBlockIndex];
   if (bb->node) {
     fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
     fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
@@ -69,6 +69,7 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     freeAST(op);
   }
 }
+
 
 
 

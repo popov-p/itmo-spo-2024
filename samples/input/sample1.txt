@@ -1,5 +1,10 @@
 def x() of int
-    if x * 0 then
-        d = k + 1;
-    end 
+    while t < d 
+        if x < y then 
+            kek = lol;
+            f();
+            g();
+            h();
+        end
+    end
 end

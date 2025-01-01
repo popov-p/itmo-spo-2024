@@ -1,11 +1,8 @@
 #include "CG.h"
+#include "safe_mem.h"
 
 CG* initEmptyCG() {
-  CG* cg = (CG*)malloc(sizeof(CG));
-  if (!cg) {
-    fprintf(stderr, "ERROR :: MALLOC FAILED\n");
-    return NULL;
-  }
+  CG* cg = (CG*)safe_malloc(sizeof(CG));
 
   cg->blocks = NULL;
   cg->blockCount = 0;
@@ -28,32 +25,21 @@ void freeCG(CG* cg) {
 }
 
 CGB* createCallGraphBlock(AST* node) {
-  CGB* block = (CGB*)malloc(sizeof(CGB));
-  if (!block) {
-    fprintf(stderr, "ERROR :: MALLOC FAILED\n");
-    return NULL;
-  }
+  CGB* block = (CGB*)safe_malloc(sizeof(CGB));
+
   block->node = node;
   block->successors = NULL;
   block->successorCount = 0;
   return block;
 }
 void addCallGraphBlock(CG* cg, CGB* block) {
-  cg->blocks = (CGB**)realloc(cg->blocks, (cg->blockCount + 1) * sizeof(CGB*));
-  if (!cg->blocks) {
-    fprintf(stderr, "ERROR :: REALLOC FAILED\n");
-    return;
-  }
+  cg->blocks = (CGB**)safe_realloc(cg->blocks,(cg->blockCount + 1) * sizeof(CGB*));
   cg->blocks[cg->blockCount] = block;
   cg->blockCount++;
 }
 
 void addCGSuccessor(CGB* block, int successorIndex) {
-  block->successors = (int*)realloc(block->successors, (block->successorCount + 1) * sizeof(int));
-  if (!block->successors) {
-    fprintf(stderr, "ERROR :: REALLOC FAILED\n");
-    return;
-  }
+  block->successors = (int*)safe_realloc(block->successors, (block->successorCount + 1) * sizeof(int));
   block->successors[block->successorCount] = successorIndex;
   block->successorCount++;
 }

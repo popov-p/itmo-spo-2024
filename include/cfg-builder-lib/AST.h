@@ -22,14 +22,16 @@ AST* duplicateTreeRecursive(AST* head);
 
 AST* findNodeById(AST* node, uint32_t id);
 AST* duplicateLeftSubtree(AST* head);
+AST* duplicateRightSubtree(AST* head);
 AST* buildFromParseResult(ParseResult* parseResult);
 void setChildFromAntlrNode(AST* parent,
                            pANTLR3_BASE_TREE_ADAPTOR adaptor,
                            pANTLR3_BASE_TREE node);
 
 AST* getChild(AST* parent, size_t i);
-void printAST(AST* head, FILE* file);
 void outputAST(AST* head, FILE* file);
+void outputASTNodes(AST* head, FILE* file);
+void outputASTEdges(AST* node, FILE* file);
 void writeNode(AST* node, int basicBlockIndex, FILE *file);
 
 void writeEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file);
@@ -42,11 +44,5 @@ void outputOpEdge(AST* parent,
                   int basicBlockIndex,
                   FILE *file);
 
-
 AST* analyzeOp (AST* node);
-void analyzeCall(AST* node);
-void analyzeLoop(AST* node);
-void analyzeRepeat(AST* node);
-void analyzeAssign(AST* node);
-void analyzeIf(AST* node);
 #endif

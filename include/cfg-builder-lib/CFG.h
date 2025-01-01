@@ -1,45 +1,38 @@
-#ifndef BASICBLOCK_H
-#define BASICBLOCK_H
-
+#pragma once
 #include "AST.h"
 #include "LevelStack.h"
 #include "ProcessedNodes.h"
+#include "OT.h"
 
-enum BasicBlockType {
-    standard = 0,
-    merge = 1,
-    loop_exit = 2,
-    repeat_exit = 3
-};
+typedef enum BB_t {
+  standard,
+  merge,
+  loop_exit,
+  repeat_exit
+}BB_t;
 
-typedef struct {
-    char **errors;
-    int count;
-    int capacity;
-} ErrorCollection;
-
-typedef struct BasicBlock {
-    AST* node;
-    enum BasicBlockType bt;
-    int* successors; //sucessors` indices in BasicBlock** array
-    int successorCount;
-} BasicBlock;
+typedef struct BB {
+  AST* node;
+  OT* opTree;
+  BB_t bt;
+  int* successors; //sucessors` indices in BasicBlock** array
+  int successorCount;
+} BB;
 
 typedef struct CFG {
-    BasicBlock** blocks;
-    int blockCount;
-    ProcessedNodes* processedNodes;
-    LoopLevelStack* loopLevelStack;
-    IfLevelStack* ifLevelStack;
+  BB** blocks;
+  int blockCount;
+  int lastProcessedIndex;
+  ProcessedNodes* processedNodes;
+  LoopLevelStack* loopLevelStack;
+  IfLevelStack* ifLevelStack;
 
 } CFG;
 
-BasicBlock* createBasicBlock(AST* node, enum BasicBlockType bt);
-void addSuccessor(BasicBlock* block, int successorIndex);
-void addBasicBlock(CFG* cfg, BasicBlock* block);
+BB* createBasicBlock(AST* node, enum BB_t bt);
+void addSuccessor(BB* block, int successorIndex);
+void addBasicBlock(CFG* cfg, BB* block);
 
 
 CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize);
 void freeCFG(CFG* cfg);
-
-#endif

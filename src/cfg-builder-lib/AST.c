@@ -1,16 +1,10 @@
 #include "AST.h"
-
+#include "safe_mem.h"
 #include <stdlib.h>
 #include <stdint.h>
 
 AST* createNode(uint32_t id, char* token) {
-  AST* node = (AST*)malloc(sizeof(AST));
-
-  if (!node) {
-    fprintf(stderr, "ERROR :: MALLOC FAIL\n");
-    return NULL;
-  }
-
+  AST* node = (AST*)safe_malloc(sizeof(AST));
   node->parent = NULL;
   node->children = NULL;
   node->childCount = 0;
@@ -37,11 +31,8 @@ void addChild(AST* parent, AST* child) {
   if (!child)
     return;
 
-  parent->children = (AST**)realloc(parent->children, sizeof(AST*) * (parent->childCount + 1));
-  if (!parent->children) {
-    fprintf(stderr, "ERROR :: REALLOC FAILED\n");
-    return;
-  }
+  parent->children = (AST**)safe_realloc(parent->children, sizeof(AST*) * (parent->childCount + 1));
+
   parent->childCount++;
   parent->children[parent->childCount-1] = child;
   child->parent = parent;
@@ -89,17 +80,16 @@ void outputASTEdges(AST* node, FILE* file) {
   }
 }
 
-void printAST(AST* head, FILE* file) {
+void outputAST(AST* head, FILE* file) {
   fprintf(file, "digraph AST {\n");
   fprintf(file, "    node [shape=box];\n");
-  outputAST(head, file);
+  outputASTNodes(head, file);
   outputASTEdges(head, file);
   fprintf(file, "}\n");
 }
 
-void outputAST(AST* node, FILE* file) {
-  if (node == NULL) return;
-  //printf("VISIT:: %s\n", node->token);
+void outputASTNodes(AST* node, FILE* file) {
+  if (!node) return;
   writeNode(node, 0, file);
   for (size_t i = 0; i < node->childCount; i++) {
     AST* child = getChild(node, i);
@@ -107,18 +97,16 @@ void outputAST(AST* node, FILE* file) {
   }
 }
 
-void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
-  if (parent == NULL || thatChild == NULL || thisNode == NULL)
+void insertBetween(AST* parent,
+                   AST* thatChild,
+                   AST* thisNode) {
+  if (!parent || !thatChild || !thisNode)
     return;
 
   if (thatChild->parent != parent)
     return;
 
-  thisNode->children = (AST**)malloc(sizeof(AST*));
-  if(!thisNode->children) {
-    fprintf(stderr, "ERROR :: MALLOC FAILED\n");
-    return;
-  }
+  thisNode->children = (AST**)safe_malloc(sizeof(AST*));
   thisNode->children[0] = thatChild;
   thisNode->childCount = 1;
   thatChild->parent = thisNode;
@@ -131,7 +119,6 @@ void insertBetween(AST* parent, AST* thatChild, AST* thisNode) {
   }
   thisNode->parent = parent;
 }
-
 
 AST* duplicateTreeRecursive(AST* head) {
   if (!head) return NULL;
@@ -146,15 +133,12 @@ AST* duplicateTreeRecursive(AST* head) {
   return newNode;
 }
 
-
 AST* duplicateTree(AST* head) {
   if (!head) {
     return NULL;
   }
   return duplicateTreeRecursive(head);
 }
-
-
 
 AST* duplicateLeftSubtree(AST* head) {
   if (!head)
@@ -203,7 +187,9 @@ AST* buildFromParseResult(ParseResult* parseResult) {
   return head;
 }
 
-void setChildFromAntlrNode(AST* parent, pANTLR3_BASE_TREE_ADAPTOR adaptor, pANTLR3_BASE_TREE node) {
+void setChildFromAntlrNode(AST* parent,
+                           pANTLR3_BASE_TREE_ADAPTOR adaptor,
+                           pANTLR3_BASE_TREE node) {
   if (!node)
     return;
   AST* child = createNode(adaptor->getUniqueID(adaptor, node),
@@ -226,6 +212,7 @@ void writeEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
   fprintf(file, "    cluster_%d_node%u -> cluster_%d_node%u;\n",
           basicBlockIndex, parent->id, basicBlockIndex, child->id);
 }
+
 
 void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
   if (node == NULL) return;
@@ -343,7 +330,7 @@ AST* analyzeOp (AST* node) {
   if(!strcmp(node->token, "VAR_DEC")) {
     head = duplicateTree(node);
   }
-  if(!strcmp(node->token, "=")) {
+  if(!strcmp(node->token, "ASSIGNMENT")) {
     head = duplicateTree(node);
     analyzeAssign(head);
   }

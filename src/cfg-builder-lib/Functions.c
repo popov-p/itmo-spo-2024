@@ -1,8 +1,9 @@
 #include "Functions.h"
 #include "CFGBuilder.h"
+#include "safe_mem.h"
 
 FunctionList* createFunctionList() {
-  FunctionList* list = (FunctionList*)malloc(sizeof(FunctionList));
+  FunctionList* list = (FunctionList*)safe_malloc(sizeof(FunctionList));
   if (list) {
     list->items = NULL;
     list->count = 0;
@@ -23,7 +24,7 @@ void freeFunctionList(FunctionList* list) {
 
 
 void addFunction(FunctionList* list, Function* func) {
-  list->items = (Function**)realloc(list->items, (list->count + 1) * sizeof(Function*));
+  list->items = (Function**)safe_realloc(list->items, (list->count + 1) * sizeof(Function*));
   if(!list->items)
     exit(EXIT_FAILURE);
   if (list->items) {
@@ -45,7 +46,7 @@ void freeFunction(Function* func) {
 }
 
 Function* createFunction(const char* name, AST* signature, CFG* cfg, const char* sourceFile) {
-  Function* func = (Function*)malloc(sizeof(Function));
+  Function* func = (Function*)safe_malloc(sizeof(Function));
   if (!func) return NULL;
 
   func->name = (char*)malloc(strlen(name) + 1);
