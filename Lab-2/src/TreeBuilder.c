@@ -1,9 +1,9 @@
-#include "Treebuilder.h"
+#include "TreeBuilder.h"
 
 char* readFileToString(const char* filePath) {
     FILE *file = fopen(filePath, "r");
     if (file == NULL) {
-        perror("not ok. error opening file\n");
+        fprintf(stderr, "\n");
         return NULL;
     }
 
@@ -13,7 +13,7 @@ char* readFileToString(const char* filePath) {
 
     char *buffer = (char *)malloc(fileSize + 1);
     if (buffer == NULL) {
-        perror("not ok. memory allocation failed\n");
+        fprintf(stderr, "not ok. memory allocation failed\n");
         fclose(file);
         return NULL;
     }
@@ -26,14 +26,14 @@ char* readFileToString(const char* filePath) {
 }
 
 pParseResult parse(const char* text) {
-    pParseResult result = (ParseResult*)malloc(sizeof(ParseResult));
+    pParseResult result = (pParseResult)malloc(sizeof(ParseResult));
 
     result->is = antlr3StringStreamNew((pANTLR3_UINT8)text,
                                        ANTLR3_ENC_8BIT, strlen(text),
                                        (pANTLR3_UINT8)"input string");
-    result->l = Var4LexerNew(result->is);
+    result->l = SigmaLexerNew(result->is);
     result->ts = antlr3CommonTokenStreamSourceNew(ANTLR3_SIZE_HINT, TOKENSOURCE(result->l));
-    result->p = Var4ParserNew(result->ts);
+    result->p = SigmaParserNew(result->ts);
     result->sr = result->p->source(result->p);
     return result;
 }
@@ -46,29 +46,22 @@ void generateDot(pParseResult result, const char* path) {
     if (dotFile != NULL) {
         fprintf(dotFile, "%s", (char *)dotString->chars);
         fclose(dotFile);
-    } else {
+    } else
         printf("not ok. trouble with opening .dot file\n");
-    }
 }
 
-int cleanup(ParseResult* pr) {
-    if (pr->p != NULL) {
+int cleanup(pParseResult pr) {
+    if (pr->p)
         pr->p->free(pr->p);
-    }
-    if (pr->ts != NULL) {
+    if (pr->ts)
         pr->ts->free(pr->ts);
-    }
-    if (pr->l != NULL) {
+    if (pr->l)
         pr->l->free(pr->l);
-    }
-    if (pr->is != NULL) {
+    if (pr->is)
         pr->is->close(pr->is);
-    }
-    if (pr == NULL) {
+    if (!pr)
         return 1;
-    }
-    else {
+    else
         free(pr);
-    }
     return 0;
 }

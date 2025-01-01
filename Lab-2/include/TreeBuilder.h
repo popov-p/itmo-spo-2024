@@ -1,17 +1,15 @@
 #ifndef TREEBUILDER_H
 #define TREEBUILDER_H
 
-#include <antlr3.h>
-
-#include "Var4Lexer.h"
-#include "Var4Parser.h"
+#include "SigmaLexer.h"
+#include "SigmaParser.h"
 
 typedef struct ParseResult {
     pANTLR3_INPUT_STREAM is;
-    pVar4Lexer l;
+    pSigmaLexer l;
     pANTLR3_COMMON_TOKEN_STREAM ts;
-    pVar4Parser p;
-    Var4Parser_source_return sr;
+    pSigmaParser p;
+    SigmaParser_source_return sr;
 } ParseResult;
 
 typedef ParseResult* pParseResult;
@@ -22,6 +20,6 @@ pParseResult parse(const char* text);
 
 void generateDot(pParseResult result, const char* path);
 
-int cleanup(ParseResult* pr);
+int cleanup(pParseResult pr);
 
 #endif // TREEBUILDER_H

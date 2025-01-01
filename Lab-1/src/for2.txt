@@ -1,0 +1,6 @@
+def main() of int
+    while x < y
+        foo();
+        break;
+    end
+end

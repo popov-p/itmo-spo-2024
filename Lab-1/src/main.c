@@ -4,14 +4,19 @@
 #include "Treebuilder.h"
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        printf("usage: %s <input file> <output file>\n", argv[0]);
-        return 1;
+    // if (argc != 3) {
+    //     printf("usage: %s <input file> <output file>\n", argv[0]);
+    //     return 1;
+    // }
+    char *inputFilePath = "../src/for2.txt";//argv[1];
+    char *outputFilePath = "../src/tree.dot";//argv[2];
+    if (remove(outputFilePath) == 0) {
+        printf("ok. file deleted %s\n", outputFilePath);
+    } else {
+        printf("not ok. file does not exist or deletion failed: %s\n", outputFilePath);
     }
 
-    char *inputFilePath = argv[1];
-    char *outputFilePath = argv[2];
-    const char* compileGrammar = "java -jar ../src/antlr-3.4-complete.jar ../src/Var4.g";
+    const char* compileGrammar = "java -jar /home/pavel/Projects/langparser/antlr-3.4-complete.jar /home/pavel/Projects/langparser/Lab-1/src/Sigma.g";
     int res = system(compileGrammar);
     if (res == -1) {
         printf("not ok, failed antlr compiler\n");
@@ -22,7 +27,7 @@ int main(int argc, char *argv[]) {
 
     char *inputText = readFileToString(inputFilePath);
     if (inputText == NULL) {
-        printf("not ok. failed reading from file\n");
+        printf("not ok, failed reading from file\n");
     }
 
     pParseResult parseResult = parse(inputText);
@@ -43,6 +48,7 @@ int main(int argc, char *argv[]) {
     else {
         printf("not ok. cleanup failed\n");
     }
+
     return 0;
 }
 
