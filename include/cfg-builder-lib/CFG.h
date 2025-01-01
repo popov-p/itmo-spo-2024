@@ -27,6 +27,7 @@ typedef struct CFG {
 
 } CFG;
 
+CFG* generateCFG(AST* head);
 BB* createBasicBlock(AST* node, enum BB_t bt);
 void addSuccessor(BB* block, int successorIndex);
 void addBasicBlock(CFG* cfg, BB* block);

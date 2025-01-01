@@ -1,4 +1,4 @@
-#include "CFGNodeProcessing.h"
+#include "CFGWalker.h"
 
 #define TOKEN_IS(node, str) (!strcmp((node->token), (str)))
 #define BREAK_DETECTED(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].breakDetected)
@@ -6,7 +6,8 @@
 #define LAST_IF_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].ifBlockIndex)
 #define LAST_LOOP_EXIT_IDX(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].exitBlockIndex)
 #define LAST_LOOP_IDX(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].loopIndex)
-
+#define LAST_PROCESSED_BLOCK(cfg) ((cfg)->blocks[(cfg)->lastProcessedIndex])
+#define LAST_ELSE_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].elseBlockIndex)
 
 int connectNewBlock(CFG* cfg,
                     AST* current) {
@@ -15,15 +16,15 @@ int connectNewBlock(CFG* cfg,
   int currentBlockIndex = cfg->blockCount - 1;
 
   if (cfg->lastProcessedIndex != -1)
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex], currentBlockIndex);
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg), currentBlockIndex);
 
   cfg->lastProcessedIndex = currentBlockIndex;
-  printf("CFG :: WLP :: %s\n", current->token);
+  printf("CFG :: CONNECT NEW BLOCK :: %s\n", current->token);
   return currentBlockIndex;
 }
 
 void enterIf(CFG* cfg,
-                AST* node) {
+             AST* node) {
   int ifBlockIndex = connectNewBlock(cfg, node);
   BB* mergeBlock = createBasicBlock(NULL, merge);
   addBasicBlock(cfg, mergeBlock);
@@ -32,23 +33,23 @@ void enterIf(CFG* cfg,
 
   pushIfEntry(cfg->ifLevelStack, ifBlockIndex, -1, mergeBlockIndex);
   cfg->lastProcessedIndex = ifBlockIndex;
-  printf("CFG :: WP :: ENTERING IF\n");
+  printf("CFG :: ENTERING IF\n");
 }
 void exitIf(CFG* cfg,
             AST* node)  {
   if (node->childCount == 2) {
     if(BREAK_DETECTED(cfg)) {
-      BREAK_DETECTED(cfg) = 0; // break elimination
+      BREAK_DETECTED(cfg) = 0;
 
       addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
                    LAST_MERGE_IDX(cfg));
 
-      addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+      addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                    LAST_LOOP_EXIT_IDX(cfg));
       cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
     }
     else {
-      addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+      addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                    LAST_MERGE_IDX(cfg));
       addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
                    LAST_MERGE_IDX(cfg));
@@ -62,10 +63,10 @@ void exitIf(CFG* cfg,
       addSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
                    LAST_LOOP_EXIT_IDX(cfg));
     }
-    printf("CFG :: W :: EXITING IF TO ELSE\n");
+    printf("CFG :: EXITING IF TO ELSE\n");
   }
 
-  printf("CFG :: W :: EXITING IF\n");
+  printf("CFG :: EXITING IF\n");
   popIfEntry(cfg->ifLevelStack);
 }
 
@@ -75,7 +76,7 @@ void enterElse(CFG* cfg,
   BB* bb = createBasicBlock(node, standard);
   addBasicBlock(cfg, bb);
   int elseBlockIndex = cfg->blockCount - 1;
-  cfg->ifLevelStack->entries[cfg->ifLevelStack->currentLevel].elseBlockIndex = elseBlockIndex;
+  LAST_ELSE_IDX(cfg) = elseBlockIndex;
 
   if(BREAK_DETECTED(cfg))
     addSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
@@ -83,37 +84,35 @@ void enterElse(CFG* cfg,
 
   BREAK_DETECTED(cfg) = 0;
 
-
   if (cfg->lastProcessedIndex != -1) {
     addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)], elseBlockIndex);
   }
-  addSuccessor(cfg->blocks[cfg->lastProcessedIndex], LAST_MERGE_IDX(cfg));
+  addSuccessor(LAST_PROCESSED_BLOCK(cfg), LAST_MERGE_IDX(cfg));
   cfg->lastProcessedIndex = elseBlockIndex;
-  printf("CFG :: WP :: ENTERING ELSE\n");
+  printf("CFG :: ENTERING ELSE\n");
 }
 
 void exitElse(CFG* cfg, AST* node) {
   if(BREAK_DETECTED(cfg)) {
     BREAK_DETECTED(cfg) = 0;
 
-
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
   }
   else {
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_MERGE_IDX(cfg));
     cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
   }
-  printf("CFG :: W :: EXITING ELSE\n");
+  printf("CFG :: EXITING ELSE\n");
 }
 
 
 void exitCall(CFG* cfg, AST* node) {
   int callIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = callIndex;
-  printf("CFG :: WP :: CALL %s\n", (char*)getChild(node, 0)->token);
+  printf("CFG :: CALL %s\n", (char*)getChild(node, 0)->token);
 }
 
 void enterLoop(CFG* cfg,
@@ -126,30 +125,28 @@ void enterLoop(CFG* cfg,
   int exitBlockIndex = cfg->blockCount - 1;
   addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
   pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
-  printf("CFG :: WP :: ENTERING LOOP\n");
+  printf("CFG :: ENTERING LOOP\n");
 }
 
 void exitLoop(CFG* cfg,
               AST* node) {
-  printf("CFG :: W :: EXITING LOOP\n");
+  printf("CFG :: EXITING LOOP\n");
   if(BREAK_DETECTED(cfg)) {
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   else {
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   popLoopEntry(cfg->loopLevelStack);
 }
 
-
-
 void enterBreak(CFG* cfg, AST* node) {
   BREAK_DETECTED(cfg) = 1;
-  printf("CFG :: WP :: BREAK\n");
+  printf("CFG :: BREAK\n");
 }
 
 void enterRepeat(CFG* cfg,
@@ -162,47 +159,47 @@ void enterRepeat(CFG* cfg,
   int exitBlockIndex = cfg->blockCount - 1;
 
   pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, repeatBlockIndex);
-  printf("CFG :: WP :: ENTETING REPEAT\n");
+  printf("CFG :: ENTER REPEAT\n");
 }
 void exitRepeat(CFG* cfg,
                 AST* node) {
   if(BREAK_DETECTED(cfg)) {
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   else {
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_IDX(cfg));
-    addSuccessor(cfg->blocks[cfg->lastProcessedIndex],
+    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   popLoopEntry(cfg->loopLevelStack);
 }
 
-
 void enterVarDec(CFG* cfg,
                  AST* node) {
   int varDecIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDecIndex;
-  printf("CFG :: WP :: VAR_DEC\n");
+  printf("CFG :: VAR_DEC\n");
 }
 
 void enterVarDef(CFG* cfg,
                  AST* node) {
   int varDefIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDefIndex;
-  printf("CFG :: WP :: VAR_DEF\n");
+  printf("CFG :: VAR_DEF\n");
 }
 
 void enterAssignment(CFG* cfg,
                      AST* node) {
   int assignmentIndex = connectNewBlock(cfg, node);
+  cfg->blocks[assignmentIndex]->opTree = otAssignment(node);
   cfg->lastProcessedIndex = assignmentIndex;
 }
 
-void walker(CFG* cfg, AST* node)
+void cfgWalker(CFG* cfg, AST* node)
 {
   if (!node) return;
 
@@ -233,7 +230,7 @@ void walker(CFG* cfg, AST* node)
 
   if(!BREAK_DETECTED(cfg))
     for (int i = 0; i < node->childCount; i++)
-      walker(cfg, getChild(node, i));
+      cfgWalker(cfg, getChild(node, i));
 
   if (TOKEN_IS(node, "CALL"))
     exitCall(cfg, node);

@@ -1,8 +1,7 @@
 #include "InputOptions.h"
 #include "AST.h"
 #include "Functions.h"
-#include "CFGBuilder.h"
-#include "CG.h"
+#include "CFGOutput.h"
 #include "commands.h"
 
 void processInput(int argc, char** argv) {
@@ -26,7 +25,6 @@ void processInput(int argc, char** argv) {
     AST* head = buildFromParseResult(parseResult);
 
     FunctionList* functionList = findFunctions(head, argv[i]);
-    CG* cg = generateCG(functionList);
 
     if(!functionList->count) {
       perror("PI :: WARNING :: NO FUNCTIONS DETECTED\n");
@@ -34,18 +32,6 @@ void processInput(int argc, char** argv) {
       free(filename);
       return;
     }
-
-    char* cgDotFilename = createFilePath("%s/%s-cg.dot", outputSubDir, filename);
-
-    FILE* cgFile = fopen(cgDotFilename, "w");
-    if (!cgFile)
-      perror("PI:: ERROR :: CG DOT CREATION FAILED\n");
-    else {
-      outputCG(cg, cgFile);
-      fclose(cgFile);
-    }
-
-    free(cgDotFilename);
 
     for(int j = 0; j < functionList->count; j++) {
       char* cfgDotFilename = createFilePath("%s/%s-cfg.dot", outputSubDir, functionList->items[j]->name);
@@ -67,7 +53,6 @@ void processInput(int argc, char** argv) {
     free(filename);
     free(outputSubDir);
     freeFunctionList(functionList);
-    freeCG(cg);
     freeAST(head);
   }
 }

@@ -1,5 +1,4 @@
 #include "Functions.h"
-#include "CFGBuilder.h"
 #include "safe_mem.h"
 
 FunctionList* createFunctionList() {
@@ -22,15 +21,10 @@ void freeFunctionList(FunctionList* list) {
   }
 }
 
-
 void addFunction(FunctionList* list, Function* func) {
   list->items = (Function**)safe_realloc(list->items, (list->count + 1) * sizeof(Function*));
-  if(!list->items)
-    exit(EXIT_FAILURE);
-  if (list->items) {
-    list->items[list->count] = func;
-    list->count++;
-  }
+  list->items[list->count] = func;
+  list->count++;
 }
 
 void freeFunction(Function* func) {
@@ -98,7 +92,6 @@ void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) 
     findFunctionsRecursive(functions, getChild(node, i), filename);
   }
 }
-
 
 FunctionList* findFunctions(AST* head, char* filename) {
   FunctionList* functionList = createFunctionList();

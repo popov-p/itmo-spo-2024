@@ -1,6 +1,5 @@
-#include "CFGBuilder.h"
+#include "CFGOutput.h"
 #include "AST.h"
-#include "CFGNodeProcessing.h"
 
 void writeBlock(int num, FILE *file, BB_t type) {
   if (type == standard)
@@ -18,12 +17,6 @@ void writeCFGEdges(CFG* cfg, FILE *file) {
     for(int j = 0; j < cfg->blocks[i]->successorCount; j++)
       fprintf(file, "    node%d -> node%d;\n", i, cfg->blocks[i]->successors[j]);
   }
-}
-
-CFG* generateCFG(AST* head) {
-  CFG* cfg = initEmptyCFG(100, 20, 20);
-  walker(cfg, head);
-  return cfg;
 }
 
 void outputCFG(CFG* cfg, FILE* file) {
@@ -68,8 +61,3 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     freeAST(op);
   }
 }
-
-
-
-
-
