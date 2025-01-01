@@ -1,7 +1,6 @@
 #pragma once
 #include "AST.h"
 #include "LevelStack.h"
-#include "ProcessedNodes.h"
 #include "OT.h"
 
 typedef enum BB_t {
@@ -23,7 +22,6 @@ typedef struct CFG {
   BB** blocks;
   int blockCount;
   int lastProcessedIndex;
-  ProcessedNodes* processedNodes;
   LoopLevelStack* loopLevelStack;
   IfLevelStack* ifLevelStack;
 

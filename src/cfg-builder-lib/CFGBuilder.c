@@ -22,8 +22,7 @@ void writeCFGEdges(CFG* cfg, FILE *file) {
 
 CFG* generateCFG(AST* head) {
   CFG* cfg = initEmptyCFG(100, 20, 20);
-  int lastProcessedIndex = -1;
-  cfgWalker(cfg, head);
+  walker(cfg, head);
   return cfg;
 }
 

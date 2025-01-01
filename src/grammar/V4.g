@@ -52,12 +52,11 @@ DEC: ('0'..'9')+;
 WS: (' ' | '\t' | '\n')+ { $channel = HIDDEN; };
 
 source
-  : sourceItem* -> ^(SOURCE sourceItem*)
+  : sourceItem*
   ;
 
 sourceItem
-  : funcDef -> ^(SOURCE_ITEM funcDef)
-  | expr
+  : funcDef
   ;
 
 funcDef

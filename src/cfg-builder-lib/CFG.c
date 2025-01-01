@@ -31,7 +31,6 @@ CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize, int ifLevelSta
   cfg->blocks = NULL;
   cfg->blockCount = 0;
   cfg->lastProcessedIndex = -1;
-  cfg->processedNodes = createProcessedNodes(processedNodesSize);
   cfg->loopLevelStack = createLoopLevelStack(loopLevelStackSize);
   cfg->ifLevelStack = createIfLevelStack(ifLevelStackSize);
   return cfg;
@@ -45,8 +44,6 @@ void freeCFG(CFG* cfg) {
 
   freeIfLevelStack(cfg->ifLevelStack);
   freeLoopLevelStack(cfg->loopLevelStack);
-  freeProcessedNodes(cfg->processedNodes);
-
   free(cfg->blocks);
   free(cfg);
 }

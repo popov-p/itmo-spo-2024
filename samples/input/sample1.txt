@@ -1,10 +1,16 @@
 def x() of int
-    while t < d 
-        if x < y then 
-            kek = lol;
-            f();
-            g();
-            h();
+    int d = 2;
+    boolean t;
+    z = m;
+    while t < d
+        while m < k
+            if as < ff then {
+                x = f();
+            }
+            else {
+                m = d();
+            }
+            end
         end
     end
 end
