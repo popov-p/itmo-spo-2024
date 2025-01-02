@@ -42,6 +42,7 @@ void OT_addChild(OT* parent, OT* child) {
 
   child->parent = parent;
 }
+
 void OT_removeChild(OT* parent, OT* child) {
   if (!parent || !child) return;
 
@@ -61,7 +62,6 @@ void OT_removeChild(OT* parent, OT* child) {
 
   parent->children = safe_realloc(parent->children, parent->childCount * sizeof(OT*));
 }
-
 
 void OT_insertBetween(OT* parent,
                       OT* thatChild,
@@ -106,10 +106,9 @@ void OT_Walker(OT* ot, AST* node) {
   }
 
   else if (TOKEN_IS(node, "+") ||
-      TOKEN_IS(node, "-") ||
-      TOKEN_IS(node, "*") ||
-      TOKEN_IS(node, "/"))
-  {
+           TOKEN_IS(node, "-") ||
+           TOKEN_IS(node, "*") ||
+           TOKEN_IS(node, "/")) {
     currentNode = OT_createNode(node->token);
     OT_addChild(ot, currentNode);
   }

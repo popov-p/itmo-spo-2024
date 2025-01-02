@@ -1,1 +1,1 @@
-create_library(${TREE_VIS_LIB} ${GRAMMAR_RUNTIME_LIB})
+create_library(${TREE_VIS_LIB} ${GRAMMAR_RUNTIME_LIB} ${SAFE_MEM})

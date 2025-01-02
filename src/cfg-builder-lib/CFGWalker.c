@@ -115,7 +115,7 @@ void exitCall(CFG* cfg, AST* node) {
 }
 
 void enterLoop(CFG* cfg,
-                  AST* node) {
+               AST* node) {
   int loopBlockIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = loopBlockIndex;
 

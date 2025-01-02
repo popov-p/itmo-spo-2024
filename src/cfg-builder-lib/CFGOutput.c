@@ -54,12 +54,10 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
     fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
 
-    //AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
 
     OT_PrintTree(bb->opTree, 0);
     OT_OutputNode(bb->opTree, basicBlockIndex, file);
     OT_OutputEdge(bb->opTree, basicBlockIndex, file);
     fprintf(file, "}\n");
-    //freeOT(op);
   }
 }

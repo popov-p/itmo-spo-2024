@@ -13,11 +13,8 @@ typedef struct ParseResult {
 } ParseResult;
 
 char* readFileToString(const char* filePath);
-
 ParseResult* parse(const char* text);
-
 void generateDot(ParseResult* result, const char* path);
-
 int cleanup(ParseResult* pr);
 
 #endif // TREEBUILDER_H

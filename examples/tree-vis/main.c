@@ -1,5 +1,6 @@
 #include "TreeBuilder.h"
 #include "commands.h"
+#include "AST.h"
 
 int main(int argc, char** argv)
 {
@@ -16,15 +17,19 @@ int main(int argc, char** argv)
   char* pngFilePath = createFilePath("%s/%s.png", outputDir, baseName);
 
   char *inputText = readFileToString(inputFilePath);
-  if (!inputText)
+  if (!inputText) {
     printf("not ok, failed reading from file\n");
+    exit(EXIT_FAILURE);
+  }
 
   ParseResult* parseResult = parse(inputText);
+  AST* head = buildFromParseResult(parseResult);
 
-  generateDot(parseResult, dotFilePath);
+  FILE* treeFile = open_file(dotFilePath, "w");
+  AST_WriteInFile(head, treeFile);
+  close_file(treeFile);
 
   executeCommand("dot -Tpng %s -o %s", dotFilePath, pngFilePath);
-
   executeCommand("xdg-open %s", pngFilePath);
 
   free(pngFilePath);
