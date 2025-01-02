@@ -34,7 +34,7 @@ void freeFunction(Function* func) {
     if (func->sourceFile)
       free(func->sourceFile);
     if(func->cfg)
-      freeCFG(func->cfg);
+      CFG_Free(func->cfg);
     free(func);
   }
 }
@@ -75,11 +75,11 @@ int functionExists(FunctionList* functions, char* funcName) {
 
 void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) {
   if(!strcmp(node->token, "FUNC_DEF")) {
-    AST* signature = getChild(node, 0);
-    AST* funcName = getChild(signature, 0);
+    AST* signature = AST_GetChild(node, 0);
+    AST* funcName = AST_GetChild(signature, 0);
 
     if (!functionExists(functions, funcName->token)) {
-      CFG* cfg = generateCFG(node);
+      CFG* cfg = CFG_Generate(node);
 
       Function* func = createFunction(funcName->token, signature, cfg, filename);
       addFunction(functions, func);
@@ -89,7 +89,7 @@ void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) 
       perror("FFR :: DEFINITION OF FUNCTIONS WITH EQUAL NAMES IS PROHIBITED\n");
   }
   for(int i = 0; i < node->childCount; ++i) {
-    findFunctionsRecursive(functions, getChild(node, i), filename);
+    findFunctionsRecursive(functions, AST_GetChild(node, i), filename);
   }
 }
 

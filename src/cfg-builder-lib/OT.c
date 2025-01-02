@@ -22,7 +22,7 @@ OT* OT_GetChild(const OT* parent, int index) {
   return parent->children[index];
 }
 
-OT* OT_createNode(const char* token) {
+OT* OT_CreateNode(const char* token) {
   if(!token)
     return NULL;
   OT* node = (OT*)safe_malloc(sizeof(OT));
@@ -35,7 +35,7 @@ OT* OT_createNode(const char* token) {
   return node;
 }
 
-void OT_addChild(OT* parent, OT* child) {
+void OT_AddChild(OT* parent, OT* child) {
   parent->children = realloc(parent->children, (parent->childCount + 1) * sizeof(OT*));
   parent->children[parent->childCount] = child;
   parent->childCount++;
@@ -43,7 +43,7 @@ void OT_addChild(OT* parent, OT* child) {
   child->parent = parent;
 }
 
-void OT_removeChild(OT* parent, OT* child) {
+void OT_RemoveChild(OT* parent, OT* child) {
   if (!parent || !child) return;
 
   int childIndex = -1;
@@ -63,23 +63,23 @@ void OT_removeChild(OT* parent, OT* child) {
   parent->children = safe_realloc(parent->children, parent->childCount * sizeof(OT*));
 }
 
-void OT_insertBetween(OT* parent,
+void OT_InsertBetween(OT* parent,
                       OT* thatChild,
                       OT* thisNode) {
   if (!parent || !thatChild || !thisNode) return;
 
-  OT_removeChild(parent, thatChild);
-  OT_addChild(parent, thisNode);
-  OT_addChild(thisNode, thatChild);
+  OT_RemoveChild(parent, thatChild);
+  OT_AddChild(parent, thisNode);
+  OT_AddChild(thisNode, thatChild);
 }
 
-void OT_destroy(OT* node) {
+void OT_Free(OT* node) {
   if (!node) return;
 
   free(node->token);
   if (node->children) {
     for (size_t i = 0; node->children[i]; i++) {
-      OT_destroy(node->children[i]);
+      OT_Free(node->children[i]);
     }
     free(node->children);
   }
@@ -88,7 +88,7 @@ void OT_destroy(OT* node) {
 
 OT* OT_Assignment(AST* node) {
   if (!node) return NULL;
-  OT* ot = OT_createNode(__HEAD__);
+  OT* ot = OT_CreateNode(__HEAD__);
   OT_Walker(ot, node);
 
   return ot;
@@ -101,30 +101,30 @@ void OT_Walker(OT* ot, AST* node) {
 
   if(TOKEN_CONVERTS_TO_INT(node)) {
     const char* substrings[] = {__CONST, ": ", node->token};
-    currentNode = OT_createNode(concatenateStrings(3, substrings));
-    OT_addChild(ot, currentNode);
+    currentNode = OT_CreateNode(concatenateStrings(3, substrings));
+    OT_AddChild(ot, currentNode);
   }
 
   else if (TOKEN_IS(node, "+") ||
            TOKEN_IS(node, "-") ||
            TOKEN_IS(node, "*") ||
            TOKEN_IS(node, "/")) {
-    currentNode = OT_createNode(node->token);
-    OT_addChild(ot, currentNode);
+    currentNode = OT_CreateNode(node->token);
+    OT_AddChild(ot, currentNode);
   }
   else if (TOKEN_IS(node, "ASSIGNMENT")) {
-    currentNode = OT_createNode(__WRITE);
-    OT_addChild(ot, currentNode);
+    currentNode = OT_CreateNode(__WRITE);
+    OT_AddChild(ot, currentNode);
   }
   else
   {
     const char* substrings[] = {__PLACE, ": ", node->token};
-    currentNode = OT_createNode(concatenateStrings(3, substrings));
-    OT_addChild(ot, currentNode);
-    OT_insertBetween(ot, currentNode, OT_createNode(__READ));
+    currentNode = OT_CreateNode(concatenateStrings(3, substrings));
+    OT_AddChild(ot, currentNode);
+    OT_InsertBetween(ot, currentNode, OT_CreateNode(__READ));
   }
   for (int i = 0; i < node->childCount; i++)
-    OT_Walker(currentNode, getChild(node, i));
+    OT_Walker(currentNode, AST_GetChild(node, i));
 
 }
 
@@ -134,5 +134,4 @@ void OT_TypeResolver(OT* ot) {
     OT* child = OT_GetChild(ot, i);
     OT_TypeResolver(child);
   }
-  // if()
 }

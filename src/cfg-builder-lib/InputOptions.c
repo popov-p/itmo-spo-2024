@@ -22,7 +22,7 @@ void processInput(int argc, char** argv) {
 
     char *inputText = readFileToString(argv[i]);
     ParseResult* parseResult = parse(inputText);
-    AST* head = buildFromParseResult(parseResult);
+    AST* head = AST_BuildFromParseResult(parseResult);
 
     FunctionList* functionList = findFunctions(head, argv[i]);
 
@@ -39,7 +39,7 @@ void processInput(int argc, char** argv) {
       if (!cfgFile)
         fprintf(stderr, "PI :: ERROR :: FILE NOT OPENED");
       else {
-        outputCFG(functionList->items[j]->cfg, cfgFile);
+        CFG_WriteInFile(functionList->items[j]->cfg, cfgFile);
         fclose(cfgFile);
       }
       char* cfgPngFilename = createFilePath("%s/%s-cfg.png", outputSubDir, functionList->items[j]->name);
@@ -53,7 +53,7 @@ void processInput(int argc, char** argv) {
     free(filename);
     free(outputSubDir);
     freeFunctionList(functionList);
-    freeAST(head);
+    AST_Free(head);
   }
 }
 

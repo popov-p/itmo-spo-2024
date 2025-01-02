@@ -1,7 +1,6 @@
 #include "TreeBuilder.h"
 #include "commands.h"
-#include "AST.h"
-
+#include "ASTOutput.h"
 int main(int argc, char** argv)
 {
   if (argc != 3) {
@@ -23,7 +22,7 @@ int main(int argc, char** argv)
   }
 
   ParseResult* parseResult = parse(inputText);
-  AST* head = buildFromParseResult(parseResult);
+  AST* head = AST_BuildFromParseResult(parseResult);
 
   FILE* treeFile = open_file(dotFilePath, "w");
   AST_WriteInFile(head, treeFile);

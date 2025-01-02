@@ -11,7 +11,7 @@ void AST_WriteInFile(AST* head, FILE* file) {
 
 void AST_WriteEdges(AST* node, FILE* file) {
   for (size_t i = 0; i < node->childCount; i++) {
-    AST* child = getChild(node, i);
+    AST* child = AST_GetChild(node, i);
     AST_WriteEdge(node, child, file);
     AST_WriteEdges(child, file);
   }
@@ -21,7 +21,7 @@ void AST_WriteNodes(AST* node, FILE* file) {
   if (!node) return;
   AST_WriteNode(node, file);
   for (size_t i = 0; i < node->childCount; i++) {
-    AST* child = getChild(node, i);
+    AST* child = AST_GetChild(node, i);
     AST_WriteNodes(child, file);
   }
 }

@@ -27,11 +27,9 @@ typedef struct CFG {
 
 } CFG;
 
-CFG* generateCFG(AST* head);
-BB* createBasicBlock(AST* node, enum BB_t bt);
-void addSuccessor(BB* block, int successorIndex);
-void addBasicBlock(CFG* cfg, BB* block);
-
-
-CFG* initEmptyCFG(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize);
-void freeCFG(CFG* cfg);
+CFG* CFG_Generate(AST* head);
+BB* CFG_CreateBB(AST* node, enum BB_t bt);
+void CFG_AddSuccessor(BB* block, int successorIndex);
+void CFG_AddBB(CFG* cfg, BB* block);
+CFG* CFG_Init(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize);
+void CFG_Free(CFG* cfg);

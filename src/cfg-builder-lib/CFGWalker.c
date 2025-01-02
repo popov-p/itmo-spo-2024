@@ -10,12 +10,12 @@
 
 int connectNewBlock(CFG* cfg,
                     AST* current) {
-  BB* bb = createBasicBlock(current, standard);
-  addBasicBlock(cfg, bb);
+  BB* bb = CFG_CreateBB(current, standard);
+  CFG_AddBB(cfg, bb);
   int currentBlockIndex = cfg->blockCount - 1;
 
   if (cfg->lastProcessedIndex != -1)
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg), currentBlockIndex);
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg), currentBlockIndex);
 
   cfg->lastProcessedIndex = currentBlockIndex;
   printf("CFG :: CONNECT NEW BLOCK :: %s\n", current->token);
@@ -25,8 +25,8 @@ int connectNewBlock(CFG* cfg,
 void enterIf(CFG* cfg,
              AST* node) {
   int ifBlockIndex = connectNewBlock(cfg, node);
-  BB* mergeBlock = createBasicBlock(NULL, merge);
-  addBasicBlock(cfg, mergeBlock);
+  BB* mergeBlock = CFG_CreateBB(NULL, merge);
+  CFG_AddBB(cfg, mergeBlock);
 
   int mergeBlockIndex = cfg->blockCount - 1;
 
@@ -40,17 +40,17 @@ void exitIf(CFG* cfg,
     if(BREAK_DETECTED(cfg)) {
       BREAK_DETECTED(cfg) = 0;
 
-      addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
+      CFG_AddSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
                    LAST_MERGE_IDX(cfg));
 
-      addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+      CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                    LAST_LOOP_EXIT_IDX(cfg));
       cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
     }
     else {
-      addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+      CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                    LAST_MERGE_IDX(cfg));
-      addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
+      CFG_AddSuccessor(cfg->blocks[LAST_IF_IDX(cfg)],
                    LAST_MERGE_IDX(cfg));
 
       cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
@@ -59,7 +59,7 @@ void exitIf(CFG* cfg,
   if(node->childCount == 3) {
     if(BREAK_DETECTED(cfg)) {
       BREAK_DETECTED(cfg) = 0;
-      addSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
+      CFG_AddSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
                    LAST_LOOP_EXIT_IDX(cfg));
     }
     printf("CFG :: EXITING IF TO ELSE\n");
@@ -72,21 +72,21 @@ void exitIf(CFG* cfg,
 
 void enterElse(CFG* cfg,
                AST* node) {
-  BB* bb = createBasicBlock(node, standard);
-  addBasicBlock(cfg, bb);
+  BB* bb = CFG_CreateBB(node, standard);
+  CFG_AddBB(cfg, bb);
   int elseBlockIndex = cfg->blockCount - 1;
   LAST_ELSE_IDX(cfg) = elseBlockIndex;
 
   if(BREAK_DETECTED(cfg))
-    addSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
+    CFG_AddSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
                  LAST_LOOP_EXIT_IDX(cfg));
 
   BREAK_DETECTED(cfg) = 0;
 
   if (cfg->lastProcessedIndex != -1) {
-    addSuccessor(cfg->blocks[LAST_IF_IDX(cfg)], elseBlockIndex);
+    CFG_AddSuccessor(cfg->blocks[LAST_IF_IDX(cfg)], elseBlockIndex);
   }
-  addSuccessor(LAST_PROCESSED_BLOCK(cfg), LAST_MERGE_IDX(cfg));
+  CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg), LAST_MERGE_IDX(cfg));
   cfg->lastProcessedIndex = elseBlockIndex;
   printf("CFG :: ENTERING ELSE\n");
 }
@@ -95,12 +95,12 @@ void exitElse(CFG* cfg, AST* node) {
   if(BREAK_DETECTED(cfg)) {
     BREAK_DETECTED(cfg) = 0;
 
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
   }
   else {
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_MERGE_IDX(cfg));
     cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
   }
@@ -111,7 +111,7 @@ void exitElse(CFG* cfg, AST* node) {
 void exitCall(CFG* cfg, AST* node) {
   int callIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = callIndex;
-  printf("CFG :: CALL %s\n", (char*)getChild(node, 0)->token);
+  printf("CFG :: CALL %s\n", (char*)AST_GetChild(node, 0)->token);
 }
 
 void enterLoop(CFG* cfg,
@@ -119,10 +119,10 @@ void enterLoop(CFG* cfg,
   int loopBlockIndex = connectNewBlock(cfg, node);
   cfg->lastProcessedIndex = loopBlockIndex;
 
-  BB* exitBlock = createBasicBlock(NULL, loop_exit);
-  addBasicBlock(cfg, exitBlock);
+  BB* exitBlock = CFG_CreateBB(NULL, loop_exit);
+  CFG_AddBB(cfg, exitBlock);
   int exitBlockIndex = cfg->blockCount - 1;
-  addSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
+  CFG_AddSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
   pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
   printf("CFG :: ENTERING LOOP\n");
 }
@@ -131,12 +131,12 @@ void exitLoop(CFG* cfg,
               AST* node) {
   printf("CFG :: EXITING LOOP\n");
   if(BREAK_DETECTED(cfg)) {
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   else {
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
@@ -153,8 +153,8 @@ void enterRepeat(CFG* cfg,
 
   int repeatBlockIndex = connectNewBlock(cfg, node);
 
-  BB* exitBlock = createBasicBlock(NULL, repeat_exit);
-  addBasicBlock(cfg, exitBlock);
+  BB* exitBlock = CFG_CreateBB(NULL, repeat_exit);
+  CFG_AddBB(cfg, exitBlock);
   int exitBlockIndex = cfg->blockCount - 1;
 
   pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, repeatBlockIndex);
@@ -163,14 +163,14 @@ void enterRepeat(CFG* cfg,
 void exitRepeat(CFG* cfg,
                 AST* node) {
   if(BREAK_DETECTED(cfg)) {
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
   else {
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_IDX(cfg));
-    addSuccessor(LAST_PROCESSED_BLOCK(cfg),
+    CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
@@ -229,7 +229,7 @@ void cfgWalker(CFG* cfg, AST* node)
 
   if(!BREAK_DETECTED(cfg))
     for (int i = 0; i < node->childCount; i++)
-      cfgWalker(cfg, getChild(node, i));
+      cfgWalker(cfg, AST_GetChild(node, i));
 
   if (TOKEN_IS(node, "CALL"))
     exitCall(cfg, node);

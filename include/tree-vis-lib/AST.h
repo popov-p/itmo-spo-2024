@@ -13,20 +13,18 @@ typedef struct AST {
   size_t childCount;
 } AST;
 
-AST* createNode(uint32_t id, char* token);
-void addChild(AST* parent, AST* child);
-void freeAST(AST* head);
+AST* AST_CreateNode(uint32_t id, char* token);
+void AST_AddChild(AST* parent, AST* child);
+void AST_Free(AST* head);
 
-void insertBetween(AST* parent, AST* thatChild, AST* thisNode);
-AST* duplicateTree(AST* head);
-AST* duplicateTreeRecursive(AST* head);
+void AST_InsertBetween(AST* parent, AST* thatChild, AST* thisNode);
 
-AST* findNodeById(AST* node, uint32_t id);
-AST* buildFromParseResult(ParseResult* parseResult);
-void setChildFromAntlrNode(AST* parent,
+AST* AST_FindNodeById(AST* node, uint32_t id);
+AST* AST_BuildFromParseResult(ParseResult* parseResult);
+void AST_SetChildFromAntlrNode(AST* parent,
                            pANTLR3_BASE_TREE_ADAPTOR adaptor,
                            pANTLR3_BASE_TREE node);
-AST* getChild(AST* parent, size_t i);
+AST* AST_GetChild(AST* parent, size_t i);
 
 
 // void outputAST(AST* head, FILE* file);

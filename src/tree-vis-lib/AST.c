@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-AST* createNode(uint32_t id, char* token) {
+AST* AST_CreateNode(uint32_t id, char* token) {
   AST* node = (AST*)safe_malloc(sizeof(AST));
   node->parent = NULL;
   node->children = NULL;
@@ -13,9 +13,9 @@ AST* createNode(uint32_t id, char* token) {
   return node;
 }
 
-void addChild(AST* parent, AST* child) {
+void AST_AddChild(AST* parent, AST* child) {
   if (!parent) {
-    freeAST(child);
+    AST_Free(child);
   }
   if (!child)
     return;
@@ -27,26 +27,26 @@ void addChild(AST* parent, AST* child) {
   child->parent = parent;
 }
 
-void freeAST(AST* node) {
+void AST_Free(AST* node) {
   if (!node)
     return;
   free(node->token);
 
   for (size_t i = 0; i < node->childCount; i++)
-    freeAST(node->children[i]);
+    AST_Free(node->children[i]);
 
   free(node->children);
   free(node);
 }
 
-AST* findNodeById(AST* node, uint32_t id) {
+AST* AST_FindNodeById(AST* node, uint32_t id) {
   if (!node)
     return NULL;
   if (node->id == id)
     return node;
 
   for (size_t i = 0; i < node->childCount; i++) {
-    AST* foundNode = findNodeById(node->children[i], id);
+    AST* foundNode = AST_FindNodeById(node->children[i], id);
     if (foundNode)
       return foundNode;
   }
@@ -54,7 +54,7 @@ AST* findNodeById(AST* node, uint32_t id) {
   return NULL;
 }
 
-AST* getChild(AST* parent, size_t i) {
+AST* AST_GetChild(AST* parent, size_t i) {
   if (!parent || i >= parent->childCount) {
     return NULL;
   }
@@ -63,7 +63,7 @@ AST* getChild(AST* parent, size_t i) {
 
 
 
-void insertBetween(AST* parent,
+void AST_InsertBetween(AST* parent,
                    AST* thatChild,
                    AST* thisNode) {
   if (!parent || !thatChild || !thisNode)
@@ -86,34 +86,34 @@ void insertBetween(AST* parent,
   thisNode->parent = parent;
 }
 
-AST* buildFromParseResult(ParseResult* parseResult) {
-  AST* head = createNode(parseResult->p->adaptor->getUniqueID(parseResult->p->adaptor,
+AST* AST_BuildFromParseResult(ParseResult* parseResult) {
+  AST* head = AST_CreateNode(parseResult->p->adaptor->getUniqueID(parseResult->p->adaptor,
                                                               parseResult->sr.tree),
                          (char*)parseResult->sr.tree->getText(parseResult->sr.tree)->chars);
 
   int childCount = parseResult->sr.tree->getChildCount(parseResult->sr.tree);
 
   for(int i = 0; i < childCount; i++) {
-    setChildFromAntlrNode(head, parseResult->p->adaptor,
+    AST_SetChildFromAntlrNode(head, parseResult->p->adaptor,
                           parseResult->sr.tree->getChild(parseResult->sr.tree, i));
   }
 
   return head;
 }
 
-void setChildFromAntlrNode(AST* parent,
+void AST_SetChildFromAntlrNode(AST* parent,
                            pANTLR3_BASE_TREE_ADAPTOR adaptor,
                            pANTLR3_BASE_TREE node) {
   if (!node)
     return;
-  AST* child = createNode(adaptor->getUniqueID(adaptor, node),
+  AST* child = AST_CreateNode(adaptor->getUniqueID(adaptor, node),
                           (char*)node->getText(node)->chars);
-  addChild(parent, child);
+  AST_AddChild(parent, child);
 
   int childCount = node->getChildCount(node);
   for (int i = 0; i < childCount; i++) {
     pANTLR3_BASE_TREE child_node = node->getChild(node, i);
-    setChildFromAntlrNode(child, adaptor, child_node);
+    AST_SetChildFromAntlrNode(child, adaptor, child_node);
   }
 }
 
