@@ -4,6 +4,8 @@
 #include <antlr3.h>
 #include "TreeBuilder.h"
 
+#define TOKEN_IS(node, str) (!strcmp((node->token), (str)))
+
 typedef struct AST {
     uint32_t id;
     char* token;

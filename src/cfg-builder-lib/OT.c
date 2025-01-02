@@ -1,306 +1,139 @@
+#include <stdlib.h>
+#include <string.h>
 #include "OT.h"
-#include "AST.h"
 #include "safe_mem.h"
+#include "commands.h"
 
-OT* createOTNode(const char* token) {
+#define __READ  "__READ"
+#define __WRITE  "__WRITE"
+#define __PLACE "__PLACE"
+#define __CONST "__CONST"
+#define __HEAD__ "HEAD"
+
+#define TOKEN_CONVERTS_TO_INT(node) ({            \
+    char* endptr;                                 \
+    strtol((node)->token, &endptr, 10);           \
+    (*endptr == '\0');                            \
+})
+
+OT* OT_GetChild(const OT* parent, int index) {
+  if (!parent || index < 0 || index >= parent->childCount)
+    return NULL;
+  return parent->children[index];
+}
+
+OT* OT_createNode(const char* token) {
+  if(!token)
+    return NULL;
   OT* node = (OT*)safe_malloc(sizeof(OT));
-
-  node->token = token ? strdup(token) : NULL;
-  node->left = NULL;
-  node->right = NULL;
-  node->children = NULL;
+  node->token = strdup(token);
+  node->returnType = NULL;
+  node->parent = NULL;
+  node->children = (OT**)safe_malloc(sizeof(OT*));
   node->childCount = 0;
-
+  node->id = arc4random();
   return node;
 }
 
-
-int addOTChild(OT* parent, OT* child) {
-  if (!parent || !child) {
-    return -1;
-  }
-
-  OT** newChildren = (OT**)safe_realloc(parent->children, sizeof(OT*) * (parent->childCount + 1));
-
-  parent->children = newChildren;
+void OT_addChild(OT* parent, OT* child) {
+  parent->children = realloc(parent->children, (parent->childCount + 1) * sizeof(OT*));
   parent->children[parent->childCount] = child;
   parent->childCount++;
 
-  return 0;
+  child->parent = parent;
 }
+void OT_removeChild(OT* parent, OT* child) {
+  if (!parent || !child) return;
 
-void freeOT(OT* node) {
-  if (!node) return;
-
-  if (node->token)
-    free(node->token);
-
-  freeOT(node->left);
-  freeOT(node->right);
-
-  if (node->children) {
-    for (int i = 0; i < node->childCount; i++)
-      freeOT(node->children[i]);
-    free(node->children);
+  int childIndex = -1;
+  for (int i = 0; i < parent->childCount; i++) {
+    if (parent->children[i] == child) {
+      childIndex = i;
+      break;
+    }
   }
 
+  if (childIndex == -1) return;
+  child->parent = NULL;
+  for (int i = childIndex; i < parent->childCount - 1; i++)
+    parent->children[i] = parent->children[i + 1];
+  parent->childCount--;
+
+  parent->children = safe_realloc(parent->children, parent->childCount * sizeof(OT*));
+}
+
+
+void OT_insertBetween(OT* parent,
+                      OT* thatChild,
+                      OT* thisNode) {
+  if (!parent || !thatChild || !thisNode) return;
+
+  OT_removeChild(parent, thatChild);
+  OT_addChild(parent, thisNode);
+  OT_addChild(thisNode, thatChild);
+}
+
+void OT_destroy(OT* node) {
+  if (!node) return;
+
+  free(node->token);
+  if (node->children) {
+    for (size_t i = 0; node->children[i]; i++) {
+      OT_destroy(node->children[i]);
+    }
+    free(node->children);
+  }
   free(node);
 }
 
+OT* OT_Assignment(AST* node) {
+  if (!node) return NULL;
+  OT* ot = OT_createNode(__HEAD__);
+  OT_Walker(ot, node);
 
-OT* otWalker(OT* ot, AST* node) {
-  return NULL;
+  return ot;
+}
+
+void OT_Walker(OT* ot, AST* node) {
+  if (!node) return;
+
+  OT* currentNode = NULL;
+
+  if(TOKEN_CONVERTS_TO_INT(node)) {
+    const char* substrings[] = {__CONST, ": ", node->token};
+    currentNode = OT_createNode(concatenateStrings(3, substrings));
+    OT_addChild(ot, currentNode);
+  }
+
+  else if (TOKEN_IS(node, "+") ||
+      TOKEN_IS(node, "-") ||
+      TOKEN_IS(node, "*") ||
+      TOKEN_IS(node, "/"))
+  {
+    currentNode = OT_createNode(node->token);
+    OT_addChild(ot, currentNode);
+  }
+  else if (TOKEN_IS(node, "ASSIGNMENT")) {
+    currentNode = OT_createNode(__WRITE);
+    OT_addChild(ot, currentNode);
+  }
+  else
+  {
+    const char* substrings[] = {__PLACE, ": ", node->token};
+    currentNode = OT_createNode(concatenateStrings(3, substrings));
+    OT_addChild(ot, currentNode);
+    OT_insertBetween(ot, currentNode, OT_createNode(__READ));
+  }
   for (int i = 0; i < node->childCount; i++)
-    otWalker(ot, getChild(node, i));
+    OT_Walker(currentNode, getChild(node, i));
+
 }
 
-OT* otAssignment(AST* node) {
-  OT* head = otWalker(NULL, node);
-  return head;
+void OT_TypeResolver(OT* ot) {
+  if (!ot) return;
+  for (int i = 0; i < ot->childCount; i++) {
+    OT* child = OT_GetChild(ot, i);
+    OT_TypeResolver(child);
+  }
+  // if()
 }
-
-// void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
-//   if (!node) return;
-
-//   int childCount = node->childCount;
-
-//   writeNode(node, basicBlockIndex, file);
-//   for (int i = 0; i < childCount; i++) {
-//     AST* child = getChild(node, i);
-//     outputOpNode(child, basicBlockIndex, file);
-//   }
-// }
-
-// void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
-//   if(!parent)
-//     return;
-//   int childCount = parent->childCount;
-
-//   for (int i = 0; i < childCount; i++) {
-//     AST* child = getChild(parent, i);
-
-//     writeEdge(parent, child, basicBlockIndex, file);
-//     outputOpEdge(child, basicBlockIndex, file);
-//   }
-// }
-
-// void analyzeCutCondition(AST* head) {
-//   AST* condition = getChild(head, 0);
-//   AST* leftOperand = getChild(condition, 0);
-//   AST* valuePlaceQualifier = createNode(arc4random(), "__read");
-//   insertBetween(condition, leftOperand, valuePlaceQualifier);
-//   for (size_t i = 1; i < condition->childCount; i++) {
-//     AST* element = getChild(condition, i);
-//     AST* readQualifier = createNode(arc4random(), "__read");
-//     insertBetween(condition, element, readQualifier);
-//   }
-
-// }
-
-// void analyzeIf(AST* ifNode) {
-//   if (ifNode->childCount < 2)
-//     return;
-//   analyzeCutCondition(ifNode);
-// }
-
-// void analyzeLoop(AST* loopNode) {
-//   if (!loopNode)
-//     return;
-
-//   analyzeCutCondition(loopNode);
-// }
-
-// void analyzeRepeat(AST* repeatNode) {
-//   if (!repeatNode)
-//     return;
-//   analyzeCutCondition(repeatNode);
-// }
-
-// void analyzeAssign(AST* assignNode) {
-//   AST* lvalue = getChild(assignNode, 0);
-//   AST* rvalue = getChild(assignNode, 1);
-//   AST* vp = createNode(arc4random(), "__value_place");
-//   AST* read = createNode(arc4random(), "__read");
-
-//   insertBetween(assignNode, lvalue, vp);
-//   insertBetween(assignNode, rvalue, read);
-// }
-
-// void analyzeCall(AST* call) {
-//   if (strcmp(call->token, "CALL")) {
-//     return;
-//   }
-
-//   if(call->childCount > 1) {
-//     AST* list_expr = getChild(call, 1);
-//     for (size_t i = 0; i < list_expr->childCount; i++) {
-//       AST* listChild = getChild(list_expr, i);
-//       if (listChild != NULL) {
-//         AST* read = createNode(arc4random(), "__read");
-//         insertBetween(list_expr, listChild, read);
-//         analyzeCall(listChild);
-//       }
-//     }
-//   }
-// }
-
-// OT* analyzeOp (AST* node) {
-//   if(!node) //merge block or another service blocks
-//     return NULL;
-//   AST* head = NULL;
-//   if(!strcmp(node->token, "CALL")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeCall(head);
-//   }
-//   if(!strcmp(node->token, "IF")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeIf(head);
-//   }
-//   if(!strcmp(node->token, "ELSE")) {
-//     head = duplicateTree(node);
-//   }
-//   if(!strcmp(node->token, "LOOP")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeLoop(head);
-//   }
-//   if(!strcmp(node->token, "REPEAT")) {
-//     head = duplicateRightSubtree(node);
-//     analyzeRepeat(head);
-//   }
-//   if(!strcmp(node->token, "VAR_DEF")) {
-//     head = duplicateTree(node);
-//   }
-
-//   if(!strcmp(node->token, "VAR_DEC")) {
-//     head = duplicateTree(node);
-//   }
-//   if(!strcmp(node->token, "ASSIGNMENT")) {
-//     head = duplicateTree(node);
-//     analyzeAssign(head);
-//   }
-//   return head;
-// }
-
-
-
-// void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
-//   if (!node) return;
-
-//   int childCount = node->childCount;
-
-//   writeNode(node, basicBlockIndex, file);
-//   for (int i = 0; i < childCount; i++) {
-//     AST* child = getChild(node, i);
-//     outputOpNode(child, basicBlockIndex, file);
-//   }
-// }
-
-// void outputOpEdge(AST* parent, int basicBlockIndex, FILE *file) {
-//   if(!parent)
-//     return;
-//   int childCount = parent->childCount;
-
-//   for (int i = 0; i < childCount; i++) {
-//     AST* child = getChild(parent, i);
-
-//     writeEdge(parent, child, basicBlockIndex, file);
-//     outputOpEdge(child, basicBlockIndex, file);
-//   }
-// }
-
-// void analyzeCutCondition(AST* head) {
-//   AST* condition = getChild(head, 0);
-//   AST* leftOperand = getChild(condition, 0);
-//   AST* valuePlaceQualifier = createNode(arc4random(), "__read");
-//   insertBetween(condition, leftOperand, valuePlaceQualifier);
-//   for (size_t i = 1; i < condition->childCount; i++) {
-//     AST* element = getChild(condition, i);
-//     AST* readQualifier = createNode(arc4random(), "__read");
-//     insertBetween(condition, element, readQualifier);
-//   }
-
-// }
-
-// void analyzeIf(AST* ifNode) {
-//   if (ifNode->childCount < 2)
-//     return;
-//   //analyzeCutCondition(ifNode);
-// }
-
-// void analyzeLoop(AST* loopNode) {
-//   if (!loopNode)
-//     return;
-
-//   //analyzeCutCondition(loopNode);
-// }
-
-// void analyzeRepeat(AST* repeatNode) {
-//   if (!repeatNode)
-//     return;
-//   // analyzeCutCondition(repeatNode);
-// }
-
-// void analyzeAssign(AST* assignNode) {
-//   // * lvalue = getChild(assignNode, 0);
-//   // AST* rvalue = getChild(assignNode, 1);
-//   // AST* vp = createNode(arc4random(), "__value_place");
-//   // AST* read = createNode(arc4random(), "__read");
-
-//   // insertBetween(assignNode, lvalue, vp);
-//   // insertBetween(assignNode, rvalue, read);
-// }
-
-// void analyzeCall(AST* call) {
-//   if (strcmp(call->token, "CALL")) {
-//     return;
-//   }
-
-//   if(call->childCount > 1) {
-//     AST* list_expr = getChild(call, 1);
-//     for (size_t i = 0; i < list_expr->childCount; i++) {
-//       AST* listChild = getChild(list_expr, i);
-//       if (listChild != NULL) {
-//         AST* read = createNode(arc4random(), "__read");
-//         insertBetween(list_expr, listChild, read);
-//         analyzeCall(listChild);
-//       }
-//     }
-//   }
-// }
-
-// OT* buildOT (AST* node) {
-//   if(!node) //merge block or another service blocks
-//     return NULL;
-//   OT* head = NULL;
-//   if(!strcmp(node->token, "CALL")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeCall(head);
-//   }
-//   if(!strcmp(node->token, "IF")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeIf(head);
-//   }
-//   if(!strcmp(node->token, "ELSE")) {
-//     head = duplicateTree(node);
-//   }
-//   if(!strcmp(node->token, "LOOP")) {
-//     head = duplicateLeftSubtree(node);
-//     analyzeLoop(head);
-//   }
-//   if(!strcmp(node->token, "REPEAT")) {
-//     head = duplicateRightSubtree(node);
-//     analyzeRepeat(head);
-//   }
-//   if(!strcmp(node->token, "VAR_DEF")) {
-//     head = duplicateTree(node);
-//   }
-
-//   if(!strcmp(node->token, "VAR_DEC")) {
-//     head = duplicateTree(node);
-//   }
-//   if(!strcmp(node->token, "ASSIGNMENT")) {
-//     head = duplicateTree(node);
-//     analyzeAssign(head);
-//   }
-//   return head;
-// }

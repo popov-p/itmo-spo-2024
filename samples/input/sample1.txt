@@ -1,16 +1,3 @@
 def x() of int
-    int d = 2;
-    boolean t;
-    z = m;
-    while t < d
-        while m < k
-            if as < ff then {
-                x = f();
-            }
-            else {
-                m = d();
-            }
-            end
-        end
-    end
+    z = m + 2 * 3;
 end

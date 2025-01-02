@@ -215,7 +215,7 @@ void writeEdge(AST* parent, AST* child, int basicBlockIndex, FILE *file) {
 
 
 void outputOpNode(AST* node, int basicBlockIndex, FILE *file) {
-  if (node == NULL) return;
+  if (!node) return;
 
           //printf("VISITING :: %s\n", node->token);
   int childCount = node->childCount;

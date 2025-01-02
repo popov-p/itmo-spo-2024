@@ -1,1 +1,1 @@
-create_library(${IO_UTILS} "")
+create_library(${IO_UTILS} ${SAFE_MEM})

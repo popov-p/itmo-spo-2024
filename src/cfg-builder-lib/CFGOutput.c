@@ -1,5 +1,6 @@
 #include "CFGOutput.h"
-#include "AST.h"
+// #include "AST.h"
+#include "OTOutput.h"
 
 void writeBlock(int num, FILE *file, BB_t type) {
   if (type == standard)
@@ -53,11 +54,12 @@ void outputSubgraph(CFG* cfg, int basicBlockIndex, FILE* file) {
     fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
     fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
 
-    AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
+    //AST* op = analyzeOp(findNodeById(bb->node, bb->node->id));
 
-    outputOpNode(op, basicBlockIndex, file);
-    outputOpEdge(op, basicBlockIndex, file);
+    OT_PrintTree(bb->opTree, 0);
+    OT_OutputNode(bb->opTree, basicBlockIndex, file);
+    OT_OutputEdge(bb->opTree, basicBlockIndex, file);
     fprintf(file, "}\n");
-    freeAST(op);
+    //freeOT(op);
   }
 }

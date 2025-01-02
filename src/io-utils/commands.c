@@ -1,5 +1,5 @@
 #include "commands.h"
-
+#include "safe_mem.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -72,4 +72,28 @@ void executeCommand(const char* commandFormat, ...) {
     free(command);
 
     return;
+}
+
+char* concatenateStrings(int count, const char** strings) {
+  if (count <= 0 || !strings) return NULL;
+
+  size_t totalLength = 0;
+
+  for (int i = 0; i < count; i++)
+    if (strings[i])
+      totalLength += strlen(strings[i]);
+
+  char* result = (char*)safe_malloc(totalLength + 1);
+
+  size_t offset = 0;
+  for (int i = 0; i < count; i++) {
+    if (strings[i]) {
+      size_t len = strlen(strings[i]);
+      memcpy(result + offset, strings[i], len);
+      offset += len;
+    }
+  }
+  result[totalLength] = '\0';
+
+  return result;
 }

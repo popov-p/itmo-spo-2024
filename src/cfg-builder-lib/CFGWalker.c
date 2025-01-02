@@ -1,6 +1,5 @@
 #include "CFGWalker.h"
 
-#define TOKEN_IS(node, str) (!strcmp((node->token), (str)))
 #define BREAK_DETECTED(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].breakDetected)
 #define LAST_MERGE_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].mergeBlockIndex)
 #define LAST_IF_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].ifBlockIndex)
@@ -195,7 +194,7 @@ void enterVarDef(CFG* cfg,
 void enterAssignment(CFG* cfg,
                      AST* node) {
   int assignmentIndex = connectNewBlock(cfg, node);
-  cfg->blocks[assignmentIndex]->opTree = otAssignment(node);
+  cfg->blocks[assignmentIndex]->opTree = OT_Assignment(node);
   cfg->lastProcessedIndex = assignmentIndex;
 }
 
