@@ -24,7 +24,6 @@ void OT_WriteEdge(OT* parent, OT* child, int basicBlockIndex, FILE *file) {
 void OT_OutputNode(OT* node, int basicBlockIndex, FILE *file) {
   if (!node) return;
 
-          //printf("VISITING :: %s\n", node->token);
   int childCount = node->childCount;
 
   OT_WriteNode(node, basicBlockIndex, file);

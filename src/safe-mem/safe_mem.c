@@ -20,7 +20,6 @@ void* safe_realloc(void* ptr, size_t new_size) {
   return new_ptr;
 }
 
-
 void safe_free(void** ptr) {
   if (ptr && *ptr) {
     free(*ptr);
