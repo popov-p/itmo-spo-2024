@@ -3,42 +3,44 @@
 #include "AST.h"
 #include "CFG.h"
 
-void cfgWalker(CFG* cfg,
-               AST* node);
+void CFG_Walker(CFG* cfg,
+                AST* node);
 
-int connectNewBlock(CFG* cfg,
+int CFG_ConnectNewBlock(CFG* cfg,
                     AST* current);
 
-void enterIf(CFG* cfg,
-             AST* node);
-void exitIf(CFG* cfg,
-            AST* node);
+void CFG_EnterIf(CFG* cfg,
+                 AST* node);
 
-void enterElse(CFG* cfg,
-               AST* node);
-void exitElse(CFG* cfg,
-              AST* node);
-
-void enterLoop(CFG* cfg,
-               AST* node);
-void exitLoop(CFG* cfg,
-              AST* node);
-
-void enterRepeat(CFG* cfg,
-                AST* node);
-void exitRepeat(CFG* cfg,
+void CFG_ExitIf(CFG* cfg,
                 AST* node);
 
-void enterVarDec(CFG* cfg,
-                AST* node);
+void CFG_EnterElse(CFG* cfg,
+                   AST* node);
 
-void enterVarDef(CFG* cfg,
-                AST* node);
+void CFG_ExitElse(CFG* cfg,
+                  AST* node);
 
-void enterBreak(CFG* cfg,
-                AST* node);
+void CFG_EnterLoop(CFG* cfg,
+                   AST* node);
+void CFG_ExitLoop(CFG* cfg,
+                  AST* node);
 
-void enterAssignment(CFG* cfg,
+void CFG_EnterRepeat(CFG* cfg,
+                     AST* node);
+void CFG_ExitRepeat(CFG* cfg,
                     AST* node);
-void exitCall(CFG* cfg,
-              AST* node);
+
+void CFG_EnterVarDec(CFG* cfg,
+                     AST* node);
+
+void CFG_EnterVarDef(CFG* cfg,
+                     AST* node);
+
+void CFG_EnterBreak(CFG* cfg,
+                    AST* node);
+
+void CFG_EnterAssignment(CFG* cfg,
+                         AST* node);
+void CFG_ExitCall(CFG* cfg,
+                  AST* node);

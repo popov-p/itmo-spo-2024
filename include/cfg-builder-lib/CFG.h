@@ -22,8 +22,8 @@ typedef struct CFG {
   BB** blocks;
   int blockCount;
   int lastProcessedIndex;
-  LoopLevelStack* loopLevelStack;
-  IfLevelStack* ifLevelStack;
+  LS* loopStack;
+  IS* ifStack;
 
 } CFG;
 

@@ -3,15 +3,15 @@
 #include <stdlib.h>
 #include "safe_mem.h"
 
-LoopLevelStack* createLoopLevelStack(int initialCapacity) {
-  LoopLevelStack* stack = safe_malloc(sizeof(LoopLevelStack));
-  stack->entries = safe_malloc(sizeof(LoopLevelEntry) * 20);
+LS* LS_Create(int initialCapacity) {
+  LS* stack = safe_malloc(sizeof(LS));
+  stack->entries = safe_malloc(sizeof(LE) * 20);
   stack->currentLevel = -1;
   stack->capacity = initialCapacity;
   return stack;
 }
 
-void freeLoopLevelStack(LoopLevelStack* stack) {
+void LS_Free(LS* stack) {
   if (!stack)
     return;
   if (stack->entries)
@@ -19,10 +19,10 @@ void freeLoopLevelStack(LoopLevelStack* stack) {
   free(stack);
 }
 
-void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex) {
+void LS_PushLE(LS* stack, int exitBlockIndex, int loopIndex) {
   if (stack->currentLevel + 1 >= stack->capacity) {
     stack->capacity *= 2;
-    stack->entries = (LoopLevelEntry*)safe_realloc(stack->entries, stack->capacity * sizeof(LoopLevelEntry));
+    stack->entries = (LE*)safe_realloc(stack->entries, stack->capacity * sizeof(LE));
   }
   stack->currentLevel++;
   stack->entries[stack->currentLevel].exitBlockIndex = exitBlockIndex;
@@ -30,29 +30,28 @@ void pushLoopEntry(LoopLevelStack* stack, int exitBlockIndex, int loopIndex) {
   stack->entries[stack->currentLevel].breakDetected = 0;
 }
 
-LoopLevelEntry popLoopEntry(LoopLevelStack* stack) {
+LE LS_PopLE(LS* stack) {
   if (stack->currentLevel >= 0) {
-    LoopLevelEntry entry = stack->entries[stack->currentLevel];
+    LE entry = stack->entries[stack->currentLevel];
     stack->currentLevel--;
     return entry;
   } else {
     fprintf(stderr, "LLS :: ERROR :: POPPING EMPTY STACK\n");
-    return (LoopLevelEntry){-1, -1};
+    return (LE){-1, -1, -1};
   }
 }
 
+IS* IS_Create(int capacity) {
+  IS* stack = (IS*)safe_malloc(sizeof(IS));
 
-IfLevelStack* createIfLevelStack(int capacity) {
-  IfLevelStack* stack = (IfLevelStack*)safe_malloc(sizeof(IfLevelStack));
-
-  stack->entries = (IfLevelEntry*)safe_malloc(capacity * sizeof(IfLevelEntry));
+  stack->entries = (IE*)safe_malloc(capacity * sizeof(IE));
 
   stack->currentLevel = -1;
   stack->capacity = capacity;
   return stack;
 }
 
-void freeIfLevelStack(IfLevelStack* stack) {
+void IS_Free(IS* stack) {
   if (!stack) return;
 
   if (stack->entries)
@@ -60,14 +59,14 @@ void freeIfLevelStack(IfLevelStack* stack) {
   free(stack);
 }
 
-void pushIfEntry(IfLevelStack* stack,
-                 int ifBlockIndex,
-                 int elseBlockIndex,
-                 int mergeBlockIndex) {
+void IS_PushIE(IS* stack,
+               int ifBlockIndex,
+               int elseBlockIndex,
+               int mergeBlockIndex) {
   if (stack->currentLevel + 1 >= stack->capacity) {
     stack->capacity *= 2;
-    stack->entries = (IfLevelEntry*)safe_realloc(stack->entries,
-                                                 stack->capacity * sizeof(IfLevelEntry));
+    stack->entries = (IE*)safe_realloc(stack->entries,
+                                       stack->capacity * sizeof(IE));
   }
   stack->currentLevel++;
   stack->entries[stack->currentLevel].ifBlockIndex = ifBlockIndex;
@@ -75,14 +74,14 @@ void pushIfEntry(IfLevelStack* stack,
   stack->entries[stack->currentLevel].mergeBlockIndex = mergeBlockIndex;
 }
 
-IfLevelEntry popIfEntry(IfLevelStack* stack) {
+IE IS_PopIE(IS* stack) {
   if (stack->currentLevel >= 0) {
-    IfLevelEntry entry = stack->entries[stack->currentLevel];
+    IE entry = stack->entries[stack->currentLevel];
     stack->currentLevel--;
     return entry;
   } else {
     fprintf(stderr, "ILS :: ERROR :: POPPING EMPTY STACK\n");
-    return (IfLevelEntry){-1};
+    return (IE){-1, -1, -1};
   }
 }
 

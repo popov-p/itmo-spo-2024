@@ -12,6 +12,8 @@ typedef struct ParseResult {
     V4Parser_source_return sr;
 } ParseResult;
 
+typedef ParseResult PR;
+
 char* readFileToString(const char* filePath);
 ParseResult* parse(const char* text);
 void generateDot(ParseResult* result, const char* path);

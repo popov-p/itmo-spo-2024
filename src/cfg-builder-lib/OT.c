@@ -2,19 +2,13 @@
 #include <string.h>
 #include "OT.h"
 #include "safe_mem.h"
-#include "commands.h"
+// #include "commands.h"
 
-#define __READ  "__READ"
-#define __WRITE  "__WRITE"
-#define __PLACE "__PLACE"
-#define __CONST "__CONST"
-#define __HEAD__ "HEAD"
-
-#define TOKEN_CONVERTS_TO_INT(node) ({            \
-    char* endptr;                                 \
-    strtol((node)->token, &endptr, 10);           \
-    (*endptr == '\0');                            \
-})
+#define __READ  "OP_READ"
+#define __WRITE  "OP_WRITE"
+#define __PLACE "OP_PLACE"
+#define __CONST "OP_CONST"
+#define __HEAD__ "OP_HEAD"
 
 OT* OT_GetChild(const OT* parent, int index) {
   if (!parent || index < 0 || index >= parent->childCount)
@@ -27,7 +21,7 @@ OT* OT_CreateNode(const char* token) {
     return NULL;
   OT* node = (OT*)safe_malloc(sizeof(OT));
   node->token = strdup(token);
-  node->returnType = NULL;
+  node->type = NULL;
   node->parent = NULL;
   node->children = (OT**)safe_malloc(sizeof(OT*));
   node->childCount = 0;
@@ -86,7 +80,7 @@ void OT_Free(OT* node) {
   free(node);
 }
 
-OT* OT_Assignment(AST* node) {
+OT* OT_BuildFromAST(AST* node) {
   if (!node) return NULL;
   OT* ot = OT_CreateNode(__HEAD__);
   OT_Walker(ot, node);
@@ -94,32 +88,38 @@ OT* OT_Assignment(AST* node) {
   return ot;
 }
 
+
+
 void OT_Walker(OT* ot, AST* node) {
   if (!node) return;
 
   OT* currentNode = NULL;
 
-  if(TOKEN_CONVERTS_TO_INT(node)) {
-    const char* substrings[] = {__CONST, ": ", node->token};
-    currentNode = OT_CreateNode(concatenateStrings(3, substrings));
-    OT_AddChild(ot, currentNode);
-  }
+  // if(TOKEN_CONVERTS_TO_INT(node)) {
+  //   const char* substrings[] = {__CONST, ": ", node->token};
+  //   currentNode = OT_CreateNode(node->token/*concatenateStrings(3, substrings)*/);
+  //   OT_AddChild(ot, currentNode);
+  //  }
 
-  else if (TOKEN_IS(node, "+") ||
-           TOKEN_IS(node, "-") ||
-           TOKEN_IS(node, "*") ||
-           TOKEN_IS(node, "/")) {
-    currentNode = OT_CreateNode(node->token);
+  if (TOKEN_IS(node, "AST_PLUS") ||
+      TOKEN_IS(node, "AST_MINUS") ||
+      TOKEN_IS(node, "AST_MUL") ||
+      TOKEN_IS(node, "AST_DIV")) {
+    currentNode = OT_CreateNode(OT_ASTToOp(node->token));
     OT_AddChild(ot, currentNode);
   }
-  else if (TOKEN_IS(node, "ASSIGNMENT")) {
+  else if (TOKEN_IS(node, "AST_ASSIGNMENT")) {
+    currentNode = OT_CreateNode(__WRITE);
+    OT_AddChild(ot, currentNode);
+  }
+  else if (TOKEN_IS(node, "AST_VAR_DEC")) {
     currentNode = OT_CreateNode(__WRITE);
     OT_AddChild(ot, currentNode);
   }
   else
   {
-    const char* substrings[] = {__PLACE, ": ", node->token};
-    currentNode = OT_CreateNode(concatenateStrings(3, substrings));
+    // const char* substrings[] = {__PLACE, ": ", node->token};
+    currentNode = OT_CreateNode(node->token/*concatenateStrings(3, substrings)*/);
     OT_AddChild(ot, currentNode);
     OT_InsertBetween(ot, currentNode, OT_CreateNode(__READ));
   }
@@ -130,8 +130,24 @@ void OT_Walker(OT* ot, AST* node) {
 
 void OT_TypeResolver(OT* ot) {
   if (!ot) return;
-  for (int i = 0; i < ot->childCount; i++) {
-    OT* child = OT_GetChild(ot, i);
-    OT_TypeResolver(child);
+  // if(ot->)
+  // STE* intConstEntry = ST_SearchByValue(st, node->token, INT_CONST);
+}
+
+char* OT_ASTToOp(const char* astToken) {
+  if (!astToken) {
+    return "OT_TREE_ERROR_NODE";
   }
+  char* prefix = "OP";
+  char* underscore = strchr(astToken, '_');
+  if (!underscore)
+    return "OT_TREE_ERROR_NODE";
+
+  size_t new_length = strlen(prefix) + strlen(underscore) + 1;
+
+  char* otToken = (char*)safe_malloc(new_length);
+
+  snprintf(otToken, new_length, "%s%s", prefix, underscore);
+
+  return otToken;
 }

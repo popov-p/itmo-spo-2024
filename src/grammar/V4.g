@@ -7,29 +7,33 @@ options {
 }
 
 tokens {
-  FUNC_DEF;
-  SOURCE;
-  SOURCE_ITEM;
-  FUNC_SIG;
-  RETURN;
-  IF;
-  ELSE;
-  LIST_ARG;
-  ARG;
-  LOOP;
-  BREAK;
-  BLOCK;
-  REPEAT;
-  ARR_TYPE;
-  CALL;
-  SLICE;
-  BRACES;
-  RANGES;
-  LIST_EXPR;
-  LIST_RANGE;
-  VAR_DEC;
-  VAR_DEF;
-  ASSIGNMENT;
+  AST_FUNC_DEF;
+  AST_SOURCE;
+  AST_SOURCE_ITEM;
+  AST_FUNC_SIG;
+  AST_RETURN;
+  AST_IF;
+  AST_ELSE;
+  AST_LIST_ARG;
+  AST_ARG;
+  AST_LOOP;
+  AST_BREAK;
+  AST_BLOCK;
+  AST_REPEAT;
+  AST_ARR_TYPE;
+  AST_CALL;
+  AST_SLICE;
+  AST_BRACES;
+  AST_RANGES;
+  AST_LIST_EXPR;
+  AST_LIST_RANGE;
+  AST_VAR_DEC;
+  AST_VAR_DEF;
+  AST_ASSIGNMENT;
+  AST_PLUS;
+  AST_MINUS;
+  AST_MUL;
+  AST_DIV;
 }
 
 TRUE: 'true';
@@ -52,33 +56,33 @@ DEC: ('0'..'9')+;
 WS: (' ' | '\t' | '\n')+ { $channel = HIDDEN; };
 
 source
-  : sourceItem*
+  : sourceItem* -> ^(AST_SOURCE sourceItem*)
   ;
 
 sourceItem
-  : funcDef
+  : funcDef -> ^(AST_SOURCE_ITEM funcDef)
   ;
 
 funcDef
   : 'def' funcSignature statement* 'end'
-  -> ^(FUNC_DEF funcSignature statement*)
+  -> ^(AST_FUNC_DEF funcSignature statement*)
   ;
 
 funcSignature
   : IDENTIFIER '(' list_arg ')' ('of' typeRef)?
-  -> ^(FUNC_SIG IDENTIFIER list_arg (typeRef)?)
+  -> ^(AST_FUNC_SIG IDENTIFIER list_arg (typeRef)?)
   ;
 
 arg
   : IDENTIFIER ('of' typeRef)?
-  -> ^(ARG IDENTIFIER (typeRef)?)
+  -> ^(AST_ARG IDENTIFIER (typeRef)?)
   ;
 
 list_arg
   : arg (',' arg)*
-  -> ^(LIST_ARG arg (arg)*)
+  -> ^(AST_LIST_ARG arg (arg)*)
   |
-  -> ^(LIST_ARG)
+  -> ^(AST_LIST_ARG)
   ;
 
 typeRef
@@ -102,12 +106,12 @@ custom
   ;
 
 arrayType
-  : baseType arraySuffix -> ^(ARR_TYPE baseType arraySuffix)
+  : baseType arraySuffix -> ^(AST_ARR_TYPE baseType arraySuffix)
   ;
 
 arraySuffix
-  : 'array' '[' DEC ']' arraySuffix -> ^(ARR_TYPE DEC arraySuffix)
-  | 'array' '[' DEC ']' -> ^(ARR_TYPE DEC)
+  : 'array' '[' DEC ']' arraySuffix -> ^(AST_ARR_TYPE DEC arraySuffix)
+  | 'array' '[' DEC ']' -> ^(AST_ARR_TYPE DEC)
   ;
 
 
@@ -134,29 +138,29 @@ expressionStmt
   -> ^(expr)
   ;
 variableDefinition
-  : typeRef IDENTIFIER ';' -> ^(VAR_DEF typeRef IDENTIFIER)
+  : typeRef IDENTIFIER ';' -> ^(AST_VAR_DEF typeRef IDENTIFIER)
   ;
 
 variableDeclaration
-  : typeRef IDENTIFIER '=' expr ';' -> ^(VAR_DEC typeRef IDENTIFIER expr)
+  : typeRef IDENTIFIER '=' expr ';' -> ^(AST_VAR_DEC typeRef IDENTIFIER expr)
   ;
 
 ifStmt
-  : 'if' expr 'then' statement elsePart? -> ^(IF expr statement (elsePart)?)
+  : 'if' expr 'then' statement elsePart? -> ^(AST_IF expr statement (elsePart)?)
   ;
 
 elsePart
-  : 'else' statement -> ^(ELSE statement)
+  : 'else' statement -> ^(AST_ELSE statement)
   ;
 
 loopStmt
   : ('while' | 'until') expr statement* 'end'
-  -> ^(LOOP expr statement*)
+  -> ^(AST_LOOP expr statement*)
   ;
 
 repeatStmt
   : blockStmt repeatSuffix
-  -> ^(REPEAT blockStmt repeatSuffix)
+  -> ^(AST_REPEAT blockStmt repeatSuffix)
   ;
 
 repeatSuffix
@@ -166,13 +170,13 @@ repeatSuffix
 
 breakStmt
   : 'break' ';'
-  -> ^(BREAK)
+  -> ^(AST_BREAK)
   ;
 
 
 blockStmt
   : blockStart statementList blockEnd
-  -> ^(BLOCK statementList)
+  -> ^(AST_BLOCK statementList)
   ;
 
 blockStart
@@ -188,12 +192,12 @@ statementList
   ;
 
 assignmentStmt
-  : IDENTIFIER '=' expr ';' -> ^(ASSIGNMENT IDENTIFIER expr)
+  : IDENTIFIER '=' expr ';' -> ^(AST_ASSIGNMENT IDENTIFIER expr)
   ;
 
 returnStmt
-  : 'return' expr ';' -> ^(RETURN expr)
-  | 'return' ';' -> ^(RETURN)
+  : 'return' expr ';' -> ^(AST_RETURN expr)
+  | 'return' ';' -> ^(AST_RETURN)
   ;
 
 expr
@@ -204,12 +208,22 @@ comparisonExpression
   : additiveExpression (('>'^ | '<'^ | '>='^ | '<='^ | '=='^ | '!='^) additiveExpression)*
   ;
 
+additiveOperation
+  : '+' -> ^(AST_PLUS)
+  | '-' -> ^(AST_MINUS)
+  ;
+
+multiplicativeOperation
+  : '*' -> ^(AST_MUL)
+  | '/' -> ^(AST_DIV)
+  ;
+
 additiveExpression
-  : multiplicativeExpression (('+'^ | '-'^) multiplicativeExpression)*
+  : multiplicativeExpression ((additiveOperation^) multiplicativeExpression)*
   ;
 
 multiplicativeExpression
-  : primaryExpression (('*'^ | '/'^) primaryExpression)*
+  : primaryExpression ((multiplicativeOperation^) primaryExpression)*
   ;
 
 
@@ -225,15 +239,15 @@ primaryExpression
 
 call
   : IDENTIFIER '(' list_expr ')'
-  -> ^(CALL IDENTIFIER list_expr)
+  -> ^(AST_CALL IDENTIFIER list_expr)
   ;
 
 slice
-  : IDENTIFIER '[' list_range ']' -> ^(SLICE IDENTIFIER list_range)
+  : IDENTIFIER '[' list_range ']' -> ^(AST_SLICE IDENTIFIER list_range)
   ;
 
 braces
-  : '(' expr ')' -> ^(BRACES expr)
+  : '(' expr ')' -> ^(AST_BRACES expr)
   ;
 
 place
@@ -256,15 +270,15 @@ literal
 
 ranges
   : expr ('..' expr)?
-  -> ^(RANGES expr (expr)?)
+  -> ^(AST_RANGES expr (expr)?)
   ;
 
 list_expr
   : (expr (',' expr)*)?
-  -> ^(LIST_EXPR (expr)*)?
+  -> ^(AST_LIST_EXPR (expr)*)?
   ;
 
 list_range
   : (ranges (',' ranges)*)?
-  -> ^(LIST_RANGE (ranges)*)?
+  -> ^(AST_LIST_RANGE (ranges)*)?
   ;

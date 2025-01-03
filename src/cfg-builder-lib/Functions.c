@@ -1,33 +1,33 @@
 #include "Functions.h"
 #include "safe_mem.h"
 
-FunctionList* createFunctionList() {
-  FunctionList* list = (FunctionList*)safe_malloc(sizeof(FunctionList));
+FL* FL_Create() {
+  FL* list = (FL*)safe_malloc(sizeof(FL));
   if (list) {
-    list->items = NULL;
+    list->functions = NULL;
     list->count = 0;
   }
   return list;
 }
 
-void freeFunctionList(FunctionList* list) {
+void FL_Free(FL* list) {
   if (list) {
     for (int i = 0; i < list->count; i++) {
-      if (list->items[i])
-        freeFunction(list->items[i]);
+      if (list->functions[i])
+        F_Free(list->functions[i]);
     }
-    free(list->items);
+    free(list->functions);
     free(list);
   }
 }
 
-void addFunction(FunctionList* list, Function* func) {
-  list->items = (Function**)safe_realloc(list->items, (list->count + 1) * sizeof(Function*));
-  list->items[list->count] = func;
+void FL_AddF(FL* list, F* func) {
+  list->functions = (F**)safe_realloc(list->functions, (list->count + 1) * sizeof(F*));
+  list->functions[list->count] = func;
   list->count++;
 }
 
-void freeFunction(Function* func) {
+void F_Free(F* func) {
   if (func) {
     if (func->name)
       free(func->name);
@@ -39,11 +39,11 @@ void freeFunction(Function* func) {
   }
 }
 
-Function* createFunction(const char* name, AST* signature, CFG* cfg, const char* sourceFile) {
-  Function* func = (Function*)safe_malloc(sizeof(Function));
+F* F_Create(const char* name, AST* signature, CFG* cfg, ST* symbolTable, const char* sourceFile) {
+  F* func = (F*)safe_malloc(sizeof(F));
   if (!func) return NULL;
 
-  func->name = (char*)malloc(strlen(name) + 1);
+  func->name = (char*)safe_malloc(strlen(name) + 1);
   if (!func->name) {
     free(func);
     return NULL;
@@ -53,7 +53,7 @@ Function* createFunction(const char* name, AST* signature, CFG* cfg, const char*
   func->signature = signature;
   func->cfg = cfg;
 
-  func->sourceFile = (char*)malloc(strlen(sourceFile) + 1);
+  func->sourceFile = (char*)safe_malloc(strlen(sourceFile) + 1);
   if (!func->sourceFile) {
     free(func->name);
     free(func);
@@ -64,39 +64,40 @@ Function* createFunction(const char* name, AST* signature, CFG* cfg, const char*
   return func;
 }
 
-int functionExists(FunctionList* functions, char* funcName) {
-  for (int i = 0; i < functions->count; ++i) {
-    if (strcmp(functions->items[i]->name, funcName) == 0) {
+int FL_FExists(FL* functionList, char* funcName) {
+  for (int i = 0; i < functionList->count; ++i) {
+    if (strcmp(functionList->functions[i]->name, funcName) == 0) {
       return 1;
     }
   }
   return 0;
 }
 
-void findFunctionsRecursive(FunctionList* functions, AST* node, char* filename) {
-  if(!strcmp(node->token, "FUNC_DEF")) {
+void FL_FindFInAST(FL* functionList, AST* node, char* filename) {
+  if(!strcmp(node->token, "AST_FUNC_DEF")) {
     AST* signature = AST_GetChild(node, 0);
     AST* funcName = AST_GetChild(signature, 0);
 
-    if (!functionExists(functions, funcName->token)) {
+    if (!FL_FExists(functionList, funcName->token)) {
       CFG* cfg = CFG_Generate(node);
-
-      Function* func = createFunction(funcName->token, signature, cfg, filename);
-      addFunction(functions, func);
+      ST* st = ST_BuildFromFAST(node);
+      ST_Print(st);
+      F* func = F_Create(funcName->token, signature, cfg, NULL, filename);
+      FL_AddF(functionList, func);
 
     }
     else
       perror("FFR :: DEFINITION OF FUNCTIONS WITH EQUAL NAMES IS PROHIBITED\n");
   }
   for(int i = 0; i < node->childCount; ++i) {
-    findFunctionsRecursive(functions, AST_GetChild(node, i), filename);
+    FL_FindFInAST(functionList, AST_GetChild(node, i), filename);
   }
 }
 
-FunctionList* findFunctions(AST* head, char* filename) {
-  FunctionList* functionList = createFunctionList();
+FL* FL_FindFsInAST(AST* head, char* filename) {
+  FL* functionList = FL_Create();
   if(!functionList)
     return NULL;
-  findFunctionsRecursive(functionList,head, filename);
+  FL_FindFInAST(functionList, head, filename);
   return functionList;
 }

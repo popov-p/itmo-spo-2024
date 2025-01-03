@@ -1,5 +1,4 @@
 #include "CFGOutput.h"
-// #include "AST.h"
 #include "OTOutput.h"
 
 void CFG_WriteBlock(int num, FILE *file, BB_t type) {

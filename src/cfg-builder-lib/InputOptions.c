@@ -10,7 +10,7 @@ void processInput(int argc, char** argv) {
   struct stat st = {0};
   if (stat(outputDir, &st) == -1) {
     if (mkdir(outputDir, 0777) == -1) {
-      perror("PI :: ERROR :: FAILED TO CREATE OUTPUT DIRECTORY");
+      perror("PI :: ERROR :: FAILED TO CREATE OUTPUT DIRECTORY\n");
       return;
     }
   }
@@ -21,10 +21,9 @@ void processInput(int argc, char** argv) {
     mkdir(outputSubDir, 0777);
 
     char *inputText = readFileToString(argv[i]);
-    ParseResult* parseResult = parse(inputText);
-    AST* head = AST_BuildFromParseResult(parseResult);
-
-    FunctionList* functionList = findFunctions(head, argv[i]);
+    PR* parseResult = parse(inputText);
+    AST* ast = AST_BuildFromParseResult(parseResult);
+    FL* functionList = FL_FindFsInAST(ast, argv[i]);
 
     if(!functionList->count) {
       perror("PI :: WARNING :: NO FUNCTIONS DETECTED\n");
@@ -34,15 +33,15 @@ void processInput(int argc, char** argv) {
     }
 
     for(int j = 0; j < functionList->count; j++) {
-      char* cfgDotFilename = createFilePath("%s/%s-cfg.dot", outputSubDir, functionList->items[j]->name);
+      char* cfgDotFilename = createFilePath("%s/%s-cfg.dot", outputSubDir, functionList->functions[j]->name);
       FILE *cfgFile = fopen(cfgDotFilename, "w");
       if (!cfgFile)
-        fprintf(stderr, "PI :: ERROR :: FILE NOT OPENED");
+        fprintf(stderr, "PI :: ERROR :: FILE NOT OPENED\n");
       else {
-        CFG_WriteInFile(functionList->items[j]->cfg, cfgFile);
+        CFG_WriteInFile(functionList->functions[j]->cfg, cfgFile);
         fclose(cfgFile);
       }
-      char* cfgPngFilename = createFilePath("%s/%s-cfg.png", outputSubDir, functionList->items[j]->name);
+      char* cfgPngFilename = createFilePath("%s/%s-cfg.png", outputSubDir, functionList->functions[j]->name);
       executeCommand("dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
       executeCommand("xdg-open %s", cfgPngFilename);
       free(cfgPngFilename);
@@ -52,8 +51,8 @@ void processInput(int argc, char** argv) {
     cleanup(parseResult);
     free(filename);
     free(outputSubDir);
-    freeFunctionList(functionList);
-    AST_Free(head);
+    FL_Free(functionList);
+    AST_Free(ast);
   }
 }
 

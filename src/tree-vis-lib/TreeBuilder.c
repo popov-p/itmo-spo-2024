@@ -1,28 +1,19 @@
 #include "TreeBuilder.h"
 #include "safe_mem.h"
-
+#include "commands.h"
 char* readFileToString(const char* filePath) {
-  FILE *file = fopen(filePath, "r");
-  if (file == NULL) {
-    fprintf(stderr, "\n");
-    return NULL;
-  }
+  FILE *file = open_file(filePath, "r");
 
   fseek(file, 0, SEEK_END);
   long fileSize = ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  char *buffer = (char *)malloc(fileSize + 1);
-  if (buffer == NULL) {
-    fprintf(stderr, "not ok. memory allocation failed\n");
-    fclose(file);
-    return NULL;
-  }
+  char *buffer = (char *)safe_malloc(fileSize + 1);
 
   fread(buffer, 1, fileSize, file);
   buffer[fileSize] = '\0';
 
-  fclose(file);
+  close_file(file);
   return buffer;
 }
 
@@ -43,12 +34,9 @@ void generateDot(ParseResult* result, const char* path) {
   pANTLR3_BASE_TREE_ADAPTOR treeAdaptor = result->p->adaptor;
   pANTLR3_STRING dotString = treeAdaptor->makeDot(treeAdaptor, result->sr.tree);
 
-  FILE *dotFile = fopen(path, "w");
-  if (dotFile != NULL) {
-    fprintf(dotFile, "%s", (char *)dotString->chars);
-    fclose(dotFile);
-  } else
-    printf("not ok. trouble with opening .dot file\n");
+  FILE *dotFile = open_file(path, "w");
+  fprintf(dotFile, "%s", (char *)dotString->chars);
+  close_file(dotFile);
 }
 
 int cleanup(ParseResult* pr) {

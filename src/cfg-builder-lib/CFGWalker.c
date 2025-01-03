@@ -1,14 +1,14 @@
 #include "CFGWalker.h"
 
-#define BREAK_DETECTED(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].breakDetected)
-#define LAST_MERGE_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].mergeBlockIndex)
-#define LAST_IF_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].ifBlockIndex)
-#define LAST_LOOP_EXIT_IDX(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].exitBlockIndex)
-#define LAST_LOOP_IDX(cfg) ((cfg)->loopLevelStack->entries[(cfg)->loopLevelStack->currentLevel].loopIndex)
+#define BREAK_DETECTED(cfg) ((cfg)->loopStack->entries[(cfg)->loopStack->currentLevel].breakDetected)
+#define LAST_MERGE_IDX(cfg) ((cfg)->ifStack->entries[(cfg)->ifStack->currentLevel].mergeBlockIndex)
+#define LAST_IF_IDX(cfg) ((cfg)->ifStack->entries[(cfg)->ifStack->currentLevel].ifBlockIndex)
+#define LAST_LOOP_EXIT_IDX(cfg) ((cfg)->loopStack->entries[(cfg)->loopStack->currentLevel].exitBlockIndex)
+#define LAST_LOOP_IDX(cfg) ((cfg)->loopStack->entries[(cfg)->loopStack->currentLevel].loopIndex)
+#define LAST_ELSE_IDX(cfg) ((cfg)->ifStack->entries[(cfg)->ifStack->currentLevel].elseBlockIndex)
 #define LAST_PROCESSED_BLOCK(cfg) ((cfg)->blocks[(cfg)->lastProcessedIndex])
-#define LAST_ELSE_IDX(cfg) ((cfg)->ifLevelStack->entries[(cfg)->ifLevelStack->currentLevel].elseBlockIndex)
 
-int connectNewBlock(CFG* cfg,
+int CFG_ConnectNewBlock(CFG* cfg,
                     AST* current) {
   BB* bb = CFG_CreateBB(current, standard);
   CFG_AddBB(cfg, bb);
@@ -22,19 +22,19 @@ int connectNewBlock(CFG* cfg,
   return currentBlockIndex;
 }
 
-void enterIf(CFG* cfg,
+void CFG_EnterIf(CFG* cfg,
              AST* node) {
-  int ifBlockIndex = connectNewBlock(cfg, node);
+  int ifBlockIndex = CFG_ConnectNewBlock(cfg, node);
   BB* mergeBlock = CFG_CreateBB(NULL, merge);
   CFG_AddBB(cfg, mergeBlock);
 
   int mergeBlockIndex = cfg->blockCount - 1;
 
-  pushIfEntry(cfg->ifLevelStack, ifBlockIndex, -1, mergeBlockIndex);
+  IS_PushIE(cfg->ifStack, ifBlockIndex, -1, mergeBlockIndex);
   cfg->lastProcessedIndex = ifBlockIndex;
-  printf("CFG :: ENTERING IF\n");
+  printf("CFG :: ENTERING AST_IF\n");
 }
-void exitIf(CFG* cfg,
+void CFG_ExitIf(CFG* cfg,
             AST* node)  {
   if (node->childCount == 2) {
     if(BREAK_DETECTED(cfg)) {
@@ -62,15 +62,15 @@ void exitIf(CFG* cfg,
       CFG_AddSuccessor(cfg->blocks[LAST_MERGE_IDX(cfg)],
                    LAST_LOOP_EXIT_IDX(cfg));
     }
-    printf("CFG :: EXITING IF TO ELSE\n");
+    printf("CFG :: EXITING AST_IF TO AST_ELSE\n");
   }
 
-  printf("CFG :: EXITING IF\n");
-  popIfEntry(cfg->ifLevelStack);
+  printf("CFG :: EXITING AST_IF\n");
+  IS_PopIE(cfg->ifStack);
 }
 
 
-void enterElse(CFG* cfg,
+void CFG_EnterElse(CFG* cfg,
                AST* node) {
   BB* bb = CFG_CreateBB(node, standard);
   CFG_AddBB(cfg, bb);
@@ -88,10 +88,10 @@ void enterElse(CFG* cfg,
   }
   CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg), LAST_MERGE_IDX(cfg));
   cfg->lastProcessedIndex = elseBlockIndex;
-  printf("CFG :: ENTERING ELSE\n");
+  printf("CFG :: ENTERING AST_ELSE\n");
 }
 
-void exitElse(CFG* cfg, AST* node) {
+void CFG_ExitElse(CFG* cfg, AST* node) {
   if(BREAK_DETECTED(cfg)) {
     BREAK_DETECTED(cfg) = 0;
 
@@ -104,32 +104,32 @@ void exitElse(CFG* cfg, AST* node) {
                  LAST_MERGE_IDX(cfg));
     cfg->lastProcessedIndex = LAST_MERGE_IDX(cfg);
   }
-  printf("CFG :: EXITING ELSE\n");
+  printf("CFG :: EXITING AST_ELSE\n");
 }
 
 
-void exitCall(CFG* cfg, AST* node) {
-  int callIndex = connectNewBlock(cfg, node);
+void CFG_ExitCall(CFG* cfg, AST* node) {
+  int callIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = callIndex;
-  printf("CFG :: CALL %s\n", (char*)AST_GetChild(node, 0)->token);
+  printf("CFG :: AST_CALL %s\n", (char*)AST_GetChild(node, 0)->token);
 }
 
-void enterLoop(CFG* cfg,
+void CFG_EnterLoop(CFG* cfg,
                AST* node) {
-  int loopBlockIndex = connectNewBlock(cfg, node);
+  int loopBlockIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = loopBlockIndex;
 
   BB* exitBlock = CFG_CreateBB(NULL, loop_exit);
   CFG_AddBB(cfg, exitBlock);
   int exitBlockIndex = cfg->blockCount - 1;
   CFG_AddSuccessor(cfg->blocks[loopBlockIndex], exitBlockIndex);
-  pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, loopBlockIndex);
-  printf("CFG :: ENTERING LOOP\n");
+  LS_PushLE(cfg->loopStack, exitBlockIndex, loopBlockIndex);
+  printf("CFG :: ENTERING AST_LOOP\n");
 }
 
-void exitLoop(CFG* cfg,
+void CFG_ExitLoop(CFG* cfg,
               AST* node) {
-  printf("CFG :: EXITING LOOP\n");
+  printf("CFG :: EXITING AST_LOOP\n");
   if(BREAK_DETECTED(cfg)) {
     CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
                  LAST_LOOP_EXIT_IDX(cfg));
@@ -140,27 +140,27 @@ void exitLoop(CFG* cfg,
                  LAST_LOOP_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
-  popLoopEntry(cfg->loopLevelStack);
+  LS_PopLE(cfg->loopStack);
 }
 
-void enterBreak(CFG* cfg, AST* node) {
+void CFG_EnterBreak(CFG* cfg, AST* node) {
   BREAK_DETECTED(cfg) = 1;
-  printf("CFG :: BREAK\n");
+  printf("CFG :: AST_BREAK\n");
 }
 
-void enterRepeat(CFG* cfg,
+void CFG_EnterRepeat(CFG* cfg,
                  AST* node) {
 
-  int repeatBlockIndex = connectNewBlock(cfg, node);
+  int repeatBlockIndex = CFG_ConnectNewBlock(cfg, node);
 
   BB* exitBlock = CFG_CreateBB(NULL, repeat_exit);
   CFG_AddBB(cfg, exitBlock);
   int exitBlockIndex = cfg->blockCount - 1;
 
-  pushLoopEntry(cfg->loopLevelStack, exitBlockIndex, repeatBlockIndex);
-  printf("CFG :: ENTER REPEAT\n");
+  LS_PushLE(cfg->loopStack, exitBlockIndex, repeatBlockIndex);
+  printf("CFG :: ENTER AST_REPEAT\n");
 }
-void exitRepeat(CFG* cfg,
+void CFG_ExitRepeat(CFG* cfg,
                 AST* node) {
   if(BREAK_DETECTED(cfg)) {
     CFG_AddSuccessor(LAST_PROCESSED_BLOCK(cfg),
@@ -174,75 +174,76 @@ void exitRepeat(CFG* cfg,
                  LAST_LOOP_EXIT_IDX(cfg));
     cfg->lastProcessedIndex = LAST_LOOP_EXIT_IDX(cfg);
   }
-  popLoopEntry(cfg->loopLevelStack);
+  LS_PopLE(cfg->loopStack);
 }
 
-void enterVarDec(CFG* cfg,
+void CFG_EnterVarDec(CFG* cfg,
                  AST* node) {
-  int varDecIndex = connectNewBlock(cfg, node);
+  int varDecIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDecIndex;
-  printf("CFG :: VAR_DEC\n");
+  cfg->blocks[varDecIndex]->opTree = OT_BuildFromAST(node);
+  printf("CFG :: AST_VAR_DEC\n");
 }
 
-void enterVarDef(CFG* cfg,
+void CFG_EnterVarDef(CFG* cfg,
                  AST* node) {
-  int varDefIndex = connectNewBlock(cfg, node);
+  int varDefIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDefIndex;
-  printf("CFG :: VAR_DEF\n");
+  printf("CFG :: AST_VAR_DEF\n");
 }
 
-void enterAssignment(CFG* cfg,
+void CFG_EnterAssignment(CFG* cfg,
                      AST* node) {
-  int assignmentIndex = connectNewBlock(cfg, node);
-  cfg->blocks[assignmentIndex]->opTree = OT_Assignment(node);
+  int assignmentIndex = CFG_ConnectNewBlock(cfg, node);
+  cfg->blocks[assignmentIndex]->opTree = OT_BuildFromAST(node);
   cfg->lastProcessedIndex = assignmentIndex;
 }
 
-void cfgWalker(CFG* cfg, AST* node)
+void CFG_Walker(CFG* cfg, AST* node)
 {
   if (!node) return;
 
-  if (TOKEN_IS(node, "IF"))
-    enterIf(cfg, node);
+  if (TOKEN_IS(node, "AST_IF"))
+    CFG_EnterIf(cfg, node);
 
-  if (TOKEN_IS(node, "ELSE"))
-    enterElse(cfg, node);
+  if (TOKEN_IS(node, "AST_ELSE"))
+    CFG_EnterElse(cfg, node);
 
-  if (TOKEN_IS(node, "LOOP"))
-    enterLoop(cfg, node);
+  if (TOKEN_IS(node, "AST_LOOP"))
+    CFG_EnterLoop(cfg, node);
 
-  if (TOKEN_IS(node, "REPEAT"))
-    enterRepeat(cfg, node);
+  if (TOKEN_IS(node, "AST_REPEAT"))
+    CFG_EnterRepeat(cfg, node);
 
-  if (TOKEN_IS(node, "BREAK"))
-    enterBreak(cfg, node);
+  if (TOKEN_IS(node, "AST_BREAK"))
+    CFG_EnterBreak(cfg, node);
 
-  if (TOKEN_IS(node, "ASSIGNMENT"))
-    enterAssignment(cfg,
+  if (TOKEN_IS(node, "AST_ASSIGNMENT"))
+    CFG_EnterAssignment(cfg,
                     node);
 
-  if (TOKEN_IS(node, "VAR_DEC"))
-    enterVarDec(cfg, node);
+  if (TOKEN_IS(node, "AST_VAR_DEC"))
+    CFG_EnterVarDec(cfg, node);
 
-  if (TOKEN_IS(node, "VAR_DEF"))
-    enterVarDec(cfg, node);
+  if (TOKEN_IS(node, "AST_VAR_DEF"))
+    CFG_EnterVarDec(cfg, node);
 
   if(!BREAK_DETECTED(cfg))
     for (int i = 0; i < node->childCount; i++)
-      cfgWalker(cfg, AST_GetChild(node, i));
+      CFG_Walker(cfg, AST_GetChild(node, i));
 
-  if (TOKEN_IS(node, "CALL"))
-    exitCall(cfg, node);
+  if (TOKEN_IS(node, "AST_CALL"))
+    CFG_ExitCall(cfg, node);
 
-  if (TOKEN_IS(node, "LOOP"))
-    exitLoop(cfg, node);
+  if (TOKEN_IS(node, "AST_LOOP"))
+    CFG_ExitLoop(cfg, node);
 
-  if (TOKEN_IS(node, "REPEAT"))
-    exitRepeat(cfg, node);
+  if (TOKEN_IS(node, "AST_REPEAT"))
+    CFG_ExitRepeat(cfg, node);
 
-  if (TOKEN_IS(node, "IF"))
-    exitIf(cfg, node);
+  if (TOKEN_IS(node, "AST_IF"))
+    CFG_ExitIf(cfg, node);
 
-  if (TOKEN_IS(node, "ELSE"))
-    exitElse(cfg, node);
+  if (TOKEN_IS(node, "AST_ELSE"))
+    CFG_ExitElse(cfg, node);
 }

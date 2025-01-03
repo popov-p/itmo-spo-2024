@@ -23,7 +23,7 @@ void CFG_AddSuccessor(BB* block, int successorIndex) {
 
 CFG* CFG_Generate(AST* head) {
   CFG* cfg = CFG_Init(100, 20, 20);
-  cfgWalker(cfg, head);
+  CFG_Walker(cfg, head);
   return cfg;
 }
 
@@ -41,8 +41,8 @@ CFG* CFG_Init(int processedNodesSize,
   cfg->blocks = NULL;
   cfg->blockCount = 0;
   cfg->lastProcessedIndex = -1;
-  cfg->loopLevelStack = createLoopLevelStack(loopLevelStackSize);
-  cfg->ifLevelStack = createIfLevelStack(ifLevelStackSize);
+  cfg->loopStack = LS_Create(loopLevelStackSize);
+  cfg->ifStack = IS_Create(ifLevelStackSize);
   return cfg;
 }
 
@@ -53,8 +53,8 @@ void CFG_Free(CFG* cfg) {
     free(cfg->blocks[i]);
   }
 
-  freeIfLevelStack(cfg->ifLevelStack);
-  freeLoopLevelStack(cfg->loopLevelStack);
+  IS_Free(cfg->ifStack);
+  LS_Free(cfg->loopStack);
   free(cfg->blocks);
   free(cfg);
 }

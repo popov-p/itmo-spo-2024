@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include "ST.h"
 
-#define INITIAL_CAPACITY 16
-#define RANDOM_KEY() ({ \
-    unsigned int key = arc4random(); \
-    char *key_str = (char *)malloc(11 * sizeof(char)); \
-    snprintf(key_str, 11, "%u", key); \
-    key_str; \
-})
+// #define RANDOM_KEY() ({ \
+//     unsigned int key = arc4random(); \
+//     char *key_str = (char *)malloc(11 * sizeof(char)); \
+//     snprintf(key_str, 11, "%u", key); \
+//     key_str; \
+// })
 
 ST *ST_Create(int capacity) {
   ST *table = (ST *)safe_malloc(sizeof(ST));
@@ -23,10 +22,18 @@ ST *ST_Create(int capacity) {
 void ST_Free(ST *table) {
   for (int i = 0; i < table->size; i++) {
     free(table->entries[i].key);
-    if (table->entries[i].type == STR_CONST ||
-        table->entries[i].type == VAR_NAME ||
-        table->entries[i].type == FUNC_NAME) {
-      free(table->entries[i].value.strConst);
+    switch (table->entries[i].type) {
+      case CONSTANT:
+        free(table->entries[i].value.constant.type);
+        break;
+      case VAR:
+        free(table->entries[i].value.variable.name);
+        free(table->entries[i].value.variable.type);
+        break;
+      case FUNC:
+        free(table->entries[i].value.function.name);
+        free(table->entries[i].value.function.returnType);
+        break;
     }
   }
   free(table->entries);
@@ -35,7 +42,7 @@ void ST_Free(ST *table) {
 
 void ST_Resize(ST *table) {
   int new_capacity = table->capacity * 2;
-  STE *new_entries = (STE *)safe_malloc(new_capacity * sizeof(STE));
+  STE* new_entries = (STE *)safe_malloc(new_capacity * sizeof(STE));
 
   for (int i = 0; i < table->size; i++) {
     new_entries[i] = table->entries[i];
@@ -46,35 +53,21 @@ void ST_Resize(ST *table) {
   table->capacity = new_capacity;
 }
 
-STE *ST_SearchByValue(ST *table, const void *value, VT type) {
+STE* ST_Search(ST *table, const char *key) {
   for (int i = 0; i < table->size; i++) {
-    if (table->entries[i].type != type) {
-      continue;
-    }
-
-    switch (type) {
-      case INT_CONST:
-        if (table->entries[i].value.intConst == *(int *)value) {
-          return &table->entries[i];
-        }
-        break;
-      case STR_CONST:
-      case VAR_NAME:
-      case FUNC_NAME:
-        if (strcmp(table->entries[i].value.strConst, (char *)value) == 0) {
-          return &table->entries[i];
-        }
-        break;
+    if (strcmp(table->entries[i].key, key) == 0) {
+      return &table->entries[i];
     }
   }
   return NULL;
 }
 
-void ST_InsertInt(ST *table, int value) {
-  STE *entry = ST_SearchByValue(table, &value, INT_CONST);
+void ST_InsertConstant(ST *table, const char *key, const char *type) {
+  STE *entry = ST_Search(table, key);
 
   if (entry) {
-    entry->value.intConst = value;
+    free(entry->value.constant.type);
+    entry->value.constant.type = strdup(type);
     return;
   }
 
@@ -83,63 +76,53 @@ void ST_InsertInt(ST *table, int value) {
   }
 
   entry = &table->entries[table->size++];
-  entry->key = RANDOM_KEY();
-  entry->type = INT_CONST;
-  entry->value.intConst = value;
+  entry->key = strdup(key);
+  entry->type = CONSTANT;
+  entry->value.constant.type = strdup(type);
 }
 
-void ST_InsertStr(ST *table, const char *value) {
-  STE *entry = ST_SearchByValue(table, value, STR_CONST);
+void ST_InsertVariable(ST *table, const char *key, const char *name, const char *type) {
+  STE *entry = ST_Search(table, key);
 
   if (entry) {
-    free(entry->value.strConst);
-    entry->value.strConst = strdup(value);
+    free(entry->value.variable.name);
+    free(entry->value.variable.type);
+    entry->value.variable.name = strdup(name);
+    entry->value.variable.type = strdup(type);
     return;
   }
 
-  if (table->size == table->capacity)
+  if (table->size == table->capacity) {
     ST_Resize(table);
+  }
 
   entry = &table->entries[table->size++];
-  entry->key = RANDOM_KEY();
-  entry->type = STR_CONST;
-  entry->value.strConst = strdup(value);
+  entry->key = strdup(key);
+  entry->type = VAR;
+  entry->value.variable.name = strdup(name);
+  entry->value.variable.type = strdup(type);
 }
 
-void ST_InsertVar(ST *table, const char *varName) {
-  STE *entry = ST_SearchByValue(table, varName, VAR_NAME);
+void ST_InsertFunction(ST *table, const char *key, const char *name, const char *returnType) {
+  STE *entry = ST_Search(table, key);
 
   if (entry) {
-    free(entry->value.varName);
-    entry->value.varName = strdup(varName);
+    free(entry->value.function.name);
+    free(entry->value.function.returnType);
+    entry->value.function.name = strdup(name);
+    entry->value.function.returnType = strdup(returnType);
     return;
   }
 
-  if (table->size == table->capacity)
+  if (table->size == table->capacity) {
     ST_Resize(table);
-
-  entry = &table->entries[table->size++];
-  entry->key = RANDOM_KEY();
-  entry->type = VAR_NAME;
-  entry->value.varName = strdup(varName);
-}
-
-void ST_InsertFunc(ST *table, const char *funcName) {
-  STE *entry = ST_SearchByValue(table, funcName, FUNC_NAME);
-
-  if (entry) {
-    free(entry->value.funcName);
-    entry->value.funcName = strdup(funcName);
-    return;
   }
 
-  if (table->size == table->capacity)
-    ST_Resize(table);
-
   entry = &table->entries[table->size++];
-  entry->key = RANDOM_KEY();
-  entry->type = FUNC_NAME;
-  entry->value.funcName = strdup(funcName);
+  entry->key = strdup(key);
+  entry->type = FUNC;
+  entry->value.function.name = strdup(name);
+  entry->value.function.returnType = strdup(returnType);
 }
 
 void ST_Print(ST *table) {
@@ -149,18 +132,47 @@ void ST_Print(ST *table) {
     printf("Index %d: Key = %s, Type = ", i, table->entries[i].key);
 
     switch (table->entries[i].type) {
-      case INT_CONST:
-        printf("INT, Value = %d\n", table->entries[i].value.intConst);
+      case CONSTANT:
+        printf("CONSTANT, Type = %s\n", table->entries[i].value.constant.type);
         break;
-      case STR_CONST:
-        printf("STR, Value = %s\n", table->entries[i].value.strConst);
+      case VAR:
+        printf("VARIABLE, Name = %s, Type = %s\n", table->entries[i].value.variable.name, table->entries[i].value.variable.type);
         break;
-      case VAR_NAME:
-        printf("VAR, Name = %s\n", table->entries[i].value.varName);
-        break;
-      case FUNC_NAME:
-        printf("FUNC, Name = %s\n", table->entries[i].value.funcName);
+      case FUNC:
+        printf("FUNCTION, Name = %s, Return Type = %s\n", table->entries[i].value.function.name, table->entries[i].value.function.returnType);
         break;
     }
+  }
+}
+
+ST* ST_BuildFromFAST(AST *node) {
+  ST *st = ST_Create(16);
+  ST_Walker(st, node);
+  return st;
+}
+
+void ST_Walker(ST *st, AST *node) {
+  if (TOKEN_CONVERTS_TO_INT(node)) {
+    // const char *key = RANDOM_KEY();
+    // ST_InsertConstant(st, key, type);
+  }
+
+  if (TOKEN_IS(node, "AST_VAR_DEC")) {
+    // const char *varName = AST_GetChild(node, 1)->token;
+    // const char *varType = AST_GetType(node);
+    // const char *key = RANDOM_KEY();
+    // ST_InsertVariable(st, key, varName, varType);
+  }
+
+  if (TOKEN_IS(node, "AST_FUNC_DEF")) {
+    // const char *funcName = AST_GetChild(node, 0)->token;
+    // const char *returnType = AST_GetType(node);
+    // const char *key = RANDOM_KEY();
+    // ST_InsertFunction(st, key, funcName, returnType);
+  }
+
+  for (int i = 0; i < node->childCount; i++) {
+    AST *child = AST_GetChild(node, i);
+    ST_Walker(st, child);
   }
 }
