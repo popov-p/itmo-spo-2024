@@ -35,7 +35,7 @@ void CFG_EnterIf(CFG* cfg,
   printf("CFG :: ENTERING AST_IF\n");
 }
 void CFG_ExitIf(CFG* cfg,
-            AST* node)  {
+                AST* node)  {
   if (node->childCount == 2) {
     if(BREAK_DETECTED(cfg)) {
       BREAK_DETECTED(cfg) = 0;
@@ -181,21 +181,19 @@ void CFG_EnterVarDec(CFG* cfg,
                  AST* node) {
   int varDecIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDecIndex;
-  cfg->blocks[varDecIndex]->opTree = OT_BuildFromAST(node);
   printf("CFG :: AST_VAR_DEC\n");
 }
 
 void CFG_EnterVarDef(CFG* cfg,
-                 AST* node) {
+                     AST* node) {
   int varDefIndex = CFG_ConnectNewBlock(cfg, node);
   cfg->lastProcessedIndex = varDefIndex;
   printf("CFG :: AST_VAR_DEF\n");
 }
 
 void CFG_EnterAssignment(CFG* cfg,
-                     AST* node) {
+                         AST* node) {
   int assignmentIndex = CFG_ConnectNewBlock(cfg, node);
-  cfg->blocks[assignmentIndex]->opTree = OT_BuildFromAST(node);
   cfg->lastProcessedIndex = assignmentIndex;
 }
 
@@ -203,47 +201,47 @@ void CFG_Walker(CFG* cfg, AST* node)
 {
   if (!node) return;
 
-  if (TOKEN_IS(node, "AST_IF"))
+  if (AST_TOKEN_IS(node, "AST_IF"))
     CFG_EnterIf(cfg, node);
 
-  if (TOKEN_IS(node, "AST_ELSE"))
+  if (AST_TOKEN_IS(node, "AST_ELSE"))
     CFG_EnterElse(cfg, node);
 
-  if (TOKEN_IS(node, "AST_LOOP"))
+  if (AST_TOKEN_IS(node, "AST_LOOP"))
     CFG_EnterLoop(cfg, node);
 
-  if (TOKEN_IS(node, "AST_REPEAT"))
+  if (AST_TOKEN_IS(node, "AST_REPEAT"))
     CFG_EnterRepeat(cfg, node);
 
-  if (TOKEN_IS(node, "AST_BREAK"))
+  if (AST_TOKEN_IS(node, "AST_BREAK"))
     CFG_EnterBreak(cfg, node);
 
-  if (TOKEN_IS(node, "AST_ASSIGNMENT"))
+  if (AST_TOKEN_IS(node, "AST_ASSIGNMENT"))
     CFG_EnterAssignment(cfg,
                     node);
 
-  if (TOKEN_IS(node, "AST_VAR_DEC"))
+  if (AST_TOKEN_IS(node, "AST_VAR_DEC"))
     CFG_EnterVarDec(cfg, node);
 
-  if (TOKEN_IS(node, "AST_VAR_DEF"))
+  if (AST_TOKEN_IS(node, "AST_VAR_DEF"))
     CFG_EnterVarDec(cfg, node);
 
   if(!BREAK_DETECTED(cfg))
     for (int i = 0; i < node->childCount; i++)
       CFG_Walker(cfg, AST_GetChild(node, i));
 
-  if (TOKEN_IS(node, "AST_CALL"))
+  if (AST_TOKEN_IS(node, "AST_CALL"))
     CFG_ExitCall(cfg, node);
 
-  if (TOKEN_IS(node, "AST_LOOP"))
+  if (AST_TOKEN_IS(node, "AST_LOOP"))
     CFG_ExitLoop(cfg, node);
 
-  if (TOKEN_IS(node, "AST_REPEAT"))
+  if (AST_TOKEN_IS(node, "AST_REPEAT"))
     CFG_ExitRepeat(cfg, node);
 
-  if (TOKEN_IS(node, "AST_IF"))
+  if (AST_TOKEN_IS(node, "AST_IF"))
     CFG_ExitIf(cfg, node);
 
-  if (TOKEN_IS(node, "AST_ELSE"))
+  if (AST_TOKEN_IS(node, "AST_ELSE"))
     CFG_ExitElse(cfg, node);
 }

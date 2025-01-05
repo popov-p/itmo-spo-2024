@@ -10,7 +10,7 @@ char* createFilePath(const char* format, ...) {
   size_t len = vsnprintf(NULL, 0, format, args) + 1;
   va_end(args);
 
-  char* filePath = (char*)malloc(len);
+  char* filePath = (char*)safe_malloc(len);
   if (!filePath) {
     fprintf(stderr, "Memory allocation failed.\n");
     return NULL;
@@ -49,7 +49,7 @@ void executeCommand(const char* commandFormat, ...) {
   size_t commandLen = vsnprintf(NULL, 0, commandFormat, args) + 1;
   va_end(args);
 
-  char* command = (char*)malloc(commandLen);
+  char* command = (char*)safe_malloc(commandLen);
   if (!command) {
     fprintf(stderr, "Memory allocation failed.\n");
     return;

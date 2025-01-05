@@ -2,6 +2,7 @@
 #include "AST.h"
 #include "LevelStack.h"
 #include "OT.h"
+#include "ST.h"
 
 typedef enum BB_t {
   standard,
@@ -19,6 +20,7 @@ typedef struct BB {
 } BB;
 
 typedef struct CFG {
+  ST* symbolTable;
   BB** blocks;
   int blockCount;
   int lastProcessedIndex;
@@ -28,8 +30,9 @@ typedef struct CFG {
 } CFG;
 
 CFG* CFG_Generate(AST* head);
+void CFG_GenerateOTs(CFG* cfg, ST* st);
 BB* CFG_CreateBB(AST* node, enum BB_t bt);
 void CFG_AddSuccessor(BB* block, int successorIndex);
 void CFG_AddBB(CFG* cfg, BB* block);
-CFG* CFG_Init(int processedNodesSize, int loopLevelStackSize, int ifLevelStackSize);
+CFG* CFG_Init(int loopLevelStackSize, int ifLevelStackSize);
 void CFG_Free(CFG* cfg);

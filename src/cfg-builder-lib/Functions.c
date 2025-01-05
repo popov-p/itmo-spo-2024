@@ -79,19 +79,16 @@ void FL_FindFInAST(FL* functionList, AST* node, char* filename) {
     AST* funcName = AST_GetChild(signature, 0);
 
     if (!FL_FExists(functionList, funcName->token)) {
-      CFG* cfg = CFG_Generate(node);
-      ST* st = ST_BuildFromFAST(node);
-      ST_Print(st);
-      F* func = F_Create(funcName->token, signature, cfg, NULL, filename);
+      F* func = F_Create(funcName->token, signature,
+                         CFG_Generate(node), NULL, filename);
       FL_AddF(functionList, func);
 
     }
     else
       perror("FFR :: DEFINITION OF FUNCTIONS WITH EQUAL NAMES IS PROHIBITED\n");
   }
-  for(int i = 0; i < node->childCount; ++i) {
+  for(int i = 0; i < node->childCount; ++i)
     FL_FindFInAST(functionList, AST_GetChild(node, i), filename);
-  }
 }
 
 FL* FL_FindFsInAST(AST* head, char* filename) {

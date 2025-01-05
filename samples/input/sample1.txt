@@ -1,4 +1,4 @@
 def main() of boolean
+    int d;
     int t = 2 + d;
-    d = 4 * 3 + 5;
 end

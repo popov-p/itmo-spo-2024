@@ -21,9 +21,27 @@ void CFG_AddSuccessor(BB* block, int successorIndex) {
   block->successors[block->successorCount - 1] = successorIndex;
 }
 
+void CFG_GenerateOTs(CFG* cfg, ST* st) {
+  if (!cfg || !cfg->blocks || cfg->blockCount <= 0) {
+    printf("CFG or basic blocks are invalid.\n");
+    return;
+  }
+
+  for (int i = 0; i < cfg->blockCount; i++) {
+    BB* block = cfg->blocks[i];
+    if (block && block->node) {
+      block->opTree = OT_BuildFromAST(st, block->node);
+      printf("Basic block %d is invalid or has no AST node.\n", i);
+      continue;
+    }
+  }
+}
+
 CFG* CFG_Generate(AST* head) {
-  CFG* cfg = CFG_Init(100, 20, 20);
+  CFG* cfg = CFG_Init(20, 20);
   CFG_Walker(cfg, head);
+  ST* st = ST_BuildFromFAST(head);
+  CFG_GenerateOTs(cfg, st);
   return cfg;
 }
 
@@ -34,10 +52,10 @@ void CFG_AddBB(CFG* cfg, BB* block) {
   cfg->blocks[cfg->blockCount - 1] = block;
 }
 
-CFG* CFG_Init(int processedNodesSize,
-                  int loopLevelStackSize,
-                  int ifLevelStackSize) {
+CFG* CFG_Init(int loopLevelStackSize,
+              int ifLevelStackSize) {
   CFG* cfg = (CFG*)safe_malloc(sizeof(CFG));
+  cfg->symbolTable = NULL;
   cfg->blocks = NULL;
   cfg->blockCount = 0;
   cfg->lastProcessedIndex = -1;

@@ -3,8 +3,13 @@
 #include <antlr3.h>
 #include "TreeBuilder.h"
 
-#define TOKEN_IS(node, str) (!strcmp((node->token), (str)))
+#define AST_TOKEN_IS(node, str) (!strcmp((node->token), (str)))
 
+#define AST_TOKEN_CONVERTS_TO_INT(node) ({            \
+    char* endptr;                                 \
+    strtol((node)->token, &endptr, 10);           \
+    (*endptr == '\0');                            \
+})
 typedef struct AST {
   uint32_t id;
   char* token;

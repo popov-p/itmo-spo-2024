@@ -64,8 +64,8 @@ AST* AST_GetChild(AST* parent, size_t i) {
 
 
 void AST_InsertBetween(AST* parent,
-                   AST* thatChild,
-                   AST* thisNode) {
+                       AST* thatChild,
+                       AST* thisNode) {
   if (!parent || !thatChild || !thisNode)
     return;
 
@@ -102,8 +102,8 @@ AST* AST_BuildFromParseResult(ParseResult* parseResult) {
 }
 
 void AST_SetChildFromAntlrNode(AST* parent,
-                           pANTLR3_BASE_TREE_ADAPTOR adaptor,
-                           pANTLR3_BASE_TREE node) {
+                               pANTLR3_BASE_TREE_ADAPTOR adaptor,
+                               pANTLR3_BASE_TREE node) {
   if (!node)
     return;
   AST* child = AST_CreateNode(adaptor->getUniqueID(adaptor, node),
