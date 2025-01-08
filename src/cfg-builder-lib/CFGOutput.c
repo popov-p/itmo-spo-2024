@@ -53,7 +53,6 @@ void CFG_WriteOT(CFG* cfg, int basicBlockIndex, FILE* file) {
     fprintf(file, "subgraph cluster_%d {\n", basicBlockIndex);
     fprintf(file, "    label=\"%s%d\";\n", "BB", basicBlockIndex);
 
-    OT_PrintTree(bb->opTree, 0);
     OT_WriteNodes(bb->opTree, basicBlockIndex, file);
     OT_WriteEdges(bb->opTree, basicBlockIndex, file);
     fprintf(file, "}\n");

@@ -19,7 +19,7 @@ static inline bool OT_IsInt(const char* token) {
   return true;
 }
 
-typedef enum OT_t {OT_OPERATION, OT_VARIABLE, OT_FUNCTION, OT_CONSTANT} OT_t;
+typedef enum OT_t {OT_OPERATION, OT_VARIABLE, OT_FUNCTION, OT_CONSTANT, OT_AUX} OT_t;
 typedef struct OT {
   OT_t dataType;
   struct OT* parent;
@@ -43,6 +43,10 @@ typedef struct OT {
       char* value;
       char* constType;
     } constant;
+    struct {
+      char* firstOption;
+      char* secondOption;
+    } auxiliary;
   } data;
 } OT;
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "safe_mem.h"
 #include "CFGWalker.h"
+// #include "OTOutput.h"
 
 BB* CFG_CreateBB(AST* node, BB_t bt) {
   BB* block = (BB*)safe_malloc(sizeof(BB));
@@ -16,7 +17,8 @@ BB* CFG_CreateBB(AST* node, BB_t bt) {
 
 void CFG_AddSuccessor(BB* block, int successorIndex) {
   block->successorCount++;
-  int* newSuccessors = (int*)safe_realloc(block->successors, block->successorCount * sizeof(int));
+  int* newSuccessors = (int*)safe_realloc(block->successors,
+                                          block->successorCount * sizeof(int));
   block->successors = newSuccessors;
   block->successors[block->successorCount - 1] = successorIndex;
 }
@@ -31,8 +33,15 @@ void CFG_GenerateOTs(CFG* cfg, ST* st) {
     BB* block = cfg->blocks[i];
     if (block && block->node) {
       block->opTree = OT_BuildFromAST(st, block->node);
-      printf("Basic block %d is invalid or has no AST node.\n", i);
       continue;
+    }
+  }
+
+  for (int i = 0; i < cfg->blockCount; i++) {
+    BB* block = cfg->blocks[i];
+    if (block && block->node) {
+      // OT_PrintTree(block->opTree, 0);
+      // printf("=================>\n");
     }
   }
 }
@@ -47,7 +56,8 @@ CFG* CFG_Generate(AST* head) {
 
 void CFG_AddBB(CFG* cfg, BB* block) {
   cfg->blockCount++;
-  BB** newBlocks = (BB**)safe_realloc(cfg->blocks, cfg->blockCount * sizeof(BB*));
+  BB** newBlocks = (BB**)safe_realloc(cfg->blocks,
+                                      cfg->blockCount * sizeof(BB*));
   cfg->blocks = newBlocks;
   cfg->blocks[cfg->blockCount - 1] = block;
 }

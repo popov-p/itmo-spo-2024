@@ -3,6 +3,7 @@
 #include "OT.h"
 #include "safe_mem.h"
 #include "ST.h"
+#include "OTOutput.h"
 
 #define __READ  "OP_READ"
 #define __WRITE  "OP_WRITE"
@@ -47,6 +48,9 @@ OT* OT_CreateNode(AST* astNode,
     case OT_CONSTANT:
       otNode->data.constant.value = primaryData ? strdup(primaryData) : NULL;
       otNode->data.constant.constType = secondaryData ? strdup(secondaryData) : NULL;
+    case OT_AUX:
+      otNode->data.auxiliary.firstOption = primaryData ? strdup(primaryData) : NULL;
+      otNode->data.auxiliary.secondOption = secondaryData ? strdup(secondaryData) : NULL;
       break;
     default:
       printf("%s", "Error while building OT from AST. Exiting ...\n");
@@ -65,7 +69,7 @@ OT* OT_CreateAuxiliaryNode(OT_t dataType,
   otNode->parent = NULL;
   otNode->children = NULL;
   otNode->childCount = 0;
-  otNode->id = 0;
+  otNode->id = arc4random();
 
   switch (dataType) {
     case OT_OPERATION:
@@ -81,6 +85,8 @@ OT* OT_CreateAuxiliaryNode(OT_t dataType,
 }
 
 void OT_AddChild(OT* parent, OT* child) {
+  if(!parent || !child)
+    return;
   parent->children = safe_realloc(parent->children, (parent->childCount + 1) * sizeof(OT*));
   parent->children[parent->childCount] = child;
   parent->childCount++;
@@ -153,7 +159,7 @@ void OT_Free(OT* node) {
 
 OT* OT_BuildFromAST(ST* st, AST* node) {
   if (!node) return NULL;
-  OT* ot = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
+  OT* ot = OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __HEAD);
   OT_Walker(ot, st, node);
   // OT_TypeResolver(ot);
   return ot;
@@ -161,14 +167,12 @@ OT* OT_BuildFromAST(ST* st, AST* node) {
 
 void OT_Walker(OT* ot, ST* st, AST* node) {
   if (!node) return;
-
+  printf("=======================> token: %s, id: %u\n", node->token, node->id);
+  if (!strcmp(node->token, "k")) {
+    printf("=========>Найдена ! Таблица выглядит так: \n");
+    ST_Print(st);
+  }
   OT* currentNode = NULL;
-
-  // if(TOKEN_CONVERTS_TO_INT(node)) {
-  //   const char* substrings[] = {__CONST, ": ", node->token};
-  //   currentNode = OT_CreateNode(node->token/*concatenateStrings(3, substrings)*/);
-  //   OT_AddChild(ot, currentNode);
-  //  }
 
   if (AST_TOKEN_IS(node, "AST_PLUS") ||
       AST_TOKEN_IS(node, "AST_MINUS") ||
@@ -185,6 +189,7 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
   else if (AST_TOKEN_IS(node, "AST_VAR_DEC")) {
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
     OT_AddChild(ot, currentNode);
+    //OT_PrintTree(ot, 0);
   }
   else if (AST_TOKEN_IS(node, "AST_CALL")) {
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __CALL);
@@ -192,16 +197,29 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
   }
   else
   {
-    // const char* substrings[] = {__PLACE, ": ", node->token};
     STE* element = ST_Search(st, node->id);
     if (element) {
+      // if (!strcmp(element->value.variable.name, "k"))
+      //   printf("=========>Найдена !!\n");
+
+      printf("Debugging ELEMENT :: name: %s, type: %s\n",
+             element->value.variable.name,
+             element->value.variable.type);
       switch(element->type) {
         case ST_VAR:
-          currentNode = OT_CreateNode(node, OT_VARIABLE, element->value.variable.name, element->value.variable.type/*concatenateStrings(3, substrings)*/);
+          printf("Variable is: %s with type %s:\n", element->value.variable.name,
+                 element->value.variable.type);
+          currentNode = OT_CreateNode(node, OT_VARIABLE,
+                                      element->value.variable.name,
+                                      element->value.variable.type);
           OT_AddChild(ot, currentNode);
           //OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
           break;
         case ST_CONSTANT:
+          currentNode = OT_CreateNode(node, OT_CONSTANT,
+                                      element->value.constant.value,
+                                      element->value.constant.type);
+          OT_AddChild(ot, currentNode);
           break;
         case ST_FUNC:
           break;
@@ -211,7 +229,7 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
     }
   }
   for (int i = 0; i < node->childCount; i++)
-    OT_Walker(ot, st, AST_GetChild(node, i));
+    OT_Walker(currentNode, st, AST_GetChild(node, i));
 
 }
 
