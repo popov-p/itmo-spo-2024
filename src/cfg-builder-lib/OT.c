@@ -160,17 +160,12 @@ OT* OT_BuildFromAST(ST* st, AST* node) {
   if (!node) return NULL;
   OT* ot = OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __HEAD);
   OT_Walker(ot, st, node);
-  // OT_TypeResolver(ot);
+  OT_TypeResolver(ot);
   return ot;
 }
 
 void OT_Walker(OT* ot, ST* st, AST* node) {
   if (!node) return;
-  // printf("===> ot walker debugging process: token: %s, id: %u\n", node->token, node->id);
-  // if (!strcmp(node->token, "k")) {
-  //   printf("=========>Найдена ! Таблица выглядит так: \n");
-  //   ST_Print(st);
-  // }
   OT* currentNode = NULL;
 
   if (AST_TOKEN_IS(node, "AST_PLUS") ||
@@ -182,15 +177,12 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
     OT_AddChild(ot, currentNode);
   }
   else if (AST_TOKEN_IS(node, "AST_ASSIGNMENT")) {
-    printf("====> ELEMENT :: name: %s, id: %u\n",node->token, node->id);
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
     OT_AddChild(ot, currentNode);
   }
   else if (AST_TOKEN_IS(node, "AST_VAR_DEC")) {
-    printf("====> ELEMENT :: name: %s, id: %u\n",node->token, node->id);
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
     OT_AddChild(ot, currentNode);
-    //OT_PrintTree(ot, 0);
   }
   else if (AST_TOKEN_IS(node, "AST_CALL")) {
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __CALL);
@@ -204,8 +196,8 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
           currentNode = OT_CreateNode(node, OT_VARIABLE,
                                       variable->value.variable.name,
                                       variable->value.variable.type);
-          // OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
           OT_AddChild(ot, currentNode);
+          OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
     }
     STE* constant = ST_Search(st, node->token, ST_CONSTANT);
     if (constant) {
@@ -222,7 +214,82 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
 
 void OT_TypeResolver(OT* ot) {
   if (!ot) return;
+
+  for (int i = 0; i < ot->childCount; i++) {
+    OT_TypeResolver(OT_GetChild(ot, i));
+  }
+
+  if (ot->childCount > 0) {
+    int uniformType = 1;
+    char* childType = NULL;
+
+    OT* firstChild = OT_GetChild(ot, 0);
+    switch (firstChild->dataType) {
+      case OT_VARIABLE:
+        childType = firstChild->data.variable.varType;
+        break;
+      case OT_OPERATION:
+      case OT_FUNCTION:
+        childType = firstChild->data.operation.returnType;
+        break;
+      case OT_CONSTANT:
+        childType = firstChild->data.constant.constType;
+        break;
+      case OT_AUX:
+        childType = firstChild->data.auxiliary.firstOption;
+        break;
+      default:
+        uniformType = 0;
+        break;
+    }
+
+    for (int i = 1; i < ot->childCount; i++) {
+      OT* child = OT_GetChild(ot, i);
+      char* currentChildType = NULL;
+
+      switch (child->dataType) {
+        case OT_VARIABLE:
+          currentChildType = child->data.variable.varType;
+          break;
+        case OT_OPERATION:
+        case OT_FUNCTION:
+          currentChildType = child->data.operation.returnType;
+          break;
+        case OT_CONSTANT:
+          currentChildType = child->data.constant.constType;
+          break;
+        case OT_AUX:
+          currentChildType = child->data.auxiliary.firstOption;
+          break;
+        default:
+          uniformType = 0;
+          break;
+      }
+
+      if (!currentChildType || strcmp(currentChildType, childType) != 0) {
+        uniformType = 0;
+        break;
+      }
+    }
+
+    if (uniformType && childType) {
+      switch (ot->dataType) {
+        case OT_OPERATION:
+        case OT_FUNCTION:
+          ot->data.operation.returnType = childType;
+          break;
+        case OT_VARIABLE:
+          ot->data.variable.varType = childType;
+          break;
+        default:
+          break;
+      }
+    }
+  }
 }
+
+
+
 
 char* OT_ASTToOpToken(const char* astToken) {
   if (!astToken) {
