@@ -3,7 +3,6 @@
 #include "OT.h"
 #include "safe_mem.h"
 #include "ST.h"
-#include "OTOutput.h"
 
 #define __READ  "OP_READ"
 #define __WRITE  "OP_WRITE"
@@ -167,11 +166,11 @@ OT* OT_BuildFromAST(ST* st, AST* node) {
 
 void OT_Walker(OT* ot, ST* st, AST* node) {
   if (!node) return;
-  printf("=======================> token: %s, id: %u\n", node->token, node->id);
-  if (!strcmp(node->token, "k")) {
-    printf("=========>Найдена ! Таблица выглядит так: \n");
-    ST_Print(st);
-  }
+  // printf("===> ot walker debugging process: token: %s, id: %u\n", node->token, node->id);
+  // if (!strcmp(node->token, "k")) {
+  //   printf("=========>Найдена ! Таблица выглядит так: \n");
+  //   ST_Print(st);
+  // }
   OT* currentNode = NULL;
 
   if (AST_TOKEN_IS(node, "AST_PLUS") ||
@@ -183,10 +182,12 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
     OT_AddChild(ot, currentNode);
   }
   else if (AST_TOKEN_IS(node, "AST_ASSIGNMENT")) {
+    printf("====> ELEMENT :: name: %s, id: %u\n",node->token, node->id);
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
     OT_AddChild(ot, currentNode);
   }
   else if (AST_TOKEN_IS(node, "AST_VAR_DEC")) {
+    printf("====> ELEMENT :: name: %s, id: %u\n",node->token, node->id);
     currentNode = OT_CreateNode(node, OT_OPERATION, NULL, __WRITE);
     OT_AddChild(ot, currentNode);
     //OT_PrintTree(ot, 0);
@@ -197,35 +198,21 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
   }
   else
   {
-    STE* element = ST_Search(st, node->id);
-    if (element) {
-      // if (!strcmp(element->value.variable.name, "k"))
-      //   printf("=========>Найдена !!\n");
-
-      printf("Debugging ELEMENT :: name: %s, type: %s\n",
-             element->value.variable.name,
-             element->value.variable.type);
-      switch(element->type) {
-        case ST_VAR:
-          printf("Variable is: %s with type %s:\n", element->value.variable.name,
-                 element->value.variable.type);
+    printf("====> VISITING ELEMENT :: name: %s, id: %u\n",node->token, node->id);
+    STE* variable = ST_Search(st, node->token, ST_VAR);
+    if (variable) {
           currentNode = OT_CreateNode(node, OT_VARIABLE,
-                                      element->value.variable.name,
-                                      element->value.variable.type);
+                                      variable->value.variable.name,
+                                      variable->value.variable.type);
+          // OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
           OT_AddChild(ot, currentNode);
-          //OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
-          break;
-        case ST_CONSTANT:
-          currentNode = OT_CreateNode(node, OT_CONSTANT,
-                                      element->value.constant.value,
-                                      element->value.constant.type);
-          OT_AddChild(ot, currentNode);
-          break;
-        case ST_FUNC:
-          break;
-        default:
-          break;
-      }
+    }
+    STE* constant = ST_Search(st, node->token, ST_CONSTANT);
+    if (constant) {
+      currentNode = OT_CreateNode(node, OT_CONSTANT,
+                                  constant->value.constant.value,
+                                  constant->value.constant.type);
+      OT_AddChild(ot, currentNode);
     }
   }
   for (int i = 0; i < node->childCount; i++)

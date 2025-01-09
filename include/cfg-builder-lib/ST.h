@@ -37,19 +37,17 @@ ST* ST_Create(int capacity);
 void ST_Free(ST* table);
 void ST_Resize(ST* table);
 
-STE* ST_Search(ST* table, const uint32_t key);
+STE* ST_Search(ST* table, const char* name, VT valueType);
+
 void ST_InsertConstant(ST* table,
-                       const uint32_t key,
                        const char* value,
                        const char* type);
 
 void ST_InsertVariable(ST* table,
-                       const uint32_t key,
                        const char* name,
                        const char* type);
 
 void ST_InsertFunction(ST* table,
-                       const uint32_t key,
                        const char* name,
                        const char* returnType);
 

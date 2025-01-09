@@ -24,6 +24,7 @@ void CFG_AddSuccessor(BB* block, int successorIndex) {
 }
 
 void CFG_GenerateOTs(CFG* cfg, ST* st) {
+  ST_Print(st);
   if (!cfg || !cfg->blocks || cfg->blockCount <= 0) {
     printf("CFG or basic blocks are invalid.\n");
     return;

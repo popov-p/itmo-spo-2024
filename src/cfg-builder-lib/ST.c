@@ -35,7 +35,7 @@ void ST_Free(ST *table) {
 
 void ST_Resize(ST* table) {
   int new_capacity = table->capacity * 2;
-  STE* new_entries = (STE* )safe_malloc(new_capacity * sizeof(STE));
+  STE* new_entries = (STE*)safe_malloc(new_capacity * sizeof(STE));
 
   for (int i = 0; i < table->size; i++) {
     new_entries[i] = table->entries[i];
@@ -46,24 +46,30 @@ void ST_Resize(ST* table) {
   table->capacity = new_capacity;
 }
 
-STE* ST_Search(ST* table, const uint32_t key) {
+STE* ST_Search(ST* table, const char* name, VT valueType) {
   for (int i = 0; i < table->size; i++) {
-    if (table->entries[i].key == key) {
-      return &table->entries[i];
+    if (table->entries[i].type == valueType) {
+      switch (valueType) {
+        case ST_VAR:
+          if (strcmp(table->entries[i].value.variable.name, name) == 0)
+            return &table->entries[i];
+          break;
+        case ST_FUNC:
+          if (strcmp(table->entries[i].value.function.name, name) == 0)
+            return &table->entries[i];
+          break;
+        case ST_CONSTANT:
+          if (strcmp(table->entries[i].value.constant.value, name) == 0)
+            return &table->entries[i];
+          break;
+      }
     }
   }
   return NULL;
 }
 
-void ST_InsertConstant(ST* table,
-                       const uint32_t key,
-                       const char* value,
-                       const char* type) {
-  STE *entry = ST_Search(table, key);
-
-  if (entry) {
-    free(entry->value.constant.type);
-    entry->value.constant.type = strdup(type);
+void ST_InsertConstant(ST* table, const char* value, const char* type) {
+  if (ST_Search(table, value, ST_CONSTANT)) {
     return;
   }
 
@@ -71,21 +77,14 @@ void ST_InsertConstant(ST* table,
     ST_Resize(table);
   }
 
-  entry = &table->entries[table->size++];
-  entry->key = key;
+  STE* entry = &table->entries[table->size++];
   entry->type = ST_CONSTANT;
   entry->value.constant.value = strdup(value);
   entry->value.constant.type = strdup(type);
 }
 
-void ST_InsertVariable(ST* table, const uint32_t key, const char* name, const char* type) {
-  STE *entry = ST_Search(table, key);
-
-  if (entry) {
-    free(entry->value.variable.name);
-    free(entry->value.variable.type);
-    entry->value.variable.name = strdup(name);
-    entry->value.variable.type = strdup(type);
+void ST_InsertVariable(ST* table, const char* name, const char* type) {
+  if (ST_Search(table, name, ST_VAR)) {
     return;
   }
 
@@ -93,21 +92,14 @@ void ST_InsertVariable(ST* table, const uint32_t key, const char* name, const ch
     ST_Resize(table);
   }
 
-  entry = &table->entries[table->size++];
-  entry->key = key;
+  STE* entry = &table->entries[table->size++];
   entry->type = ST_VAR;
   entry->value.variable.name = strdup(name);
   entry->value.variable.type = strdup(type);
 }
 
-void ST_InsertFunction(ST* table, const uint32_t key, const char *name, const char *returnType) {
-  STE *entry = ST_Search(table, key);
-
-  if (entry) {
-    free(entry->value.function.name);
-    free(entry->value.function.returnType);
-    entry->value.function.name = strdup(name);
-    entry->value.function.returnType = strdup(returnType);
+void ST_InsertFunction(ST* table, const char* name, const char* returnType) {
+  if (ST_Search(table, name, ST_FUNC)) {
     return;
   }
 
@@ -115,12 +107,12 @@ void ST_InsertFunction(ST* table, const uint32_t key, const char *name, const ch
     ST_Resize(table);
   }
 
-  entry = &table->entries[table->size++];
-  entry->key = key;
+  STE* entry = &table->entries[table->size++];
   entry->type = ST_FUNC;
   entry->value.function.name = strdup(name);
   entry->value.function.returnType = strdup(returnType);
 }
+
 
 void ST_Print(ST *table) {
   printf("Symbol Table:\n");
@@ -153,15 +145,15 @@ ST* ST_BuildFromFAST(AST *node) {
 
 void ST_Walker(ST *st, AST *node) {
   if (AST_TOKEN_CONVERTS_TO_INT(node))
-    ST_InsertConstant(st, node->id, node->token, "int");
+    ST_InsertConstant(st, node->token, "int");
 
   if (AST_TOKEN_IS(node, "AST_VAR_DEC") ||
       AST_TOKEN_IS(node, "AST_VAR_DEF"))
   {
     const char* varType = AST_GetChild(node, 0)->token;
     const char* varName = AST_GetChild(node, 1)->token;
-    uint32_t varId = AST_GetChild(node, 1)->id;
-    ST_InsertVariable(st, varId, varName, varType);
+
+    ST_InsertVariable(st, varName, varType);
   }
 
   for (int i = 0; i < node->childCount; i++) {
