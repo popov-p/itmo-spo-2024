@@ -54,25 +54,26 @@ instructions:
 	}; // For later usage
 	
 
-	instruction push = { 0001, 0000, imm16 as value } {
+	instruction push = { 1000, 0000, imm16 as value } {
 		stackmem:2[sp] = value;
 		sp = sp + 2;
 		ip = ip + 3;                                            
 	};
 
-	instruction pop = { 0010, 0000 } {
+	instruction pop = { 1000, 0001 } {
     	sp = sp - 2;
+    	stackmem:2[sp] = 0;
     	ip = ip + 1;
   	};
 
-  	instruction popout = { 0100, 0000 } {
+  	instruction popout = { 1000, 0010 } {
     	sp = sp - 2;
     	outp = stackmem:2[sp];
     	stackmem:2[sp] = 0;
     	ip = ip + 1;
   	};
 
-	instruction add = { 1000, 0000 } {
+	instruction add = { 1000, 0100 } {
 		sp = sp - 2;
 	    let x = stackmem:2[sp];
 		stackmem:2[sp] = 0;
@@ -88,7 +89,7 @@ instructions:
 	    ip = ip + 1;
 	};
 
-	instruction sub = { 1001, 0000 } {
+	instruction sub = { 1000, 1000 } {
 		sp = sp - 2;
 	    let x = stackmem:2[sp];
 	    stackmem:2[sp] = 0;
@@ -104,7 +105,7 @@ instructions:
 	    ip = ip + 1;
 	};
 
-	instruction mul = { 1010, 0000 } {
+	instruction mul = { 1001, 0000 } {
 		sp = sp - 2;
 	    let x = stackmem:2[sp];
 	    stackmem:2[sp] = 0;
@@ -120,7 +121,7 @@ instructions:
 	    ip = ip + 1;
 	};
 
-	instruction div = { 1100, 0000 } {
+	instruction div = { 1010, 0000 } {
 		sp = sp - 2;
 	    let x = stackmem:2[sp];
 	    stackmem:2[sp] = 0;
@@ -136,21 +137,47 @@ instructions:
 	    ip = ip + 1;
 	};
 
-	instruction jmp = { 1101, 0000, imm16 as target } {
-    	ip = target;
-  	};
-
-  	instruction call = { 1111, 0000, imm16 as target } {
+  	instruction call = { 1100, 0000, imm16 as target } {
 			stackmem:2[sp] = ip + 3;
 			sp = sp + 2;
 			ip = target;
 	};
 
-	instruction ret = { 1111, 0001 } {
+	instruction ret = { 1100, 0001 } {
 		sp = sp - 2;
     	let where_to = stackmem:2[sp];
     	stackmem:2[sp] = 0;
     	ip = where_to;
+	};
+
+	instruction jz = { 1100, 0010, imm16 as target } {
+		let top = stackmem:2[sp - 2];
+		if top == 0 then
+			ip = target;
+		else
+			ip = ip + 3;
+	};
+
+	instruction jmp = { 1100, 0100, imm16 as target } {
+    	ip = target;
+  	};
+
+  	instruction jmpgt = { 1100, 1000, imm16 as target } {
+  		let top = stackmem:2[sp - 2];
+  		let pretop = stackmem:2[sp - 4];
+		if pretop > top then
+			ip = target;
+		else
+			ip = ip + 3;
+	};
+
+	instruction jmplt = { 1101, 0000, imm16 as target } {
+		let top = stackmem:2[sp - 2];
+  		let pretop = stackmem:2[sp - 4];
+		if pretop < top then
+			ip = target;
+		else
+			ip = ip + 3;
 	};
 
 
@@ -166,7 +193,9 @@ mnemonics:
 	mnemonic div();
 
 	mnemonic jmp(target) "{1}";
-
+	mnemonic jz(target) "{1}";
+	mnemonic jmplt(target) "{1}";
+	mnemonic jmpgt(target) "{1}";
 
 	mnemonic call(target) "{1}";
 	mnemonic ret();

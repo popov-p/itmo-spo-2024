@@ -1,12 +1,12 @@
 [section name=progmem]
 
 main:
-    call foo
+    push 2
+    push 4
+    jmplt bar
+    push 5
     halt
 
-foo:
-    call bar
-    ret
-
 bar:
-    ret
+    push 777
+    halt
