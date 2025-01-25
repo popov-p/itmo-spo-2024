@@ -22,7 +22,7 @@ memory:
 		granularity = 2;
 	}
 
-	range constantmem [0x0000 .. 0xffff] {							// Constants memory
+	range constantmem [0x0000 .. 0xffff] {					// Constants memory
 		cell = 16;
 		endianess = little-endian;
 		granularity = 2;
@@ -54,7 +54,7 @@ instructions:
 	}; // For later usage
 	
 
-	instruction push = { 0001, imm16 as value, 0000 } {                                            
+	instruction push = { 0001, 0000, imm16 as value } {
 		stackmem:2[sp] = value;
 		sp = sp + 2;
 		ip = ip + 3;                                            
@@ -68,28 +68,108 @@ instructions:
   	instruction popout = { 0100, 0000 } {
     	sp = sp - 2;
     	outp = stackmem:2[sp];
+    	stackmem:2[sp] = 0;
     	ip = ip + 1;
   	};
 
 	instruction add = { 1000, 0000 } {
 		sp = sp - 2;
 	    let x = stackmem:2[sp];
+		stackmem:2[sp] = 0;
 	    
 	    sp = sp - 2;
 	    let y = stackmem:2[sp];
-	    
+	    stackmem:2[sp] = 0;
+
 	    let r = x + y;
 	    
 	    stackmem:2[sp] = r;
-	    sp = sp - 2;
+	    sp = sp + 2;
 	    ip = ip + 1;
 	};
+
+	instruction sub = { 1001, 0000 } {
+		sp = sp - 2;
+	    let x = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    sp = sp - 2;
+	    let y = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    let r = x - y;
+	    
+	    stackmem:2[sp] = r;
+	    sp = sp + 2;
+	    ip = ip + 1;
+	};
+
+	instruction mul = { 1010, 0000 } {
+		sp = sp - 2;
+	    let x = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    sp = sp - 2;
+	    let y = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    let r = x * y;
+	    
+	    stackmem:2[sp] = r;
+	    sp = sp + 2;
+	    ip = ip + 1;
+	};
+
+	instruction div = { 1100, 0000 } {
+		sp = sp - 2;
+	    let x = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    sp = sp - 2;
+	    let y = stackmem:2[sp];
+	    stackmem:2[sp] = 0;
+
+	    let r = x / y;
+	    
+	    stackmem:2[sp] = r;
+	    sp = sp + 2;
+	    ip = ip + 1;
+	};
+
+	instruction jmp = { 1101, 0000, imm16 as target } {
+    	ip = target;
+  	};
+
+  	instruction call = { 1111, 0000, imm16 as target } {
+			stackmem:2[sp] = ip + 3;
+			sp = sp + 2;
+			ip = target;
+	};
+
+	instruction ret = { 1111, 0001 } {
+		sp = sp - 2;
+    	let where_to = stackmem:2[sp];
+    	stackmem:2[sp] = 0;
+    	ip = where_to;
+	};
+
 
 mnemonics:
 	
 	mnemonic push(value) "{1}";
 	mnemonic pop();
 	mnemonic popout();
+
+	mnemonic add();
+	mnemonic sub();
+	mnemonic mul();
+	mnemonic div();
+
+	mnemonic jmp(target) "{1}";
+
+
+	mnemonic call(target) "{1}";
+	mnemonic ret();
 
 	mnemonic halt();
 

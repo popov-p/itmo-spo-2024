@@ -1,0 +1,18 @@
+./run.sh -ib -w -s ExecuteBinaryWithInteractiveInput \
+definitionFile ./arch/arch-popov-v24.target.pdsl \
+archName popov-v24 \
+binaryFileToRun ./examples/asm-gen/hw.ptptb \
+ipRegStorageName ip \
+finishMnemonicName halt \
+codeRamBankName progmem \
+stdinRegStName inp \
+stdoutRegStName outp
+
+
+./run.sh -il -s DebugBinary \
+definitionFile ./arch/arch-popov-v24.target.pdsl \
+archName popov-v24 \
+binaryFileToRun ./examples/asm-gen/hw.ptptb \
+ipRegStorageName ip \
+finishMnemonicName halt \
+codeRamBankName progmem

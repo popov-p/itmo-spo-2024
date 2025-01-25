@@ -1,8 +1,12 @@
-[section progmem]
+[section name=progmem]
 
 main:
-    push 66
-    push 77
-    popout
-    popout
+    call foo
     halt
+
+foo:
+    call bar
+    ret
+
+bar:
+    ret
