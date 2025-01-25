@@ -7,3 +7,4 @@ RemoteTasks/
 samples/output
 arch/example*
 examples/asm-gen/hw.ptptb
+scripts/utils/__pycache__

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-import re
 import sys
+sys.dont_write_bytecode = True
 
+import re
 from utils.run_command import run_command, USER_LOGIN, USER_PASSWORD
+
 
 assemble_debug_command = (
     f"mono ./RemoteTasks/Portable.RemoteTasks.Manager.exe "
