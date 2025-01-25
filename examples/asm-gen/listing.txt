@@ -1,0 +1,8 @@
+[section progmem]
+
+main:
+    push 66
+    push 77
+    popout
+    popout
+    halt

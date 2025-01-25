@@ -1,0 +1,96 @@
+architecture popov-v24 {
+/*
+	case				                24
+	data word length	                2
+	code model			                Stack machine
+	spaces				                code, constants, data, stack
+*/
+
+registers:
+
+	storage sp [16];                                        // Stack pointer
+	storage ip [16];                                        // Program counter (Instruction pointer)
+
+	storage inp [16];
+	storage outp [16];
+
+memory:
+
+	range datamem [0x0000 .. 0xffff] { 						// Data memory
+		cell = 16;
+		endianess = little-endian;
+		granularity = 2;
+	}
+
+	range constantmem [0x0000 .. 0xffff] {							// Constants memory
+		cell = 16;
+		endianess = little-endian;
+		granularity = 2;
+	}
+
+	range stackmem [0x0000 .. 0xffff] {						// Stack memory
+		cell = 16;
+		endianess = little-endian;
+		granularity = 2;
+	}
+
+	range progmem [0x0000 .. 0xffff] {						// Program memory
+		cell = 16;
+		endianess = little-endian;
+		granularity = 2;
+	}
+
+instructions:
+	instruction halt = { 1111 1111 1111 1111 } {};
+
+
+	encode imm16 field = immediate [16];
+
+	encode bank sequence = alternatives {
+		d = {00},
+		c = {01},
+		s = {10},
+		p = {11}
+	}; // For later usage
+	
+
+	instruction push = { 0001, imm16 as value, 0000 } {                                            
+		stackmem:2[sp] = value;
+		sp = sp + 2;
+		ip = ip + 3;                                            
+	};
+
+	instruction pop = { 0010, 0000 } {
+    	sp = sp - 2;
+    	ip = ip + 1;
+  	};
+
+  	instruction popout = { 0100, 0000 } {
+    	sp = sp - 2;
+    	outp = stackmem:2[sp];
+    	ip = ip + 1;
+  	};
+
+	instruction add = { 1000, 0000 } {
+		sp = sp - 2;
+	    let x = stackmem:2[sp];
+	    
+	    sp = sp - 2;
+	    let y = stackmem:2[sp];
+	    
+	    let r = x + y;
+	    
+	    stackmem:2[sp] = r;
+	    sp = sp - 2;
+	    ip = ip + 1;
+	};
+
+mnemonics:
+	
+	mnemonic push(value) "{1}";
+	mnemonic pop();
+	mnemonic popout();
+
+	mnemonic halt();
+
+}

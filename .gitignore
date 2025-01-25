@@ -5,4 +5,5 @@ src/tree.dot
 src/output.png
 RemoteTasks/
 samples/output
-arch
+arch/example*
+examples/asm-gen/hw.ptptb
