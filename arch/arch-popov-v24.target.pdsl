@@ -45,15 +45,7 @@ instructions:
 
 
 	encode imm16 field = immediate [16];
-
-	encode bank sequence = alternatives {
-		d = {00},
-		c = {01},
-		s = {10},
-		p = {11}
-	}; // For later usage
 	
-
 	instruction push = { 1000, 0000, imm16 as value } {
 		stackmem:2[sp] = value;
 		sp = sp + 2;
@@ -180,6 +172,40 @@ instructions:
 			ip = ip + 3;
 	};
 
+	encode bank sequence = alternatives {
+		d = {00},
+		c = {01}
+	};
+
+	instruction ldloc = { 1110, 0000, imm16 as ptr } {
+		stackmem:2[sp] = datamem:2[ptr];
+		datamem:2[ptr] = 0;
+		sp = sp + 2;
+		ip = ip + 3;
+	};
+
+	instruction ldc = {1110, 0001, imm16 as ptr} {
+		stackmem:2[sp] = constantmem:2[ptr];
+		constantmem:2[ptr] = 0;
+		sp = sp + 2;
+		ip = ip + 3;
+	};
+
+	instruction stloc = { 1110, 0010, imm16 as ptr } {
+		sp = sp - 2;
+		datamem:2[ptr] = stackmem:2[sp];
+		stackmem:2[sp] = 0;
+		ip = ip + 3;
+	};
+
+	instruction stc = {1110, 0100, imm16 as ptr} {
+		sp = sp - 2;
+		constantmem:2[ptr] = stackmem:2[sp];
+		stackmem:2[sp] = 0;
+		ip = ip + 3;
+	};
+
+
 
 mnemonics:
 	
@@ -199,6 +225,12 @@ mnemonics:
 
 	mnemonic call(target) "{1}";
 	mnemonic ret();
+	
+	mnemonic ldc(ptr) "{1}";
+	mnemonic ldloc(ptr) "{1}";
+
+	mnemonic stc(ptr) "{1}";
+	mnemonic stloc(ptr) "{1}";
 
 	mnemonic halt();
 

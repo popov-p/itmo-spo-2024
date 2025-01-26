@@ -11,7 +11,7 @@ assemble_debug_command = (
     f"-ul \"{USER_LOGIN}\" "
     f"-up \"{USER_PASSWORD}\" "
     f"-w -s AssembleDebug definitionFile ./arch/arch-popov-v24.target.pdsl "
-    f"archName popov-v24 asmListing ./examples/asm-gen/listing.txt sourcesDir ."
+    f"archName popov-v24 asmListing ./samples/output/sample1/asm/main-asm-listing.txt sourcesDir ."
 )
 
 assemble_debug_output = run_command(assemble_debug_command)
@@ -34,7 +34,7 @@ pull_binary_command = (
     f"mono ./RemoteTasks/Portable.RemoteTasks.Manager.exe "
     f"-ul \"{USER_LOGIN}\" "
     f"-up \"{USER_PASSWORD}\" "
-    f"-g {task_id} -r out.ptptb -o ./examples/asm-gen/hw.ptptb"
+    f"-g {task_id} -r out.ptptb -o ./samples/output/sample1/asm/hw.ptptb"
 )
 
 pull_binary_output = run_command(pull_binary_command)

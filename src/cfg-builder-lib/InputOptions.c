@@ -33,15 +33,18 @@ void processInput(int argc, char** argv) {
     }
 
     for(int j = 0; j < functionList->count; j++) {
-      char* cfgDotFilename = createFilePath("%s/%s-cfg.dot", outputSubDir, functionList->functions[j]->name);
-      FILE *cfgFile = fopen(cfgDotFilename, "w");
-      if (!cfgFile)
-        fprintf(stderr, "PI :: ERROR :: FILE NOT OPENED\n");
-      else {
-        CFG_WriteInFile(functionList->functions[j]->cfg, cfgFile);
-        fclose(cfgFile);
-      }
-      char* cfgPngFilename = createFilePath("%s/%s-cfg.png", outputSubDir, functionList->functions[j]->name);
+      char* cfgDotFilename = createFilePath("%s/cfg/%s-cfg.dot", outputSubDir, functionList->functions[j]->name);
+      FILE* cfgFile = open_file(cfgDotFilename, "w");
+      CFG_WriteInFile(functionList->functions[j]->cfg, cfgFile);
+      close_file(cfgFile);
+
+      char* asmListingFilename = createFilePath("%s/asm/%s-asm-listing.txt", outputSubDir, functionList->functions[j]->name);
+      FILE* asmFile = open_file(asmListingFilename, "w");
+      fprintf(asmFile, "lol-kek");
+      close_file(asmFile);
+
+      //ASM_GenerateListing(functionList->functions[j]->cfg);
+      char* cfgPngFilename = createFilePath("%s/cfg/%s-cfg.png", outputSubDir, functionList->functions[j]->name);
       executeCommand("dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
       executeCommand("xdg-open %s", cfgPngFilename);
       free(cfgPngFilename);

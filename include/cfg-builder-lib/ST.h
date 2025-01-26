@@ -25,6 +25,7 @@ typedef struct {
       char* returnType;
     } function;
   } value;
+  uint16_t addr;
 } STE; // Symbol Table element
 
 typedef struct {

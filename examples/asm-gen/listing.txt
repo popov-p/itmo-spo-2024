@@ -1,12 +1,9 @@
-[section name=progmem]
+[section datamem]
+x: db 0x0002
+y: db 0x0004
 
+[section progmem]
 main:
-    push 2
-    push 4
-    jmplt bar
-    push 5
-    halt
-
-bar:
-    push 777
+    push y
+    popout
     halt

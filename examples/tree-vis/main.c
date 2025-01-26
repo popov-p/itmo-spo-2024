@@ -12,8 +12,8 @@ int main(int argc, char** argv)
 
   char* baseName = getBaseName(inputFilePath);
 
-  char* dotFilePath = createFilePath("%s/%s.dot", outputDir, baseName);
-  char* pngFilePath = createFilePath("%s/%s.png", outputDir, baseName);
+  char* dotFilePath = createFilePath("%s/%s/tree/%s-tree.dot", outputDir, baseName, baseName);
+  char* pngFilePath = createFilePath("%s/%s/tree/%s-tree.png", outputDir, baseName, baseName);
 
   char *inputText = readFileToString(inputFilePath);
   if (!inputText) {
