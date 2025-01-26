@@ -3,6 +3,20 @@
 #include "stdbool.h"
 #include "ST.h"
 
+#define __READ  "OP_READ"
+#define __WRITE  "OP_WRITE"
+#define __PLACE "OP_PLACE"
+#define __CONST "OP_CONST"
+#define __CALL "OP_CALL"
+#define __HEAD "OP_HEAD"
+#define __PLUS "OP_PLUS"
+
+#define IS_OPERATION(node, op) ((node)->dataType == OT_OPERATION && strcmp((node)->data.operation.operationType, (op)) == 0)
+#define IS_CONSTANT(node) ((node)->dataType == OT_CONSTANT)
+#define IS_VARIABLE(node) ((node)->dataType == OT_VARIABLE)
+
+
+
 static inline bool OT_IsInt(const char* token) {
   if (!token || *token == '\0') {
     return false;

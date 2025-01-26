@@ -75,7 +75,7 @@ void OT_WriteNode(OT* node, int basicBlockIndex, FILE *file) {
               node->data.constant.constType);
       break;
     default:
-      fprintf(file, "    cluster_%d_node%u [label=\"Unknown\"];\n",
+      fprintf(file, "    cluster_%d_node%u [label=\"HEAD\"];\n",
               basicBlockIndex, node->id);
   }
 }

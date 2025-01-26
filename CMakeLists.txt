@@ -18,7 +18,7 @@ set(TREE_VIS_LIB tree-vis-lib)
 set(TREE_VIS tree-vis)
 
 set(CFG_BUILDER_LIB cfg-builder-lib)
-set(CFG_BUILDER cfg-builder)
+set(COMPILER compiler)
 
 set(IO_UTILS io-utils)
 set(SAFE_MEM safe-mem)
@@ -35,5 +35,5 @@ add_subdirectory(${SRCDIR}/${IO_UTILS})
 add_subdirectory(${SRCDIR}/${SAFE_MEM})
 
 add_subdirectory(${EXAMPLEDIR}/${TREE_VIS})
-add_subdirectory(${EXAMPLEDIR}/${CFG_BUILDER})
+add_subdirectory(${EXAMPLEDIR}/${COMPILER})
 add_subdirectory(${EXAMPLEDIR}/${ASM_GEN})

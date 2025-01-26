@@ -4,13 +4,6 @@
 #include "safe_mem.h"
 #include "ST.h"
 
-#define __READ  "OP_READ"
-#define __WRITE  "OP_WRITE"
-#define __PLACE "OP_PLACE"
-#define __CONST "OP_CONST"
-#define __CALL "OP_CALL"
-#define __HEAD "OP_HEAD"
-
 OT* OT_GetChild(const OT* parent, int index) {
   if (!parent || index < 0 || index >= parent->childCount)
     return NULL;
@@ -74,6 +67,10 @@ OT* OT_CreateAuxiliaryNode(OT_t dataType,
     case OT_OPERATION:
       otNode->data.operation.returnType = primaryData ? strdup(primaryData) : NULL;
       otNode->data.operation.operationType = secondaryData ? strdup(secondaryData) : NULL;
+      break;
+    case OT_AUX:
+      otNode->data.auxiliary.firstOption = primaryData ? strdup(primaryData) : NULL;
+      otNode->data.auxiliary.secondOption = secondaryData ? strdup(secondaryData) : NULL;
       break;
     default:
       printf("%s", "Error while creating auxiliary OT node. Exiting ...\n");
@@ -158,7 +155,7 @@ void OT_Free(OT* node) {
 
 OT* OT_BuildFromAST(ST* st, AST* node) {
   if (!node) return NULL;
-  OT* ot = OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __HEAD);
+  OT* ot = OT_CreateAuxiliaryNode(OT_AUX, NULL, __HEAD);
   OT_Walker(ot, st, node);
   OT_TypeResolver(ot);
   return ot;
@@ -190,14 +187,14 @@ void OT_Walker(OT* ot, ST* st, AST* node) {
   }
   else
   {
-    printf("====> VISITING ELEMENT :: name: %s, id: %u\n",node->token, node->id);
+    // printf("====> VISITING ELEMENT :: name: %s, id: %u\n",node->token, node->id);
     STE* variable = ST_Search(st, node->token, ST_VAR);
     if (variable) {
           currentNode = OT_CreateNode(node, OT_VARIABLE,
                                       variable->value.variable.name,
                                       variable->value.variable.type);
           OT_AddChild(ot, currentNode);
-          OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
+          // OT_InsertBetween(ot, currentNode, OT_CreateAuxiliaryNode(OT_OPERATION, NULL, __READ));
     }
     STE* constant = ST_Search(st, node->token, ST_CONSTANT);
     if (constant) {
@@ -287,9 +284,6 @@ void OT_TypeResolver(OT* ot) {
     }
   }
 }
-
-
-
 
 char* OT_ASTToOpToken(const char* astToken) {
   if (!astToken) {

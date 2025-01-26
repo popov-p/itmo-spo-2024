@@ -113,7 +113,6 @@ void ST_InsertFunction(ST* table, const char* name, const char* returnType) {
   entry->value.function.returnType = strdup(returnType);
 }
 
-
 void ST_Print(ST *table) {
   printf("Symbol Table:\n");
   printf("Capacity: %d, Size: %d\n", table->capacity, table->size);

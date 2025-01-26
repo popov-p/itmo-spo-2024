@@ -9,7 +9,7 @@ typedef enum BB_t {
   merge,
   loop_exit,
   repeat_exit
-}BB_t;
+} BB_t;
 
 typedef struct BB {
   AST* node;

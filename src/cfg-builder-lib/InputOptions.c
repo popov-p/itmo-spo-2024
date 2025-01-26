@@ -1,8 +1,9 @@
-  #include "InputOptions.h"
+#include "InputOptions.h"
 #include "AST.h"
 #include "Functions.h"
 #include "CFGOutput.h"
 #include "commands.h"
+#include "ASMGen.h"
 
 void processInput(int argc, char** argv) {
   const char* outputDir = argv[1];
@@ -40,10 +41,9 @@ void processInput(int argc, char** argv) {
 
       char* asmListingFilename = createFilePath("%s/asm/%s-asm-listing.txt", outputSubDir, functionList->functions[j]->name);
       FILE* asmFile = open_file(asmListingFilename, "w");
-      fprintf(asmFile, "lol-kek");
+      ASM_GenerateListing(functionList->functions[j], asmFile);
       close_file(asmFile);
 
-      //ASM_GenerateListing(functionList->functions[j]->cfg);
       char* cfgPngFilename = createFilePath("%s/cfg/%s-cfg.png", outputSubDir, functionList->functions[j]->name);
       executeCommand("dot -Tpng %s -o %s", cfgDotFilename, cfgPngFilename);
       executeCommand("xdg-open %s", cfgPngFilename);

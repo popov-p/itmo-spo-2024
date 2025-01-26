@@ -16,3 +16,8 @@ binaryFileToRun ./examples/asm-gen/hw.ptptb \
 ipRegStorageName ip \
 finishMnemonicName halt \
 codeRamBankName progmem
+
+./scripts/assemble-pull-debug.py && ./run.sh -il -s DebugBinary \
+definitionFile ./arch/arch-popov-v24.target.pdsl archName popov-v24 \
+binaryFileToRun ./samples/output/sample1/asm/hw.ptptb ipRegStorageName ip \
+finishMnemonicName halt codeRamBankName progmem

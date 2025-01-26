@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "safe_mem.h"
 #include "CFGWalker.h"
-// #include "OTOutput.h"
 
 BB* CFG_CreateBB(AST* node, BB_t bt) {
   BB* block = (BB*)safe_malloc(sizeof(BB));
@@ -34,15 +33,6 @@ void CFG_GenerateOTs(CFG* cfg, ST* st) {
     BB* block = cfg->blocks[i];
     if (block && block->node) {
       block->opTree = OT_BuildFromAST(st, block->node);
-      continue;
-    }
-  }
-
-  for (int i = 0; i < cfg->blockCount; i++) {
-    BB* block = cfg->blocks[i];
-    if (block && block->node) {
-      // OT_PrintTree(block->opTree, 0);
-      // printf("=================>\n");
     }
   }
 }
@@ -51,6 +41,7 @@ CFG* CFG_Generate(AST* head) {
   CFG* cfg = CFG_Init(20, 20);
   CFG_Walker(cfg, head);
   ST* st = ST_BuildFromFAST(head);
+  cfg->symbolTable = st;
   CFG_GenerateOTs(cfg, st);
   return cfg;
 }

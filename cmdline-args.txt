@@ -1,0 +1,7 @@
+tree-vis:
+/home/pavel-ub/devel/itmo-spo-2024/samples/input/sample1.txt \
+/home/pavel-ub/devel/itmo-spo-2024/samples/output
+
+compiler:
+/home/pavel-ub/devel/itmo-spo-2024/samples/output \
+/home/pavel-ub/devel/itmo-spo-2024/samples/input/sample1.txt

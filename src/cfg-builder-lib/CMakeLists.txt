@@ -1,1 +1,1 @@
-create_library(${CFG_BUILDER_LIB} ${TREE_VIS_LIB} ${IO_UTILS} ${SAFE_MEM})
+create_library(${CFG_BUILDER_LIB} ${TREE_VIS_LIB} ${ASM_GEN_LIB} ${IO_UTILS} ${SAFE_MEM})
