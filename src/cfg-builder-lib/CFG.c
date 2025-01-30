@@ -57,7 +57,7 @@ void CFG_AddBB(CFG* cfg, BB* block) {
 CFG* CFG_Init(int loopLevelStackSize,
               int ifLevelStackSize) {
   CFG* cfg = (CFG*)safe_malloc(sizeof(CFG));
-  cfg->symbolTable = NULL;
+  //cfg->symbolTable = NULL;
   cfg->blocks = NULL;
   cfg->blockCount = 0;
   cfg->lastProcessedIndex = -1;

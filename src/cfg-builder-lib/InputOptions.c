@@ -25,7 +25,7 @@ void processInput(int argc, char** argv) {
     PR* parseResult = parse(inputText);
     AST* ast = AST_BuildFromParseResult(parseResult);
     FL* functionList = FL_FindFsInAST(ast, argv[i]);
-
+    AS* addrSet = AS_init();
     if(!functionList->count) {
       perror("PI :: WARNING :: NO FUNCTIONS DETECTED\n");
       free(functionList);
@@ -41,7 +41,7 @@ void processInput(int argc, char** argv) {
 
       char* asmListingFilename = createFilePath("%s/asm/%s-asm-listing.txt", outputSubDir, functionList->functions[j]->name);
       FILE* asmFile = open_file(asmListingFilename, "w");
-      ASM_GenerateListing(functionList->functions[j], asmFile);
+      ASM_GenerateListing(addrSet, functionList->functions[j], asmFile);
       close_file(asmFile);
 
       char* cfgPngFilename = createFilePath("%s/cfg/%s-cfg.png", outputSubDir, functionList->functions[j]->name);

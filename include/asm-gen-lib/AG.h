@@ -2,12 +2,12 @@
 #include "AS.h"
 
 typedef struct AG {
-  unsigned short current;
-  unsigned short end;
+  uint16_t current;
+  uint16_t end;
 } AG; // Address Generator
 
-AG* AG_init(unsigned short start, unsigned short end);
+AG* AG_init(uint16_t start, uint16_t end);
 
-bool AG_next(AG *gen, unsigned short *out);
-bool AG_generateUniqueAddr(AS *set, unsigned short *out);
+bool AG_next(AG *gen, uint16_t *out);
+bool AG_nextUnique(AS *set, uint16_t *out);
 void AG_destroy(AG *gen);

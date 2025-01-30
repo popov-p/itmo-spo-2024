@@ -12,7 +12,7 @@ void AS_free(AS* set) {
   free(set);
 }
 
-bool AS_containsAddr(const AS* set, unsigned short value) {
+bool AS_containsAddr(const AS* set, uint16_t value) {
   for (size_t i = 0; i < set->size; i++) {
     if (set->elements[i] == value) {
       return true;
@@ -21,7 +21,7 @@ bool AS_containsAddr(const AS* set, unsigned short value) {
   return false;
 }
 
-bool AS_addAddr(AS *set, unsigned short value) {
+bool AS_addAddr(AS *set, uint16_t value) {
   if (AS_containsAddr(set, value)) {
     return false;
   }
@@ -32,7 +32,7 @@ bool AS_addAddr(AS *set, unsigned short value) {
   return true;
 }
 
-bool AS_removeAddr(AS *set, unsigned short value) {
+bool AS_removeAddr(AS *set, uint16_t value) {
   for (size_t i = 0; i < set->size; i++) {
     if (set->elements[i] == value) {
       set->elements[i] = set->elements[--set->size];

@@ -1,8 +1,13 @@
 #pragma once
 #include "Functions.h"
 #include "OT.h"
+#include "AG.h"
 
 #define PUSH push_addr
 
-void ASM_GenerateListing(F* function, FILE* listing);
-void ASM_Walker(OT* node, FILE* listing);
+typedef struct ASMFW {
+  AS* set;
+  F* function;
+} ASMFW; // ASM Function Wrapper
+void ASM_GenerateListing(AS* set, F* function, FILE* listing);
+void ASM_Walker(ASMFW* funcWrap, OT* node, FILE* listing);
